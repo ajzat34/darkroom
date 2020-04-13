@@ -2,11 +2,23 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="index.css">
+
+    <title>Electron</title>
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="window.css">
+
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
+    <div class="preview" id="preview-pane">
+      <canvas id="preview_canvas"></canvas>
+      <div class="content">
+        <button class="large" type="button">Open Image</button>
+      </div>
+    </div>
+    <div class="options line left" id="options-pane"></div>
+
+    <script type="text/javascript" src="webgl.js"></script>
+    <script type="text/javascript" src="window.js"></script>
   </body>
 </html>
