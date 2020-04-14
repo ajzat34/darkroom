@@ -12,15 +12,14 @@ function loadWidget (gl, path) {
     // error checking
     if (shader.glshaderpack.attribLocations.aVertex === -1) console.error(`could not get AttribLocation for atrribVertexCoord: ${shader.atrribVertexCoord}`)
     if (shader.glshaderpack.attribLocations.textureCoord === -1) console.error(`could not get AttribLocation for atrribTextureCoord: ${shader.atrribTextureCoord}`)
-    if (shader.glshaderpack.attribLocations.aVertex === -1) console.error(`could not get AttribLocation for textureSampler: ${shader.textureSampler}`)
   })
   return widget
 }
 
 // sets up opengl to use a widget
-function useWidgetShader(gl, widget, shaderidx, texture, fb) {
+function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   var shader = widget.stages[shaderidx]
-  gluse(gl, shader.glshaderpack, model, texture)
+  gluse(gl, shader.glshaderpack, model)
   Object.keys(shader.knob_bindings).forEach((key) => {
     var value = shader.knob_bindings[key]
     switch (value.type) {
@@ -31,6 +30,7 @@ function useWidgetShader(gl, widget, shaderidx, texture, fb) {
         throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
     }
   })
+  useTextures(gl, shader.glshaderpack, imgs)
   useFB(gl, fb)
 }
 
@@ -38,15 +38,18 @@ function useWidgetShader(gl, widget, shaderidx, texture, fb) {
 function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
   widget.stages.forEach((item, i) => {
     var shader = widget.stages[i]
-    var img
+    var imgs = []
     var fb
-    if (shader.inputs[0] === 'in'){
-      img = img_in
-    }
-    if (shader.out === 'out') {
-      fb = fb_out
-    }
-    useWidgetShader(gl, widget, i, img, fb)
+    shader.inputs.forEach((inp) => {
+      if (inp === 'in') imgs.push(img_in)
+      else if (inp === 'original') imgs.push(sourceImage)
+      else if (inp in privateframebuffers) imgs.push(privateframebuffers[inp])
+    });
+
+    if (shader.out === 'out') fb = fb_out
+    else if (shader.out in privateframebuffers) fb = privateframebuffers[inp]
+
+    useWidgetShader(gl, widget, i, imgs, fb)
     draw(gl)
   });
 }

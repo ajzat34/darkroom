@@ -6,13 +6,17 @@ function loadShaderPack (gl, path, descriptor) {
       aVertex: gl.getAttribLocation(shaderprogram, descriptor.atrribVertexCoord),
       textureCoord: gl.getAttribLocation(shaderprogram, descriptor.atrribTextureCoord),
     },
-    uniformLocations: {
-      texture: gl.getUniformLocation(shaderprogram, descriptor.textureSampler),
-    },
+    uniformLocations: {},
+    imageBindings: {},
   }
   if (descriptor.uniforms) {
     Object.keys(descriptor.uniforms).forEach((key) => {
       pack.uniformLocations[key] = gl.getUniformLocation(shaderprogram, descriptor.uniforms[key])
+    })
+  }
+  if (descriptor.inputBindings) {
+    descriptor.inputBindings.forEach((key) => {
+      pack.imageBindings[key] = gl.getUniformLocation(shaderprogram, descriptor.inputBindings[key])
     })
   }
   return pack

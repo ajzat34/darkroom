@@ -79,7 +79,7 @@ function prepareModelBuffer (gl) {
   }
 }
 
-function gluse (gl, program, model, texture) {
+function gluse (gl, program, model) {
   // vertex buffer
   {
     const numComponents = 2;  // pull out 2 values per iteration
@@ -104,10 +104,15 @@ function gluse (gl, program, model, texture) {
     gl.enableVertexAttribArray(program.attribLocations.textureCoord);
   }
 
-  gl.activeTexture(gl.TEXTURE0)
   gl.useProgram(program.gl)
-  gl.bindTexture(gl.TEXTURE_2D, texture)
-  gl.uniform1i(program.uniformLocations.texSampler, 0)
+}
+
+function useTextures(gl, program, textures) {
+  textures.forEach((texture, i) => {
+    gl.activeTexture(gl[`TEXTURE${i}`])
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.uniform1i(program.uniformLocations.texture, 0)
+  })
 }
 
 // Initialize a texture and load an image.
@@ -149,8 +154,8 @@ function loadTexture(gl, url) {
 function draw (gl) {
   gl.clear(gl.COLOR_BUFFER_BIT)
   const offset = 0;
-  const vertexCount = 4;
-  gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+  const vertexCount = 6;
+  gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
 }
 
 function isPowerOf2(value) {
