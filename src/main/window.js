@@ -1,4 +1,4 @@
-const remote = require('electron').remote
+const { ipcRenderer, remote } = require('electron')
 
 var preview
 var pc
@@ -95,4 +95,5 @@ document.addEventListener("DOMContentLoaded", function(){
   resize()
   // and an eventlistener for resizing
   window.addEventListener('resize', resize)
+  ipcRenderer.send('mainwindow-loaded')
 })

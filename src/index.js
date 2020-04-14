@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -6,7 +6,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
   app.quit();
 }
 
-const createWindow = () => {
+const createWindows = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1366,
@@ -17,25 +17,35 @@ const createWindow = () => {
       nodeIntegration: true,
     },
     show: false,
-    backgroundColor: '24252b',
-  })
-
-  // when the window is all ready and loaded, show the window
-  mainWindow.on('ready-to-show', ()=>{
-    mainWindow.show()
+    backgroundColor: '#24252b',
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'))
+  mainWindow.loadFile(path.join(__dirname, 'main/index.html'))
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
-};
+  // Create the loading window
+  const loadWindow = new BrowserWindow({
+    width: 360,
+    height: 480,
+    show: true,
+    backgroundColor: '#24252b',
+    frame: false,
+  })
+
+  // and load the index.html of the app.
+  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
+
+  // when the render process is ready, show the window
+  ipcMain.on('mainwindow-loaded', () => {
+    mainWindow.show()
+    loadWindow.close()
+  })
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindows)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -49,6 +59,3 @@ app.on('activate', () => {
     createWindow();
   }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
