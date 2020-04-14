@@ -1,28 +1,58 @@
+const remote = require('electron').remote
+
 var preview
-var pcv
-var ctx
+var pc
+var pgl
 var options
 
 var optionsSize = 300
 
+var model
+var copyprogram
+
 function resize () {
   options.style.width = `${optionsSize}px`
   preview.style.width = `${window.innerWidth - optionsSize}px`
-  pcv.width = (window.innerWidth - optionsSize) * window.devicePixelRatio
-  pcv.height = window.innerHeight * window.devicePixelRatio
+  pc.width = (window.innerWidth - optionsSize) * window.devicePixelRatio
+  pc.height = window.innerHeight * window.devicePixelRatio
+  pc.style.width = `${window.innerWidth - optionsSize}px`
+  pc.style.height = `${window.innerHeight}px`
+  glResize(pgl)
+  render(pgl)
+}
+
+function loadGL (gl) {
+  model = prepareModelBuffer(gl)
+  sourceImage = loadTexture(gl, 'image.jpg')
+  copyprogram = loadShaderPack(gl, __dirname + '/shaders/copy', {
+    atrribVertexCoord: 'aVertex',
+    atrribTextureCoord: 'aTextureCoord',
+    textureSampler: 'texSampler',
+  })
+}
+
+function render (gl) {
+  gluse(gl, copyprogram, model, sourceImage)
+  draw(gl)
 }
 
 document.addEventListener("DOMContentLoaded", function(){
   // window panes
   preview = document.getElementById('preview-pane')
   options = document.getElementById('options-pane')
-  pcv = document.getElementById('preview_canvas')
-  ctx = getWebGL(pcv)
-  if (!ctx) {
-    document.getElementsByTagName("BODY")[0].innerHTML = 'WebGL is not supported'
-    throw new Error('WebGL is not supported')
+
+  // webgl / preview canvas
+  pc = document.getElementById('preview_canvas')
+  pgl = getWebGL(pc)
+  if (!pgl) {
+    alert('WebGL is not supported')
+    remote.getCurrentWindow().close()
     return
   }
+
+  // initial sizing
+  loadGL(pgl)
   resize()
+  // and an eventlistener for resizing
   window.addEventListener('resize', resize)
 })

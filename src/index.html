@@ -8,17 +8,22 @@
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="window.css">
 
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+
   </head>
   <body>
     <div class="preview" id="preview-pane">
       <canvas id="preview_canvas"></canvas>
-      <div class="content">
+      <div class="content hidden">
         <button class="large" type="button">Open Image</button>
       </div>
     </div>
     <div class="options line left" id="options-pane"></div>
 
+    <script type="text/javascript" src="glmatrix.js"></script>
+    <script type="text/javascript" src="model.js"></script>
     <script type="text/javascript" src="webgl.js"></script>
+    <script type="text/javascript" src="shaders.js"></script>
     <script type="text/javascript" src="window.js"></script>
   </body>
 </html>
