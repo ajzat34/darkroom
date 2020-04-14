@@ -7,8 +7,8 @@ var options
 
 var optionsSize = 300
 
-var model
-var copyprogram
+var sourceImageWidth = 2
+var sourceImageHeight = 2
 
 function resize () {
   options.style.width = `${optionsSize}px`
@@ -18,22 +18,14 @@ function resize () {
   pc.style.width = `${window.innerWidth - optionsSize}px`
   pc.style.height = `${window.innerHeight}px`
   glResize(pgl)
+  updateCanvas(pgl)
+}
+
+function eventImageLoad (image) {
+  sourceImageWidth = image.width
+  sourceImageHeight = image.height
+  triggerRecreateFrameBuffers(pgl)
   render(pgl)
-}
-
-function loadGL (gl) {
-  model = prepareModelBuffer(gl)
-  sourceImage = loadTexture(gl, 'image.jpg')
-  copyprogram = loadShaderPack(gl, __dirname + '/shaders/copy', {
-    atrribVertexCoord: 'aVertex',
-    atrribTextureCoord: 'aTextureCoord',
-    textureSampler: 'texSampler',
-  })
-}
-
-function render (gl) {
-  gluse(gl, copyprogram, model, sourceImage)
-  draw(gl)
 }
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -51,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   // initial sizing
-  loadGL(pgl)
+  prepare(pgl)
   resize()
   // and an eventlistener for resizing
   window.addEventListener('resize', resize)
