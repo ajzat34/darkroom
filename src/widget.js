@@ -30,6 +30,9 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
         throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
     }
   })
+  if ('__imagesize__' in shader.uniforms) {
+    gl.uniform2i(shader.glshaderpack.uniformLocations['__imagesize__'], sourceImageWidth, sourceImageHeight)
+  }
   useTextures(gl, shader.glshaderpack, imgs)
   useFB(gl, fb)
 }
@@ -43,11 +46,11 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
     shader.inputs.forEach((inp) => {
       if (inp === 'in') imgs.push(img_in)
       else if (inp === 'original') imgs.push(sourceImage)
-      else if (inp in privateframebuffers) imgs.push(privateframebuffers[inp])
+      else if (inp in privateframebuffers) imgs.push(privateframebuffers[inp].texture)
     });
 
     if (shader.out === 'out') fb = fb_out
-    else if (shader.out in privateframebuffers) fb = privateframebuffers[inp]
+    else if (shader.out in privateframebuffers) fb = privateframebuffers[shader.out]
 
     useWidgetShader(gl, widget, i, imgs, fb)
     draw(gl)
@@ -59,6 +62,7 @@ function createFramebuffers (gl, widgets, widgetOrder, width, height) {
   var chainFrameBuffersCount = 2
   var extraFrameBuffersCount = 0
   widgetOrder.forEach((widgetname) => {
+    if (!(widgetname in widgets)) throw new Error (`widget ${widgetname} does not exist`)
     if (widgets[widgetname].framebuffers.length > extraFrameBuffersCount) extraFrameBuffersCount = widgets[widgetname].framebuffers.length
   });
   var chainFrameBuffers = []
@@ -72,7 +76,7 @@ function createFramebuffers (gl, widgets, widgetOrder, width, height) {
   return {
     chain: chainFrameBuffers,
     extra: extraFrameBuffers,
-    final: allocTextureFB(gl, width, height),
+    final: allocTextureFB(gl, width, height, true),
   }
 }
 

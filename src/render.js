@@ -1,7 +1,7 @@
 var model
 var copyprogram
 var widgets = {}
-var widgetOrder = ['adjustments', 'gamma']
+var widgetOrder = ['adjustments', 'gamma', 'gaussian4', 'meanblur9']
 var framebuffers = {}
 var sourceImage
 
@@ -18,6 +18,10 @@ function prepare (gl) {
   })
   widgets.adjustments = loadWidget(gl, __dirname + '/widgets/adjustments.js')
   widgets.gamma = loadWidget(gl, __dirname + '/widgets/gamma.js')
+  widgets.meanblur5 = loadWidget(gl, __dirname + '/widgets/meanblur5.js')
+  widgets.meanblur9 = loadWidget(gl, __dirname + '/widgets/meanblur9.js')
+  widgets.meanblur9x2 = loadWidget(gl, __dirname + '/widgets/meanblur9x2.js')
+  widgets.gaussian4 = loadWidget(gl, __dirname + '/widgets/gaussian4.js')
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
 }
 
