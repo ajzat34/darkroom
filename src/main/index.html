@@ -7,16 +7,32 @@
 
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="window.css">
+    <link rel="stylesheet" href="widgetui/widgets.css">
 
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
 
   </head>
   <body>
     <div class="preview" id="preview-pane">
-      <canvas id="preview_canvas"></canvas>
-      <div class="content hidden">
-        <button class="large" type="button">Open Image</button>
+      <div class="toolbar line bottom" id="toolbar">
+        <section class="left">
+          <div class="osx_buttons">
+            <span class="close" id="close-btn"><span class="button">x</span></span>
+            <span class="min" id="min-btn"><span class="button">&ndash;</span></span>
+            <span class="max" id="max-btn"><span class="button">+</span></span>
+          </div>
+        </section>
+        <section class="mid">
+          <strong>Open Darkroom</strong>
+        </section>
+        <section class="right">
+          <button class="mid" type="button" id="btn-compare">Compare</button>
+        </section>
       </div>
+      <canvas id="preview_canvas"></canvas>
+      <!-- <div class="content">
+        <button class="large" type="button">Open Image</button>
+      </div> -->
     </div>
     <div class="options line left" id="options-pane"></div>
 
@@ -27,6 +43,7 @@
     <script type="text/javascript" src="framebuffer.js"></script>
     <script type="text/javascript" src="widget.js"></script>
     <script type="text/javascript" src="render.js"></script>
+    <script type="text/javascript" src="widgetui/main.js"></script>
     <script type="text/javascript" src="window.js"></script>
   </body>
 </html>

@@ -1,9 +1,12 @@
 var model
 var copyprogram
 var widgets = {}
-var widgetOrder = ['adjustments', 'gamma', 'gaussian4', 'meanblur9']
+var widgetOrder = ['adjustments', 'meanblur5']
 var framebuffers = {}
 var sourceImage
+var lastrender
+var renderRequest = false
+var renderrate = (1/30)*1000
 
 function prepare (gl) {
   model = prepareModelBuffer(gl)
@@ -23,6 +26,7 @@ function prepare (gl) {
   widgets.meanblur9x2 = loadWidget(gl, __dirname + '/widgets/meanblur9x2.js')
   widgets.gaussian4 = loadWidget(gl, __dirname + '/widgets/gaussian4.js')
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
+  createWidgetUIs()
 }
 
 function triggerRecreateFrameBuffers (gl) {
@@ -54,13 +58,13 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
   });
 }
 
-function updateFromFramebuffers (gl, framebuffers, dst, tin) {
+function updateFromFramebuffers (gl, framebuffer, dst, tin) {
   // bind the program and framebuffer
   gluse(gl, copyprogram, model)
   useFB(gl, dst)
   // bind the final texture
   gl.activeTexture(gl.TEXTURE0)
-  gl.bindTexture(gl.TEXTURE_2D, framebuffers.final.texture)
+  gl.bindTexture(gl.TEXTURE_2D, framebuffer)
   gl.uniform1i(copyprogram.uniformLocations.texture, 0)
   // create the transform matrix
   const transform = mat4.create()
@@ -70,18 +74,31 @@ function updateFromFramebuffers (gl, framebuffers, dst, tin) {
   draw (gl)
 }
 
-function updateCanvas (gl, x,y, scale) {
-  updateFromFramebuffers(gl, framebuffers, null, {
-    translate: [x, y, 0],
-    scale: [scale, -(pcaspect)/(framebuffers.final.width/framebuffers.final.height)*scale, 1],
+function updateCanvas (gl, x,y, scale, framebuffer) {
+  requestAnimationFrame(function(){
+    updateFromFramebuffers(gl, framebuffer, null, {
+      translate: [x, y, 0],
+      scale: [scale, -(pcaspect)/(framebuffers.final.width/framebuffers.final.height)*scale, 1],
+    })
   })
 }
 
 function render (gl) {
-  var start = new Date()
   update(gl, framebuffers, widgets, widgetOrder, sourceImage)
-  var finish = new Date()
+  gl.finish()
   updateCanvasMouse(pgl)
-  var stats = { total: new Date() - start + ' ms', render: finish - start + ' ms', }
-  console.log(stats)
+  gl.finish()
+}
+
+function updateCycle () {
+  var start = new Date()
+  if (renderRequest) {
+    render(pgl)
+    renderRequest = false
+  }
+  setTimeout(function(){ requestAnimationFrame(updateCycle) }, renderrate-(new Date() - start))
+}
+
+function sheduleRender() {
+  renderRequest = true
 }

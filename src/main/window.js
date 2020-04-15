@@ -6,7 +6,8 @@ var pgl
 var pcaspect
 var options
 
-var optionsSize = 300
+var optionsSize = 320
+var toolbarSize = 48
 
 var sourceImageWidth = 2
 var sourceImageHeight = 2
@@ -21,7 +22,7 @@ var mouse
 
 function resize () {
   var width = window.innerWidth - optionsSize
-  var height = window.innerHeight
+  var height = window.innerHeight - toolbarSize
   options.style.width = `${optionsSize}px`
   preview.style.width = `${width}px`
   pc.width = (width) * window.devicePixelRatio
@@ -36,7 +37,13 @@ function resize () {
 function updateCanvasMouse () {
   var width = window.innerWidth - optionsSize
   var height = window.innerHeight
-  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale)
+  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, framebuffers.final.texture)
+}
+
+function updateCanvasMouseCompare () {
+  var width = window.innerWidth - optionsSize
+  var height = window.innerHeight
+  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, sourceImage)
 }
 
 function eventImageLoad (image) {
@@ -73,7 +80,47 @@ function mouseWheelHandler (e) {
   updateCanvasMouse()
 }
 
+function createWidgetUIs() {
+  widgetOrder.forEach((widgetname) => {
+    var widget = widgets[widgetname]
+    var w = createWidgetUi(options, widget)
+    w.onchange = function(data) {
+      Object.keys(widget.knobs).forEach((knob) => {
+        widget.knobs[knob].value = data[knob]
+      })
+      sheduleRender()
+    }
+  })
+}
+
 document.addEventListener("DOMContentLoaded", function(){
+
+  // macos buttons
+  document.getElementById("min-btn").addEventListener("click", function (e) {
+       var window = remote.getCurrentWindow();
+       window.minimize()
+  })
+  document.getElementById("max-btn").addEventListener("click", function (e) {
+       var window = remote.getCurrentWindow();
+       if (!window.isMaximized()) {
+           window.maximize()
+       } else {
+           window.unmaximize()
+       }
+  })
+  document.getElementById("close-btn").addEventListener("click", function (e) {
+       var window = remote.getCurrentWindow();
+       window.close();
+  })
+
+  document.getElementById('btn-compare').addEventListener("mousedown", function(e) {
+    updateCanvasMouseCompare()
+  })
+  document.getElementById('btn-compare').addEventListener("mouseup", function(e) {
+    updateCanvasMouse()
+  })
+
+
   // window panes
   preview = document.getElementById('preview-pane')
   options = document.getElementById('options-pane')
@@ -96,4 +143,6 @@ document.addEventListener("DOMContentLoaded", function(){
   resize()
   // and an eventlistener for resizing
   window.addEventListener('resize', resize)
+
+  updateCycle()
 })

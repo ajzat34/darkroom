@@ -4,8 +4,9 @@ module.exports = {
     'Gamma': {
       type: 'slider',
       minValue: 0,
-      maxValue: 3,
+      maxValue: 4,
       value: 1,
+      step: '0.05',
     },
   },
   baseShader: 'gamma',

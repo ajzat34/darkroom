@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'Gaussian Blur (4x4, 2 Pass)',
+  name: 'Gaussian Blur 4x4',
   knobs: {
   },
   baseShader: 'gaussian4',

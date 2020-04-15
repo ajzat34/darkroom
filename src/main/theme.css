@@ -1,8 +1,10 @@
 :root {
-  --theme-background-color: rgb(35, 38, 43);
+  --theme-background-color: rgb(19, 22, 26);
   --theme-text-color: rgb(225, 226, 233);
-  --theme-line-color: rgb(24, 27, 32);
+  --theme-line-color: rgb(8, 8, 8);
   --theme-button-color: rgb(64, 70, 80);
   --theme-button-active-color: rgb(51, 56, 64);
-  --theme-options-color: rgb(29, 33, 38);
+  --theme-widget-color: rgb(43, 46, 51);
+  --theme-widget-line-color: rgb(20, 21, 23);
+  --theme-options-color: rgb(26, 30, 34);
 }

@@ -1,0 +1,121 @@
+.widgetUI-base {
+  background-color: var(--theme-widget-color);
+
+  margin-bottom: 16px;
+  width: 100%;
+
+  padding: 8px;
+
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--theme-widget-line-color);
+
+  user-select: none;
+
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
+}
+
+.widgetUI-base::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.widgetUI-base h4 {
+  margin: 0;
+}
+
+.widgetUI-row {
+  width: 100%;
+  display: block;
+}
+
+.widgetUI-row.top {
+  width: 100%;
+  display: block;
+  margin-bottom: 32px;
+}
+
+.widgetUI-row .title {
+  font-size: 10pt;
+  float: left;
+}
+
+.widgetUI-row .title.large {
+  font-weight: bold;
+  font-size: 14pt;
+}
+
+.widgetUI-row button {
+  font-size: 12pt;
+  font-weight: bold;
+  float: right;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.widgetUI-row input.inputnumber {
+  font-size: 8pt;
+  float: right;
+  width: 50px;
+  margin-left: 4px;
+  padding: 0;
+  background: none;
+  border-style: none;
+  color: var(--theme-text-color);
+  text-align: right;
+  box-sizing:border-box;
+}
+input.inputnumber[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input.inputnumber:focus {outline:0;}
+
+
+.widgetUI-content {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.knob {
+  margin-bottom: 12px;
+  width: 100%;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.knob input.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 2px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  transition: height .2s;
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+
+.knob input.slider:hover {
+  opacity: 1;
+  height: 4px;
+}
+
+.knob input.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  border-radius: 50%;
+  width: 16px; /* Set a specific slider handle width */
+  height: 16px; /* Slider handle height */
+  background: var(--theme-widget-color); /* Green background */
+  border-color: #fff;
+  outline: 3px solid var(--theme-widget-color);
+  border-width: 2px;
+  border-style: solid;
+}

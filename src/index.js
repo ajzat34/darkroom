@@ -6,7 +6,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
   app.quit();
 }
 
-const createWindows = () => {
+function makeLoadWindow () {
   // Create the loading window
   const loadWindow = new BrowserWindow({
     width: 300,
@@ -14,6 +14,7 @@ const createWindows = () => {
     show: false,
     backgroundColor: '#24252b',
     frame: false,
+    resizable: false,
   })
   loadWindow.once('ready-to-show', () => {
     loadWindow.show()
@@ -21,6 +22,12 @@ const createWindows = () => {
 
   // and load the index.html of the app.
   loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
+  return loadWindow
+}
+
+const createWindows = () => {
+
+  const loadWindow = makeLoadWindow ();
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -32,20 +39,23 @@ const createWindows = () => {
       nodeIntegration: true,
     },
     show: false,
+    frame: false,
     backgroundColor: '#24252b',
   })
-
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'main/index.html'))
 
   function swapwindows () {
-    try {
-      mainWindow.show()
-      loadWindow.close()
-      clearTimeout(closetimeout)
-    } catch (err) {
-      console.error(err)
-    }
+    console.log('swapping to main window')
+    setTimeout(function(){
+      try {
+        mainWindow.show()
+        loadWindow.close()
+        clearTimeout(closetimeout)
+      } catch (err) {
+        console.error(err)
+      }
+    }, 100)
   }
 
   // when the render process is ready, show the window
@@ -53,6 +63,10 @@ const createWindows = () => {
 
   // set a timeout in case something goes wrong
   var closetimeout = setTimeout(swapwindows, 5000)
+}
+
+// window for selecting a file to open
+const openDialogeWindow = () => {
 }
 
 // This method will be called when Electron has finished

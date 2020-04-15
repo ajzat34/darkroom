@@ -17,11 +17,51 @@ body {
   left: 0;
 }
 
+.toolbar {
+  width: 100%;
+  height: 48px;
+  background-color: var(--theme-options-color);
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar section.left {
+  flex-grow: 0.5;
+  order: 1;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.toolbar section.mid {
+  flex-grow: 3;
+  order: 2;
+  padding: 2px;
+}
+.toolbar section.right {
+  flex-grow: 1;
+  order: 3;
+  padding: 2px;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding-right: 12px;
+}
+
 .preview canvas {
   position: absolute;
-
-  top: 0;
-  left: 0;
+  top: 48px;
 }
 
 .preview .content {
@@ -48,6 +88,12 @@ body {
   right: 0;
 
   background-color: var(--theme-options-color);
+
+  padding: 12px;
+
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
+
+  overflow: scroll;
 }
 
 .line {
@@ -85,6 +131,70 @@ button.large {
   padding: 12px;
 }
 
+button.mid {
+  font-size: 12pt;
+  font-weight: bold;
+  padding: 4px;
+}
+
 .hidden {
   display: none !important;
+}
+
+.osx_buttons {
+  display: flex;
+  width: 80px;
+  height: 48px;
+  flex-direction: row;
+  padding-top: 12px;
+  align-items: flex-start;
+  justify-content: space-evenly;
+}
+
+.osx_buttons .button {
+  text-decoration: none;
+  visibility: hidden;
+  line-height: 0px;
+  position: relative;
+}
+.osx_buttons:hover .button {
+  visibility: visible;
+}
+
+.osx_buttons * {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.osx_buttons .close {
+  background-color: #fc615d;
+  font-size: 12px;
+  border: 1px solid #e33e41;
+  display: inline-block;
+  color: #4e0002;
+}
+.osx_buttons .close .button {
+  bottom: 4px;
+  left: 1.5px;
+}
+
+.osx_buttons .min {
+  background-color: #fdbc40;
+  border: 1px solid #e09e3e;
+  color: #5a2607;
+}
+.osx_buttons .min .button {
+  bottom: 5px;
+  left: 1.25px;
+}
+
+.osx_buttons .max {
+  background-color: #34c749;
+  border: 1px solid #14ae46;
+  color: #003107;
+}
+.osx_buttons .max .button {
+  bottom: 5px;
+  left: 0px;
 }
