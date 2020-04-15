@@ -44,6 +44,7 @@ function eventImageLoad (image) {
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
   render(pgl)
+  ipcRenderer.send('mainwindow-loaded')
 }
 
 function mouseMoveHandler (e) {
@@ -95,5 +96,4 @@ document.addEventListener("DOMContentLoaded", function(){
   resize()
   // and an eventlistener for resizing
   window.addEventListener('resize', resize)
-  ipcRenderer.send('mainwindow-loaded')
 })

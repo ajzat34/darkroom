@@ -7,6 +7,21 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindows = () => {
+  // Create the loading window
+  const loadWindow = new BrowserWindow({
+    width: 300,
+    height: 360,
+    show: false,
+    backgroundColor: '#24252b',
+    frame: false,
+  })
+  loadWindow.once('ready-to-show', () => {
+    loadWindow.show()
+  })
+
+  // and load the index.html of the app.
+  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1366,
@@ -23,23 +38,21 @@ const createWindows = () => {
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'main/index.html'))
 
-  // Create the loading window
-  const loadWindow = new BrowserWindow({
-    width: 360,
-    height: 480,
-    show: true,
-    backgroundColor: '#24252b',
-    frame: false,
-  })
-
-  // and load the index.html of the app.
-  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
+  function swapwindows () {
+    try {
+      mainWindow.show()
+      loadWindow.close()
+      clearTimeout(closetimeout)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   // when the render process is ready, show the window
-  ipcMain.on('mainwindow-loaded', () => {
-    mainWindow.show()
-    loadWindow.close()
-  })
+  ipcMain.on('mainwindow-loaded', swapwindows)
+
+  // set a timeout in case something goes wrong
+  var closetimeout = setTimeout(swapwindows, 5000)
 }
 
 // This method will be called when Electron has finished
