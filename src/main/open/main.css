@@ -1,0 +1,58 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  height: 32px;
+}
+
+.osx_buttons {
+  height: 32px;
+  align-items: center;
+  padding: 0;
+}
+
+.main {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.leftpane {
+  float: left;
+  height: 100%;
+  width: 66%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spacer {
+  float: left;
+  height: 80%;
+  transform: translate(0, 10%);
+  width: 0;
+}
+
+.rightpane {
+  float: left;
+  height: 100%;
+  width: 33%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+img {
+  width: 60%;
+  margin-bottom: 32px;
+}

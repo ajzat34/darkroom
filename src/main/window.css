@@ -114,6 +114,9 @@ body {
 .line.bottom {
   border-bottom-width: 1px;
 }
+.line.lightline {
+  border-color: var(--theme-line-light-color);
+}
 
 button {
   background-color: var(--theme-button-color);

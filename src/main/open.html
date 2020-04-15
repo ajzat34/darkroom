@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title> Open Darkroom - Open File</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="window.css">
+    <link rel="stylesheet" href="open/main.css">
+
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  </head>
+  <body>
+    <div class="toolbar line bottom" id="toolbar">
+      <section class="left">
+        <div class="osx_buttons">
+          <span class="close" id="close-btn"><span class="button">x</span></span>
+          <span class="min" id="min-btn"><span class="button">&ndash;</span></span>
+          <span class="max" id="max-btn"><span class="button">+</span></span>
+        </div>
+      </section>
+      <section class="mid">
+        <strong>Open Darkroom</strong>
+      </section>
+      <section class="right">
+      </section>
+    </div>
+    <div class="main">
+      <div class="leftpane">
+        <div class="content">
+          <h2>Start a new project from an image:</h2>
+          <button class="large" type="button" id="open-btn">Open Image</button>
+          <h2>Load an existing project:</h2>
+          <button class="large" type="button" disabled="true">Open Project</button>
+        </div>
+      </div>
+      <div class="spacer line right lightline"></div>
+      <div class="rightpane">
+        <img src="icon.png" alt="icon">
+        <h1>Open Darkroom</h1>
+        <span>By Andrew Johnson</span>
+      </div>
+    </div>
+    <script type="text/javascript" src="open/main.js"></script>
+  </body>
+</html>

@@ -106,7 +106,6 @@ function createWidgetUiKnobSlider (name, base) {
           slider.step = base.step
         }
         if (base.style) {
-          console.log(base.style)
           slider.style = base.style
         }
         slider.oninput = function valset() {

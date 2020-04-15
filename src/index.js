@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
+var loadmode
+var filepath
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
@@ -25,7 +28,7 @@ function makeLoadWindow () {
   return loadWindow
 }
 
-const createWindows = () => {
+const createMainWindow = () => {
 
   const loadWindow = makeLoadWindow ();
 
@@ -63,20 +66,58 @@ const createWindows = () => {
 
   // set a timeout in case something goes wrong
   var closetimeout = setTimeout(swapwindows, 5000)
+
+  return mainWindow
 }
 
 // window for selecting a file to open
-const openDialogeWindow = () => {
+const createOpenWindow = () => {
+  // Create the browser window.
+  const openWindow = new BrowserWindow({
+    width: 960,
+    height: 540,
+    minWidth: 960,
+    minHeight: 540,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    show: false,
+    frame: false,
+    resizable: false,
+    backgroundColor: '#24252b',
+  })
+  // and load the index.html of the app.
+  openWindow.loadFile(path.join(__dirname, 'main/open.html'))
+
+  openWindow.on('ready-to-show', function(){
+    openWindow.show()
+  })
+
+  ipcMain.once('image-select', (event, arg) => {
+    console.log('image', arg, 'selected')
+    loadmode = "image"
+    filepath = arg
+    createMainWindow()
+    openWindow.close()
+  })
 }
+
+// when the window request a file, give it the last selected file
+ipcMain.on('request-file-info', (event) => {
+  event.returnValue = {
+    type: loadmode,
+    path: filepath,
+  }
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindows)
+app.on('ready', createOpenWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  app.quit()
+  createOpenWindow()
 })
 
 app.on('activate', () => {

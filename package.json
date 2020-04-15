@@ -20,7 +20,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "src/build/icon.icns"
+        "icon": "build/opendarkroom.icns"
       },
       "makers": [
         {

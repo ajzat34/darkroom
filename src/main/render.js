@@ -10,7 +10,6 @@ var renderrate = (1/30)*1000
 
 function prepare (gl) {
   model = prepareModelBuffer(gl)
-  sourceImage = loadTexture(gl, 'image.jpg')
   copyprogram = loadShaderPack(gl, __dirname + '/shaders/copy', {
     atrribVertexCoord: 'aVertex',
     atrribTextureCoord: 'aTextureCoord',
@@ -27,6 +26,11 @@ function prepare (gl) {
   widgets.gaussian4 = loadWidget(gl, __dirname + '/widgets/gaussian4.js')
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
   createWidgetUIs()
+
+  // ask for the image path
+  var resp = ipcRenderer.sendSync('request-file-info')
+  console.log('image', resp)
+  sourceImage = loadTexture(gl, resp.path)
 }
 
 function triggerRecreateFrameBuffers (gl) {
