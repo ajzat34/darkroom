@@ -58,14 +58,22 @@
 .widgetUI-row input.inputnumber {
   font-size: 8pt;
   float: right;
-  width: 50px;
+  width: 20px;
+  border-radius: 2px;
   margin-left: 4px;
-  padding: 0;
-  background: none;
+  padding: 2px;
+  padding-right: 4px;
+  padding-left: 4px;
+  background: solid;
+  background-color: rgba(10,10,30, 0.1);
+  opacity: .8;
   border-style: none;
   color: var(--theme-text-color);
   text-align: right;
-  box-sizing:border-box;
+  box-sizing: content-box;
+}
+.knob:hover input.inputnumber {
+  opacity: 1;
 }
 input.inputnumber[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -102,7 +110,7 @@ input.inputnumber:focus {outline:0;}
   margin-bottom: 4px;
 }
 
-.knob input.slider:hover {
+.knob:hover input.slider {
   opacity: 1;
   height: 4px;
 }

@@ -1,3 +1,4 @@
+# version 300 es
 uniform sampler2D texSampler;
 uniform highp float brightness;
 uniform highp float contrast;
@@ -7,11 +8,14 @@ uniform highp float gamma;
 uniform highp float saturation;
 uniform highp float temperature;
 uniform highp float hue;
+uniform ivec2 size;
 
-varying highp vec2 textureCoord;
+in highp vec2 textureCoord;
+out highp vec4 fragmentColor;
 
 void main(void) {
-  highp vec4 texture = texture2D(texSampler, textureCoord);
+  highp ivec2 pixel = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
+  highp vec4 texture = texelFetch(texSampler, pixel, 0);
   highp vec3 color = texture.rgb;
   highp vec3 contrast = ((color - 0.5) * contrast) + 0.5;
   highp vec3 brightness = (contrast) + brightness;
@@ -23,6 +27,6 @@ void main(void) {
   colors.r += temperature;
   colors.g += hue;
   colors.b -= temperature;
-  gl_FragColor.rgb = colors;
-  gl_FragColor.a = texture.a;
+  fragmentColor.rgb = colors;
+  fragmentColor.a = texture.a;
 }

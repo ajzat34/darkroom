@@ -8,7 +8,7 @@ function loadWidget (gl, path) {
     return
   }
   widget.stages.forEach((shader) => {
-    shader.glshaderpack = loadShaderPack(gl, `${__dirname}/shaders/${widget.baseShader}:${shader.shadername}`, shader)
+    shader.glshaderpack = loadShaderPack(gl, `${__dirname}/shaders/${shader.shadername}`, shader)
     // error checking
     if (shader.glshaderpack.attribLocations.aVertex === -1) console.error(`could not get AttribLocation for atrribVertexCoord: ${shader.atrribVertexCoord}`)
     if (shader.glshaderpack.attribLocations.textureCoord === -1) console.error(`could not get AttribLocation for atrribTextureCoord: ${shader.atrribTextureCoord}`)
@@ -21,14 +21,27 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   var shader = widget.stages[shaderidx]
   gluse(gl, shader.glshaderpack, model)
   Object.keys(shader.knob_bindings).forEach((key) => {
-    var value = shader.knob_bindings[key]
-    switch (value.type) {
-      case 'float':
-        gl.uniform1f(shader.glshaderpack.uniformLocations[value.bindname], value.process(widget.knobs[key].value))
-        break;
-      default:
-        throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
+    if (!widget.knobs[key]) {
+      throw new Error(`invalid knob binding: ${key}`)
     }
+    shader.knob_bindings[key](widget.knobs[key].value, function(bind, type, setdata){
+      switch (type) {
+        case 'float':
+          gl.uniform1f(shader.glshaderpack.uniformLocations[bind], setdata)
+          break;
+        case 'vec4':
+          gl.uniform4f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2], setdata[3])
+          break;
+        case 'floatarray':
+          gl.uniform1fv(shader.glshaderpack.uniformLocations[bind], setdata)
+          break;
+        case 'int':
+          gl.uniform1i(shader.glshaderpack.uniformLocations[bind], setdata)
+          break;
+        default:
+          throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
+      }
+    }, widget.knobs)
   })
   if ('__imagesize__' in shader.uniforms) {
     gl.uniform2i(shader.glshaderpack.uniformLocations['__imagesize__'], sourceImageWidth, sourceImageHeight)

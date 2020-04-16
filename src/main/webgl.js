@@ -1,9 +1,8 @@
 const fs = require('fs')
 
 function getWebGL (canvas) {
-  var gl = canvas.getContext("webgl")
-      || canvas.getContext("experimental-webgl")
-  if (gl && gl instanceof WebGLRenderingContext) {
+  var gl = canvas.getContext("webgl2")
+  if (gl && gl instanceof WebGL2RenderingContext) {
     return gl
   } else {
     return null
@@ -111,7 +110,7 @@ function useTextures(gl, program, textures) {
   textures.forEach((texture, i) => {
     gl.activeTexture(gl[`TEXTURE${i}`])
     gl.bindTexture(gl.TEXTURE_2D, texture)
-    gl.uniform1i(program.uniformLocations.texture, 0)
+    gl.uniform1i(program.imageBindings[program.imageBindingsMappings[i]], i)
   })
 }
 
@@ -143,7 +142,7 @@ function loadTexture(gl, url) {
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     eventImageLoad(image)
   };

@@ -62,15 +62,15 @@ module.exports = {
       step: 0.05
     },
   },
-  baseShader: 'adjustments',
   framebuffers: [],
   stages: [
     {
-      shadername: 'main',
+      shadername: 'adjustments:main',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
         // bind name : in-shader name
+        '__imagesize__': 'size',
         'brightness': 'brightness',
         'contrast': 'contrast',
         'blacks': 'blacks',
@@ -81,47 +81,45 @@ module.exports = {
         'hue': 'hue',
       },
       knob_bindings: {
-        // knob name : bind name
-        'Brightness': {bindname: 'brightness', type: 'float', process:
-          function(v) {
-            return v/100
-          }
+        'Brightness':  function(v, set) {
+            set('brightness', 'float', v/100)
         },
-        'Contrast': {bindname: 'contrast', type: 'float', process:
-          function(v) {
-            if (v >= 0){ return 1+(v/100) } else { return (100+v)/100 }
-          }
+        'Contrast':  function(v, set) {
+            if (v >= 0){
+              set('contrast', 'float', 1+(v/100))
+            } else {
+              set('contrast', 'float', (100+v)/100)
+            }
         },
-        'Blacks': {bindname: 'blacks', type: 'float', process:
-          function(v) {
-            v *= -1
-            if (v >= 0){ return 1+(v/100) } else { return (100+v)/100 }
-          }
+        'Blacks':  function(v, set) {
+            if (v >= 0){
+              set('blacks', 'float', 1-(v/100))
+            } else {
+              set('blacks', 'float', (100-v)/100)
+            }
         },
-        'Whites': {bindname: 'whites', type: 'float', process:
-          function(v) {
-            if (v >= 0){ return 1+(v/100) } else { return (100+v)/100 }
-          }
+        'Whites':  function(v, set) {
+            if (v >= 0){
+              set('whites', 'float', 1+(v/100))
+            } else {
+              set('whites', 'float', (100+v)/100)
+            }
         },
-        'Gamma': {bindname: 'gamma', type: 'float', process:
-          function(v) {
-            return v
-          }
+        'Gamma':  function(v, set) {
+          set('gamma', 'float', v)
         },
-        'Saturation': {bindname: 'saturation', type: 'float', process:
-          function(v) {
-            if (v >= 0){ return 1+(v/100) } else { return (100+v)/100 }
-          }
+        'Saturation':  function(v, set) {
+            if (v >= 0){
+              set('saturation', 'float', 1+(v/100))
+            } else {
+              set('saturation', 'float', (100+v)/100)
+            }
         },
-        'Temperature': {bindname: 'temperature', type: 'float', process:
-          function(v) {
-            return v/1000
-          }
+        'Temperature':  function(v, set) {
+          set('temperature', 'float', v/1000)
         },
-        'Hue': {bindname: 'hue', type: 'float', process:
-          function(v) {
-            return v/1000
-          }
+        'Hue':  function(v, set) {
+          set('hue', 'float', v/1000)
         },
       },
       inputs: ['in'],

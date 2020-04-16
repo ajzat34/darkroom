@@ -15,9 +15,10 @@ function loadShaderPack (gl, path, descriptor) {
     })
   }
   if (descriptor.inputBindings) {
-    descriptor.inputBindings.forEach((key) => {
-      pack.imageBindings[key] = gl.getUniformLocation(shaderprogram, descriptor.inputBindings[key])
+    descriptor.inputBindings.forEach((key, i) => {
+      pack.imageBindings[key] = gl.getUniformLocation(shaderprogram, descriptor.inputBindings[i])
     })
   }
+  pack.imageBindingsMappings = descriptor.inputBindings
   return pack
 }
