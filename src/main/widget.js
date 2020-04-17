@@ -38,6 +38,13 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
         case 'int':
           gl.uniform1i(shader.glshaderpack.uniformLocations[bind], setdata)
           break;
+        case 'bool':
+          if (setdata) {
+            gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 1)
+          } else {
+            gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 0)
+          }
+          break;
         default:
           throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
       }
