@@ -33,7 +33,7 @@ module.exports = {
     'Denoise': {
       type: 'slider',
       minValue: 0,
-      maxValue: 1.5,
+      maxValue: 2,
       value: 0,
       step: 0.01,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
@@ -151,7 +151,7 @@ module.exports = {
           set('balance', 'float', (v-1)/1)
         },
         'Sharpness Cap': function(v, set) {
-          set('slimit', 'float', (v*2)-1)
+          set('slimit', 'float', (v)-1)
         },
         'Denoise Cap': function(v, set) {
           set('dlimit', 'float', ((1-v)*2)-1)
