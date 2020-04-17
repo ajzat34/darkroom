@@ -1,16 +1,16 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
-// for differentiating windows, gets increased by one when new window is created
-// does NOT get decreased when windows are closed
-var windwIdCounter = 0
-
 // macOS acts differently, this is will make it easier to tell if
 // we are running on macOS later
 var isDarwin = false
 if (process.platform === 'darwin') {
   isDarwin = true
 }
+
+// hold the active file path and if it is an image or project
+var loadmode
+var filepath
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -40,7 +40,7 @@ function makeLoadWindow () {
 }
 
 // creates the main editor window
-const createMainWindow = (filepath, loadmode, id) => {
+const createMainWindow = () => {
   // create the loading window
   const loadWindow = makeLoadWindow ();
 
@@ -77,16 +77,6 @@ const createMainWindow = (filepath, loadmode, id) => {
 
   ipcMain.once('request-id', function(event){
     event.returnValue = id
-  })
-
-  // when the window request a file, give it the last selected file
-  ipcMain.on('request-file-info', (event) => {
-    if (event.id = id) {
-      event.returnValue = {
-        type: loadmode,
-        path: filepath,
-      }
-    }
   })
 
   // when the render process is ready, show the window
@@ -141,10 +131,9 @@ const createOpenWindow = () => {
   // when open is selected, create a main window and send it the path
   function onopen (event, arg) {
     console.log('image', arg, 'selected')
-    var loadmode = arg.type
-    var filepath = arg.path
-    windwIdCounter ++
-    createMainWindow(filepath, loadmode, windwIdCounter)
+    loadmode = arg.type
+    filepath = arg.path
+    createMainWindow()
     openWindow.close()
   }
   ipcMain.once('image-select', onopen)
@@ -152,6 +141,14 @@ const createOpenWindow = () => {
     ipcMain.removeListener('image-select', onopen)
   })
 }
+
+// when the window request a file, give it the last selected file
+ipcMain.on('request-file-info', (event, arg) => {
+  event.returnValue = {
+    type: loadmode,
+    path: filepath,
+  }
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
