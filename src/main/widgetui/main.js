@@ -55,6 +55,9 @@ function createWidgetUiKnob (name, base) {
     case 'slider':
       return createWidgetUiKnobSlider(name, base)
       break;
+    case 'checkbox':
+      return createWidgetUiKnobCheckbox(name, base)
+      break;
     default:
       throw new Error(`unknown knob type ${base.type}`)
   }
@@ -114,5 +117,37 @@ function createWidgetUiKnobSlider (name, base) {
           knob.widgetUiOnUpdate()
         }
         inputrow.appendChild(slider)
+  return knob
+}
+
+function createWidgetUiKnobCheckbox (name, base) {
+  var knob = document.createElement("div")
+  knob.widgetUiOnUpdate = function(){}
+  knob.widgetUiValue = base.value
+  knob.classList.add("widgetUI-content")
+  knob.classList.add("knob")
+  knob.classList.add("slider-container")
+
+    var titlerow = document.createElement("div")
+      titlerow.classList.add("widgetUI-row")
+      knob.appendChild(titlerow)
+
+      var title = document.createElement("div")
+        title.classList.add("title")
+        title.appendChild(document.createTextNode(name))
+        titlerow.appendChild(title)
+
+      var checkbox = document.createElement("input")
+        checkbox.classList.add("checkbox")
+        checkbox.type = "checkbox"
+        checkbox.checked = base.value
+        if (base.style) {
+          checkbox.style = base.style
+        }
+        checkbox.oninput = function valset() {
+          knob.widgetUiValue = this.checked
+          knob.widgetUiOnUpdate()
+        }
+        titlerow.appendChild(checkbox)
   return knob
 }

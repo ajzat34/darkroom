@@ -80,6 +80,12 @@ input.inputnumber[type=number]::-webkit-inner-spin-button {
 }
 input.inputnumber:focus {outline:0;}
 
+.widgetUI-row input.checkbox {
+  float: right;
+  width: 12px;
+  height: 12px;
+  transform: translate(0, -1px);
+}
 
 .widgetUI-content {
   width: 100%;
