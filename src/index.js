@@ -1,8 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
 var loadmode
 var filepath
+var windowmode = 'none'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -19,6 +20,9 @@ function makeLoadWindow () {
     frame: false,
     resizable: false,
   })
+  var windowmode = 'loading'
+
+  // show on ready
   loadWindow.once('ready-to-show', () => {
     loadWindow.show()
   })
@@ -29,7 +33,7 @@ function makeLoadWindow () {
 }
 
 const createMainWindow = () => {
-
+  // create the loading window
   const loadWindow = makeLoadWindow ();
 
   // Create the browser window.
@@ -45,6 +49,7 @@ const createMainWindow = () => {
     frame: false,
     backgroundColor: '#24252b',
   })
+  var windowmode = 'main'
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'main/index.html'))
 
@@ -67,6 +72,19 @@ const createMainWindow = () => {
   // set a timeout in case something goes wrong
   var closetimeout = setTimeout(swapwindows, 5000)
 
+  mainWindow.on('close', function(e){
+    console.log('main window is closing... interupting for to ask...')
+    var choice = dialog.showMessageBoxSync(this, {
+          type: 'question',
+          buttons: ['Yes', 'No'],
+          title: 'Confirm',
+          message: 'Are you sure you want to quit?'
+       });
+       if(choice == 1){
+         e.preventDefault();
+       }
+    });
+
   return mainWindow
 }
 
@@ -86,6 +104,9 @@ const createOpenWindow = () => {
     resizable: false,
     backgroundColor: '#24252b',
   })
+
+  var windowmode = 'open'
+
   // and load the index.html of the app.
   openWindow.loadFile(path.join(__dirname, 'main/open.html'))
 
@@ -110,9 +131,6 @@ ipcMain.on('request-file-info', (event) => {
   }
 })
 
-// enable webgl2
-app.commandLine.appendSwitch('enable-unsafe-es3-apis')
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -120,7 +138,17 @@ app.on('ready', createOpenWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  createOpenWindow()
+  // If all of the windows are close, open a new window.
+  // If the last window open was an open file screen, quit.
+  if (windowmode !== 'open') {
+    if (process.platform !== 'darwin') {
+      // On macOS it is common for applications and their menu bar
+      // to stay active until the user quits explicitly with Cmd + Q
+      app.quit()
+    }
+  } else {
+    createOpenWindow()
+  }
 })
 
 app.on('activate', () => {
