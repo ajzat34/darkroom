@@ -28,6 +28,8 @@ var renderrate = 100
 
 var widgetUiElements = []
 
+var savebutton
+
 function resize () {
   var width = window.innerWidth - optionsSize
   var height = window.innerHeight - toolbarSize
@@ -85,7 +87,7 @@ function createWidgetUIs() {
       Object.keys(widget.knobs).forEach((knob) => {
         widget.knobs[knob].value = data[knob]
       })
-      sheduleRender()
+      projectChange()
     }
   })
 }
@@ -120,6 +122,10 @@ document.addEventListener("DOMContentLoaded", function(){
   // window panes
   preview = document.getElementById('preview-pane')
   options = document.getElementById('options-pane')
+
+  // buttons
+  savebutton = document.getElementById('btn-save')
+
 
   // webgl / preview canvas
   pc = document.getElementById('preview_canvas')
@@ -176,6 +182,11 @@ function sheduleRender() {
 
 function sheduleUpdate() {
   updateRequest = true
+}
+
+function projectChange() {
+  sheduleRender()
+  saveButtonWarning()
 }
 
 function updateCanvasMouse () {

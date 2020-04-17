@@ -51,6 +51,7 @@ function loadPackage (pkg, order, widgets, srcpath) {
     }
   })
   projectPath = srcpath
+  saveButtonSuccess()
 }
 
 function saveBundle (file, bundle, callback) {
@@ -75,6 +76,7 @@ async function saveProject() {
   console.log('saving to', projectPath)
   saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){
     if (err) {
+      saveButtonDanger()
       dialog.showMessageBoxSync(this, {
         type: 'error',
         buttons: ['Yes', 'No'],
@@ -82,11 +84,13 @@ async function saveProject() {
         message: 'Saving Failed!',
         detail: err.toString(),
       });
+    } else {
+      saveButtonSuccess()
     }
   })
 }
 
-async function saveProject() {
+async function saveProjectAs() {
   var file = await dialog.showSaveDialog({
     title: 'Save Project',
     properties: ['createDirectory', 'showOverwriteConfirmation'],
@@ -102,6 +106,7 @@ async function saveProject() {
   console.log('saving to', projectPath)
   saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){
     if (err) {
+      saveButtonDanger()
       dialog.showMessageBoxSync(this, {
         type: 'error',
         buttons: ['Yes', 'No'],
@@ -109,6 +114,30 @@ async function saveProject() {
         message: 'Saving Failed!',
         detail: err.toString(),
       });
+    } else {
+      saveButtonSuccess()
     }
   })
+}
+
+// changing the save buttons colors
+function clearSaveButtonColor() {
+  savebutton.classList.remove('background-success')
+  savebutton.classList.remove('background-warning')
+  savebutton.classList.remove('background-danger')
+}
+
+function saveButtonSuccess() {
+  clearSaveButtonColor()
+  savebutton.classList.add('background-success')
+}
+
+function saveButtonWarning() {
+  clearSaveButtonColor()
+  savebutton.classList.add('background-warning')
+}
+
+function saveButtonDanger() {
+  clearSaveButtonColor()
+  savebutton.classList.add('background-danger')
 }
