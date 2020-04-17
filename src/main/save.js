@@ -1,5 +1,5 @@
 var FORMAT = {
-  version: '0:1',
+  version: '0.1',
   compatable: ['0.1'],
 }
 
@@ -32,7 +32,7 @@ function createBundle (activeWidgets, widgets, imageFormat, imageB64) {
   return result
 }
 
-function loadPackage (pkg, order, widgets) {
+function loadPackage (pkg, order, widgets, srcpath) {
   // TODO: add version checking
   var pkgWidgets = Object.keys(pkg.settings)
   order = []
@@ -48,10 +48,9 @@ function loadPackage (pkg, order, widgets) {
       Object.keys(pkgWidget).forEach((knob) => {
         widget.knobs[knob].value = pkgWidget[knob].value
       });
-
     }
   })
-
+  projectPath = srcpath
 }
 
 function saveBundle (file, bundle, callback) {
@@ -72,6 +71,33 @@ async function saveProject() {
     } else {
       projectPath = file.filePath
     }
+  }
+  console.log('saving to', projectPath)
+  saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){
+    if (err) {
+      dialog.showMessageBoxSync(this, {
+        type: 'error',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Saving Failed!',
+        detail: err.toString(),
+      });
+    }
+  })
+}
+
+async function saveProject() {
+  var file = await dialog.showSaveDialog({
+    title: 'Save Project',
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+    filters: [
+      { name: 'Open Darkroom Package', extensions: ['dkg'] },
+    ]
+  })
+  if (file.canceled) {
+    return
+  } else {
+    projectPath = file.filePath
   }
   console.log('saving to', projectPath)
   saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){

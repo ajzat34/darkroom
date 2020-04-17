@@ -55,6 +55,7 @@ body {
 }
 
 img {
-  width: 60%;
-  margin-bottom: 32px;
+  width: 50%;
+  margin-bottom: 0px;
+  margin-top: -25px;
 }

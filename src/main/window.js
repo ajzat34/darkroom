@@ -117,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function(){
     updateCanvasMouse()
   })
 
-
   // window panes
   preview = document.getElementById('preview-pane')
   options = document.getElementById('options-pane')
@@ -145,6 +144,8 @@ document.addEventListener("DOMContentLoaded", function(){
   canvasUpdateCycle()
 })
 
+
+// ------ rendering
 function updateCycle () {
   var start = new Date()
   pgl.finish()

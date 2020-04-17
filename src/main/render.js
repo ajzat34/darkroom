@@ -22,12 +22,13 @@ function prepare (gl) {
   })
   loadWidgets(gl)
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
-  createWidgetUIs()
 
   // ask for the image path
   var resp = ipcRenderer.sendSync('request-file-info')
+  var fileName = resp.path.split('/')
+  document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
   console.log('image', resp)
-  if (resp.type === 'iamge') {
+  if (resp.type === 'image') {
     imagePath = resp.path
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
@@ -39,8 +40,9 @@ function prepare (gl) {
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
     sourceImage = loadTexture(gl, imageFormat, imageB64)
-    loadPackage(srcPackage, widgetOrder, widgets)
+    loadPackage(srcPackage, widgetOrder, widgets, resp.path)
   }
+  createWidgetUIs()
 
 }
 
