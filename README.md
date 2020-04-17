@@ -23,5 +23,5 @@ Currently in early-development, don't expect stability or features.
 
 # Building
 * Clone & cd
-* `npm run make`
+* `npm install` & `npm run make`
 * Check `out/` for your build
