@@ -1,0 +1,2 @@
+April 13, 2020: created project
+April 17, 2020: almost ready for first testing build. added project saving and loading, no exporting.
