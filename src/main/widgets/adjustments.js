@@ -4,6 +4,14 @@ var sliderLight = 'rgba(255,255,255,1)'
 module.exports = {
   name: 'Adjustments',
   knobs: {
+    'Gamma': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 3,
+      value: 1,
+      style: `background: linear-gradient(90deg, ${sliderLight} 0%, ${sliderDark} 100%);`,
+      step: 0.05,
+    },
     'Brightness': {
       type: 'slider',
       minValue: -100,
@@ -53,13 +61,13 @@ module.exports = {
       value: 0,
       style: 'background: linear-gradient(90deg, rgba(187,101,255,1) 0%, rgba(250,250,250,1) 49%, rgba(145,255,136,1) 100%);',
     },
-    'Gamma': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 4,
-      value: 1,
-      style: `background: linear-gradient(90deg, ${sliderLight} 0%, ${sliderDark} 100%);`,
-      step: 0.05
+    'Show clipping': {
+      type: 'checkbox',
+      value: false,
+    },
+    'Show out of gamut colors': {
+      type: 'checkbox',
+      value: false,
     },
   },
   framebuffers: [],
@@ -79,6 +87,8 @@ module.exports = {
         'saturation': 'saturation',
         'temperature': 'temperature',
         'hue': 'hue',
+        'showClipped': 'showClipped',
+        'showGamut': 'showGamut',
       },
       knob_bindings: {
         'Brightness':  function(v, set) {
@@ -121,6 +131,12 @@ module.exports = {
         'Hue':  function(v, set) {
           set('hue', 'float', v/1000)
         },
+        'Show clipping': function(v, set){
+          set('showClipped', 'bool', v)
+        },
+        'Show out of gamut colors': function(v, set){
+          set('showGamut', 'bool', v)
+        }
       },
       inputs: ['in'],
       inputBindings: ['texSampler'],
