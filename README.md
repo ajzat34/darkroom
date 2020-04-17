@@ -14,6 +14,7 @@ Currently in early-development, don't expect stability or features.
 # The Current State
 ### Missing Features:
 * Exporting
+* Histogram Display
 
 ### Working on:
 * Improving saving
