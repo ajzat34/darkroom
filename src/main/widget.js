@@ -106,3 +106,10 @@ function recreateFrameBuffers (gl, old, widgets, widgetOrder, width, height) {
   if (old.final) deleteFB(gl, old.final);
   return createFramebuffers(gl, widgets, widgetOrder, width, height)
 }
+
+// loads widgets from list in widgets/load.js
+function loadWidgets(gl) {
+  widgetimports.forEach((widget) => {
+    widgets[widget] = loadWidget(gl, __dirname + `/widgets/${widget}.js`)
+  });
+}

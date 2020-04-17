@@ -1,4 +1,5 @@
 const { ipcRenderer, remote } = require('electron')
+const dialog = remote.dialog
 
 var preview
 var pc
@@ -20,6 +21,13 @@ var scale = 0.99
 var viewscale = scale*scale
 var mouse
 
+var updateRequest = false
+var renderRequest = false
+
+var renderrate = 100
+
+var widgetUiElements = []
+
 function resize () {
   var width = window.innerWidth - optionsSize
   var height = window.innerHeight - toolbarSize
@@ -31,26 +39,14 @@ function resize () {
   pc.style.height = `${height}px`
   pcaspect = pc.width/pc.height
   glResize(pgl)
-  updateCanvasMouse()
-}
-
-function updateCanvasMouse () {
-  var width = window.innerWidth - optionsSize
-  var height = window.innerHeight
-  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, framebuffers.final.texture)
-}
-
-function updateCanvasMouseCompare () {
-  var width = window.innerWidth - optionsSize
-  var height = window.innerHeight
-  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, sourceImage)
+  sheduleUpdate()
 }
 
 function eventImageLoad (image) {
   sourceImageWidth = image.width
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
-  render(pgl)
+  sheduleRender(pgl)
   ipcRenderer.send('mainwindow-loaded')
 }
 
@@ -60,7 +56,7 @@ function mouseMoveHandler (e) {
     deltaY = (e.clientY - mosusepos[1]) / viewscale
     scroll = [scroll[0]+deltaX, scroll[1]+deltaY]
     mosusepos = [e.clientX, e.clientY]
-    updateCanvasMouse()
+    sheduleUpdate()
   }
 }
 
@@ -77,10 +73,11 @@ function mouseWheelHandler (e) {
   scale -= e.wheelDelta/5000
   scale = Math.max(Math.min(scale, 50), 0.1)
   viewscale = scale*scale
-  updateCanvasMouse()
+  sheduleUpdate()
 }
 
 function createWidgetUIs() {
+  widgetUiElements = []
   widgetOrder.forEach((widgetname) => {
     var widget = widgets[widgetname]
     var w = createWidgetUi(options, widget)
@@ -145,4 +142,49 @@ document.addEventListener("DOMContentLoaded", function(){
   window.addEventListener('resize', resize)
 
   updateCycle()
+  canvasUpdateCycle()
 })
+
+function updateCycle () {
+  var start = new Date()
+  pgl.finish()
+  if (renderRequest) {
+    renderRequest = false
+    render(pgl)
+    pgl.finish()
+    sheduleUpdate()
+  }
+  pgl.finish()
+  // console.log(new Date()-start)
+  setTimeout(function(){ requestAnimationFrame(updateCycle) }, renderrate-(new Date() - start))
+}
+
+function canvasUpdateCycle () {
+  var start = new Date()
+  if (updateRequest){
+    updateRequest = false
+    updateCanvasMouse()
+  }
+  pgl.finish()
+  setTimeout(function(){ requestAnimationFrame(canvasUpdateCycle) } )
+}
+
+function sheduleRender() {
+  renderRequest = true
+}
+
+function sheduleUpdate() {
+  updateRequest = true
+}
+
+function updateCanvasMouse () {
+  var width = window.innerWidth - optionsSize
+  var height = window.innerHeight
+  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, framebuffers.final.texture)
+}
+
+function updateCanvasMouseCompare () {
+  var width = window.innerWidth - optionsSize
+  var height = window.innerHeight
+  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, sourceImage)
+}

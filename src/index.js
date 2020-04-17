@@ -1,15 +1,23 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
-var loadmode
-var filepath
-var windowmode = 'none'
+// for differentiating windows, gets increased by one when new window is created
+// does NOT get decreased when windows are closed
+var windwIdCounter = 0
+
+// macOS acts differently, this is will make it easier to tell if
+// we are running on macOS later
+var isDarwin = false
+if (process.platform === 'darwin') {
+  isDarwin = true
+}
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
 
+// creates a loading window
 function makeLoadWindow () {
   // Create the loading window
   const loadWindow = new BrowserWindow({
@@ -20,7 +28,6 @@ function makeLoadWindow () {
     frame: false,
     resizable: false,
   })
-  var windowmode = 'loading'
 
   // show on ready
   loadWindow.once('ready-to-show', () => {
@@ -32,7 +39,8 @@ function makeLoadWindow () {
   return loadWindow
 }
 
-const createMainWindow = () => {
+// creates the main editor window
+const createMainWindow = (filepath, loadmode, id) => {
   // create the loading window
   const loadWindow = makeLoadWindow ();
 
@@ -46,13 +54,14 @@ const createMainWindow = () => {
       nodeIntegration: true,
     },
     show: false,
-    frame: false,
+    frame: !isDarwin,
     backgroundColor: '#24252b',
   })
-  var windowmode = 'main'
-  // and load the index.html of the app.
+
+  // load the windows content
   mainWindow.loadFile(path.join(__dirname, 'main/index.html'))
 
+  // switch from the loading window to the main window
   function swapwindows () {
     console.log('swapping to main window')
     setTimeout(function(){
@@ -61,24 +70,39 @@ const createMainWindow = () => {
         loadWindow.close()
         clearTimeout(closetimeout)
       } catch (err) {
-        console.error(err)
+        console.error('did the main page reload? ', err)
       }
     }, 100)
   }
 
+  ipcMain.once('request-id', function(event){
+    event.returnValue = id
+  })
+
+  // when the window request a file, give it the last selected file
+  ipcMain.on('request-file-info', (event) => {
+    if (event.id = id) {
+      event.returnValue = {
+        type: loadmode,
+        path: filepath,
+      }
+    }
+  })
+
   // when the render process is ready, show the window
   ipcMain.on('mainwindow-loaded', swapwindows)
-
   // set a timeout in case something goes wrong
   var closetimeout = setTimeout(swapwindows, 5000)
 
+  // when the window is closed, prompt to confirm
+  // TODO: move this to the render process, and add option to save before closing
   mainWindow.on('close', function(e){
-    console.log('main window is closing... interupting for to ask...')
+    console.log('main window is closing... interupting to confirm this action...')
     var choice = dialog.showMessageBoxSync(this, {
           type: 'question',
           buttons: ['Yes', 'No'],
           title: 'Confirm',
-          message: 'Are you sure you want to quit?'
+          message: 'Are you sure you want to exit?'
        });
        if(choice == 1){
          e.preventDefault();
@@ -99,55 +123,42 @@ const createOpenWindow = () => {
     webPreferences: {
       nodeIntegration: true,
     },
+    titleBarStyle: 'hidden',
     show: false,
-    frame: false,
+    frame: !isDarwin,
     resizable: false,
     backgroundColor: '#24252b',
   })
 
-  var windowmode = 'open'
-
   // and load the index.html of the app.
   openWindow.loadFile(path.join(__dirname, 'main/open.html'))
 
+  // wait until content is loaded to show
   openWindow.on('ready-to-show', function(){
     openWindow.show()
   })
 
-  ipcMain.once('image-select', (event, arg) => {
+  // when open is selected, create a main window and send it the path
+  function onopen (event, arg) {
     console.log('image', arg, 'selected')
-    loadmode = "image"
-    filepath = arg
-    createMainWindow()
+    var loadmode = arg.type
+    var filepath = arg.path
+    windwIdCounter ++
+    createMainWindow(filepath, loadmode, windwIdCounter)
     openWindow.close()
+  }
+  ipcMain.once('image-select', onopen)
+  openWindow.on('close', function(e){
+    ipcMain.removeListener('image-select', onopen)
   })
 }
 
-// when the window request a file, give it the last selected file
-ipcMain.on('request-file-info', (event) => {
-  event.returnValue = {
-    type: loadmode,
-    path: filepath,
-  }
-})
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createOpenWindow)
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // If all of the windows are close, open a new window.
-  // If the last window open was an open file screen, quit.
-  if (windowmode !== 'open') {
-    if (process.platform !== 'darwin') {
-      // On macOS it is common for applications and their menu bar
-      // to stay active until the user quits explicitly with Cmd + Q
-      app.quit()
-    }
-  } else {
-    createOpenWindow()
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (!isDarwin) {
+    app.quit()
   }
 })
 
@@ -155,6 +166,11 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createOpenWindow();
   }
 })
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', createOpenWindow)

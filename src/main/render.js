@@ -1,12 +1,14 @@
 var model
 var copyprogram
 var widgets = {}
-var widgetOrder = ['adjustments', 'sharpness']
+var widgetOrder = ['adjustments', 'details']
 var framebuffers = {}
 var sourceImage
 var lastrender
-var renderRequest = false
-var renderrate = 150
+var imageB64
+var imageFormat
+var imagePath
+var srcPackage
 
 function prepare (gl) {
   model = prepareModelBuffer(gl)
@@ -18,16 +20,28 @@ function prepare (gl) {
       'texture': 'texSampler',
     }
   })
-  widgets.adjustments = loadWidget(gl, __dirname + '/widgets/adjustments.js')
-  widgets.sharpness = loadWidget(gl, __dirname + '/widgets/sharpness.js')
-  widgets.blur = loadWidget(gl, __dirname + '/widgets/blur.js')
+  loadWidgets(gl)
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
   createWidgetUIs()
 
   // ask for the image path
   var resp = ipcRenderer.sendSync('request-file-info')
   console.log('image', resp)
-  sourceImage = loadTexture(gl, resp.path)
+  if (resp.type === 'iamge') {
+    imagePath = resp.path
+    imageB64 = fs.readFileSync(imagePath).toString('base64')
+    imageFormat = imagePath.split('.')
+    imageFormat = imageFormat[imageFormat.length-1]
+    sourceImage = loadTexture(gl, imageFormat, imageB64)
+  } else if (resp.type === 'project') {
+    imagePath = null
+    srcPackage = JSON.parse(fs.readFileSync(resp.path))
+    imageB64 = srcPackage.image.data
+    imageFormat = srcPackage.image.format
+    sourceImage = loadTexture(gl, imageFormat, imageB64)
+    loadPackage(srcPackage, widgetOrder, widgets)
+  }
+
 }
 
 function triggerRecreateFrameBuffers (gl) {
@@ -86,20 +100,4 @@ function updateCanvas (gl, x,y, scale, framebuffer) {
 
 function render (gl) {
   update(gl, framebuffers, widgets, widgetOrder, sourceImage)
-  gl.finish()
-  updateCanvasMouse(pgl)
-  gl.flush()
-}
-
-function updateCycle () {
-  var start = new Date()
-  if (renderRequest) {
-    render(pgl)
-    renderRequest = false
-  }
-  setTimeout(function(){ requestAnimationFrame(updateCycle) }, renderrate-(new Date() - start))
-}
-
-function sheduleRender() {
-  renderRequest = true
 }

@@ -116,15 +116,9 @@ function useTextures(gl, program, textures) {
 
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-function loadTexture(gl, url) {
+function loadTexture(gl, imageFormat, imageData) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Because images have to be download over the internet
-  // they might take a moment until they are ready.
-  // Until then put a single pixel in the texture so we can
-  // use it immediately. When the image has finished downloading
-  // we'll update the texture with the contents of the image.
   const level = 0;
   const internalFormat = gl.RGBA;
   const width = 1;
@@ -146,7 +140,7 @@ function loadTexture(gl, url) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     eventImageLoad(image)
   };
-  image.src = url;
+  image.src = `data:image/${imageFormat};base64,` + imageData;
 
   return texture;
 }

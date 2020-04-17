@@ -3,16 +3,6 @@ const { dialog } = require('electron').remote
 
 document.addEventListener("DOMContentLoaded", function(){
 
-  // macos buttons
-  document.getElementById("min-btn").addEventListener("click", function (e) {
-       var window = remote.getCurrentWindow();
-       window.minimize()
-  })
-  document.getElementById("close-btn").addEventListener("click", function (e) {
-       var window = remote.getCurrentWindow();
-       window.close();
-  })
-
   document.getElementById("open-btn").addEventListener("click", async function(e) {
     var file = await dialog.showOpenDialog({
       title: 'Select an Image',
@@ -21,7 +11,21 @@ document.addEventListener("DOMContentLoaded", function(){
     if (file.canceled) {
       return
     }
-    ipcRenderer.send('image-select', file.filePaths[0])
+    ipcRenderer.send('image-select', {type: 'image', path:file.filePaths[0]})
+  })
+
+  document.getElementById("project-btn").addEventListener("click", async function(e) {
+    var file = await dialog.showOpenDialog({
+      title: 'Select an Image',
+      properties: ['openFile'],
+      filters: [
+        { name: 'Open Darkroom Package', extensions: ['dkg', 'dkr'] },
+      ]
+    })
+    if (file.canceled) {
+      return
+    }
+    ipcRenderer.send('image-select', {type: 'project', path: file.filePaths[0]})
   })
 
 })

@@ -1,0 +1,1 @@
+widgetimports = ["adjustments", "details", "blur"]

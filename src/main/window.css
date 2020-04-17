@@ -144,6 +144,21 @@ button.mid {
   display: none !important;
 }
 
+.buttonimg {
+  padding-top: 4px;
+  width: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonimg img {
+  height: 18px;
+  margin: 0;
+  display: block;
+}
+
 .osx_buttons {
   display: flex;
   width: 80px;
