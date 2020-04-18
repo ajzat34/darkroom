@@ -4,7 +4,8 @@ function loadWidget (gl, path) {
   try {
     widget = require(path)
   } catch(err) {
-    throw new Error(`Unable to load widget from ${path}: ${err}`)
+    console.error(err)
+    throw new Error(`Unable to load widget from ${path}: ${err.toString()}`)
     return
   }
   widget.stages.forEach((shader) => {
@@ -31,6 +32,9 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
           break;
         case 'vec4':
           gl.uniform4f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2], setdata[3])
+          break;
+        case 'vec3':
+          gl.uniform3f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2])
           break;
         case 'floatarray':
           gl.uniform1fv(shader.glshaderpack.uniformLocations[bind], setdata)

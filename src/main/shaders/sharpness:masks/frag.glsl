@@ -23,14 +23,15 @@ void main(void) {
   vary += vsample(p+ivec2(0,1));
   vary += vsample(p+ivec2(-1,0));
   vary += vsample(p+ivec2(0,-1));
-  // vary += texelFetch(varianceSampler, p+ivec2(1,1), 0).a;
-  // vary += texelFetch(varianceSampler, p+ivec2(-1,-1), 0).a;
-  // vary += texelFetch(varianceSampler, p+ivec2(-1,1), 0).a;
-  // vary += texelFetch(varianceSampler, p+ivec2(1,-1), 0).a;
-  vary = clamp(((vary/5.0)-balance) * -strength, slimit, dlimit);
+
+  vary += vsample(p+ivec2( 1, 1));
+  vary += vsample(p+ivec2(-1, 1));
+  vary += vsample(p+ivec2( 1,-1));
+  vary += vsample(p+ivec2(-1,-1));
+
+  vary = clamp(((vary/9.0)-balance) * -strength, slimit, dlimit);
   if (showmask) {
-    fragmentColor.r = (1.0-vary);
-    fragmentColor.b = (1.0-vary)+1.0;
+    fragmentColor.rgb = vec3(vary);
     fragmentColor.a = 1.0;
   } else {
     fragmentColor.rgb = (texelFetch(imageSampler, p, 0).rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*vary);

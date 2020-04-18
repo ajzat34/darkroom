@@ -44,7 +44,7 @@ module.exports = {
     'Sharpness Limit': {
       type: 'slider',
       minValue: 0,
-      maxValue: 1,
+      maxValue: 2,
       value: 0,
       step: 0.01,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
@@ -52,7 +52,7 @@ module.exports = {
     'Denoise Limit': {
       type: 'slider',
       minValue: 0,
-      maxValue: 1,
+      maxValue: 2,
       value: 0,
       step: 0.01,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
@@ -73,6 +73,27 @@ module.exports = {
       step: 1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
+    'Color Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 50,
+      step: 0.1,
+    },
+    'Value Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 25,
+      step: 0.1,
+    },
+    'Saturation Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 50,
+      step: 0.1,
+    },
     'Visualize Image Analysis': {
       type: 'checkbox',
       value: false,
@@ -92,19 +113,28 @@ module.exports = {
         'mode': 'mode',
         'alphaMode': 'alphaMode',
         'alphakernel': 'alphakernel',
+        'hsvweights': 'sum',
       },
       knob_bindings: {
         'Size': function(v, set, k) {
-            var kernel = v
-            var stdev = (k['Radius'].value/10)*kernelLut[kernel]
-            set('mode', 'int', 0)
-            set('kernel', 'int', kernel)
-            set('alphaMode', 'int', 1)
-            set('sizes', 'floatarray', gaussianNDist(kernelLut[kernel], stdev))
-          },
+          var kernel = v
+          var stdev = (k['Radius'].value/10)*kernelLut[kernel]
+          set('mode', 'int', 0)
+          set('kernel', 'int', kernel)
+          set('alphaMode', 'int', 1)
+          set('sizes', 'floatarray', gaussianNDist(kernelLut[kernel], stdev))
+        },
         'Search Area': function(v, set, k) {
             set('alphakernel', 'int', v)
-          },
+        },
+        'Color Noise': function(v, set, k){
+          var h = k['Color Noise'].value/100
+          var s = k['Value Noise'].value/100
+          var v = k['Saturation Noise'].value/100
+          var sum = h+s+v
+          console.log(sum, [h/sum, s/sum, v/sum])
+          set('hsvweights', 'vec3', [h/sum, s/sum, v/sum])
+        }
       },
       inputs: ['in'],
       inputBindings: ['texSampler'],
@@ -164,7 +194,7 @@ module.exports = {
         },
         'Visualize Image Analysis': function(v, set){
           set('showmask', 'bool', v)
-        }
+        },
       },
       inputs: ['in','blur'],
       inputBindings: ['imageSampler', 'blurSampler'],

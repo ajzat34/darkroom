@@ -5,12 +5,11 @@ uniform highp int kernel; // kernel size
 uniform highp int alphakernel; // kernel size
 uniform lowp int mode; // 0 = horizontal, 1 = vertial
 uniform lowp int alphaMode; // 1 = variance be mapped to alpha, 2 = first pass of alpha smooth
+uniform highp vec3 sum;
 uniform ivec2 size;
 
 in highp vec2 textureCoord;
 out highp vec4 fragmentColor;
-
-highp vec3 sum = vec3(0.4545454545, 0.09090909091, 0.4545454545);
 
 // clamp sample texel
 highp vec3 isample(ivec2 s)
@@ -97,16 +96,16 @@ highp float nlmeans(ivec2 t) {
     acc += dot(rgb2hsv(isample(ivec2(t.x-1, t.y-2))), sum);
   }
   if (alphakernel >= 6) {
-    acc += dot(rgb2hsv(isample(ivec2(t.x+3, t.y))), sum);
-    acc += dot(rgb2hsv(isample(ivec2(t.x, t.y+3))), sum);
-    acc += dot(rgb2hsv(isample(ivec2(t.x-3, t.y))), sum);
-    acc += dot(rgb2hsv(isample(ivec2(t.x, t.y-3))), sum);
-  }
-  if (alphakernel >= 7) {
     acc += dot(rgb2hsv(isample(ivec2(t.x+2, t.y+2))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x+2, t.y+2))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x-2, t.y+2))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x+2, t.y-2))), sum);
+  }
+  if (alphakernel >= 7) {
+    acc += dot(rgb2hsv(isample(ivec2(t.x+3, t.y))), sum);
+    acc += dot(rgb2hsv(isample(ivec2(t.x, t.y+3))), sum);
+    acc += dot(rgb2hsv(isample(ivec2(t.x-3, t.y))), sum);
+    acc += dot(rgb2hsv(isample(ivec2(t.x, t.y-3))), sum);
   }
   return acc / float(1+(alphakernel*4));
 }
