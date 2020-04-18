@@ -155,3 +155,23 @@ function draw (gl) {
 function isPowerOf2(value) {
  return (value & (value - 1)) == 0;
 }
+
+// sets a callback for a webgl fence to finish
+function callbackGlFence(gl, sync, callback, rate) {
+  if (gl.getSyncParameter(sync, gl.SYNC_STATUS) === gl.SIGNALED) {
+    callback()
+  } else {
+    setTimeout(function(){
+      callbackGlFence(gl, sync, callback)
+    }, rate)
+  }
+}
+
+// promise wrapper for callbackGlFence
+function asyncGlFence(gl, sync, rate) {
+  return new Promise(function(resolve, reject) {
+    callbackGlFence(gl, sync, function(){
+      resolve()
+    }, rate)
+  })
+}
