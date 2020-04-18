@@ -9,6 +9,7 @@ function loadWidget (gl, path) {
     return
   }
   widget.stages.forEach((shader) => {
+    console.log('-- loading stage:', shader.shadername)
     shader.glshaderpack = loadShaderPack(gl, `${__dirname}/shaders/${shader.shadername}`, shader)
     // error checking
     if (shader.glshaderpack.attribLocations.aVertex === -1) console.error(`could not get AttribLocation for atrribVertexCoord: ${shader.atrribVertexCoord}`)
@@ -114,6 +115,7 @@ function recreateFrameBuffers (gl, old, widgets, widgetOrder, width, height) {
 // loads widgets from list in widgets/load.js
 function loadWidgets(gl) {
   widgetimports.forEach((widget) => {
+    console.log('loading widget:', widget)
     widgets[widget] = loadWidget(gl, __dirname + `/widgets/${widget}.js`)
   });
 }
