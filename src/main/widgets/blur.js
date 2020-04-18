@@ -9,6 +9,11 @@ var kernelLut = {
   11: 6,
   13: 7,
   15: 8,
+  17: 9,
+  19: 10,
+  21: 11,
+  23: 12,
+  25: 13,
 }
 
 module.exports = {
@@ -17,7 +22,7 @@ module.exports = {
     'Kernel': {
       type: 'slider',
       minValue: 3,
-      maxValue: 15,
+      maxValue: 25,
       value: 5,
       step: 2,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`

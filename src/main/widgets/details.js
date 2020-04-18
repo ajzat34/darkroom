@@ -9,6 +9,9 @@ var kernelLut = {
   11: 6,
   13: 7,
   15: 8,
+  17: 9,
+  19: 10,
+  21: 11,
 }
 
 module.exports = {
@@ -17,7 +20,7 @@ module.exports = {
     'Strength': {
       type: 'slider',
       minValue: 0,
-      maxValue: 100,
+      maxValue: 120,
       value: 0,
       step: 1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
@@ -33,12 +36,12 @@ module.exports = {
     'Denoise': {
       type: 'slider',
       minValue: 0,
-      maxValue: 2,
+      maxValue: 100,
       value: 0,
-      step: 0.01,
+      step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
-    'Sharpness Cap': {
+    'Sharpness Limit': {
       type: 'slider',
       minValue: 0,
       maxValue: 1,
@@ -46,7 +49,7 @@ module.exports = {
       step: 0.01,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
-    'Denoise Cap': {
+    'Denoise Limit': {
       type: 'slider',
       minValue: 0,
       maxValue: 1,
@@ -62,6 +65,18 @@ module.exports = {
       step: 2,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
+    'Search Area': {
+      type: 'slider',
+      minValue: 1,
+      maxValue: 8,
+      value: 2,
+      step: 1,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+    },
+    'Visualize Image Analysis': {
+      type: 'checkbox',
+      value: false,
+    },
   },
   framebuffers: ['vary', 'blur'],
   stages: [
@@ -76,6 +91,7 @@ module.exports = {
         'sizes': 'sizes',
         'mode': 'mode',
         'alphaMode': 'alphaMode',
+        'alphakernel': 'alphakernel',
       },
       knob_bindings: {
         'Size': function(v, set, k) {
@@ -85,6 +101,9 @@ module.exports = {
             set('kernel', 'int', kernel)
             set('alphaMode', 'int', 1)
             set('sizes', 'floatarray', gaussianNDist(kernelLut[kernel], stdev))
+          },
+        'Search Area': function(v, set, k) {
+            set('alphakernel', 'int', v)
           },
       },
       inputs: ['in'],
@@ -118,20 +137,6 @@ module.exports = {
       out: 'blur',
     },
     {
-      shadername: 'variance',
-      atrribVertexCoord: 'aVertex',
-      atrribTextureCoord: 'aTextureCoord',
-      uniforms: {
-        // bind name : in-shader name
-        '__imagesize__': 'size',
-      },
-      knob_bindings: {
-      },
-      inputs: ['blur'],
-      inputBindings: ['texSampler'],
-      out: 'vary',
-    },
-    {
       shadername: 'sharpness:masks',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
@@ -142,23 +147,27 @@ module.exports = {
         'strength': 'strength',
         'slimit': 'slimit',
         'dlimit': 'dlimit',
+        'showmask': 'showmask',
       },
       knob_bindings: {
         'Strength': function(v, set) {
           set('strength', 'float', v/10)
         },
         'Denoise': function(v, set) {
-          set('balance', 'float', (v-1)/1)
+          set('balance', 'float', v/200)
         },
-        'Sharpness Cap': function(v, set) {
+        'Sharpness Limit': function(v, set) {
           set('slimit', 'float', (v)-1)
         },
-        'Denoise Cap': function(v, set) {
+        'Denoise Limit': function(v, set) {
           set('dlimit', 'float', ((1-v)*2)-1)
         },
+        'Visualize Image Analysis': function(v, set){
+          set('showmask', 'bool', v)
+        }
       },
-      inputs: ['in','blur', 'vary'],
-      inputBindings: ['imageSampler', 'blurSampler', 'varianceSampler'],
+      inputs: ['in','blur'],
+      inputBindings: ['imageSampler', 'blurSampler'],
       out: 'out',
     },
   ],
