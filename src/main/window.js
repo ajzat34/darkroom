@@ -24,11 +24,12 @@ var mouse
 var updateRequest = false
 var renderRequest = false
 
-var renderrate = 100
-
 var widgetUiElements = []
 
 var savebutton
+
+var renderrate = 12
+var renderTimeStat = 0
 
 function resize () {
   var width = window.innerWidth - optionsSize
@@ -41,14 +42,14 @@ function resize () {
   pc.style.height = `${height}px`
   pcaspect = pc.width/pc.height
   glResize(pgl)
-  sheduleUpdate()
+  scheduleUpdate()
 }
 
 function eventImageLoad (image) {
   sourceImageWidth = image.width
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
-  sheduleRender(pgl)
+  scheduleRender(pgl)
   ipcRenderer.send('mainwindow-loaded')
 }
 
@@ -58,7 +59,7 @@ function mouseMoveHandler (e) {
     deltaY = (e.clientY - mosusepos[1]) / viewscale
     scroll = [scroll[0]+deltaX, scroll[1]+deltaY]
     mosusepos = [e.clientX, e.clientY]
-    sheduleUpdate()
+    scheduleUpdate()
   }
 }
 
@@ -75,7 +76,7 @@ function mouseWheelHandler (e) {
   scale -= e.wheelDelta/5000
   scale = Math.max(Math.min(scale, 50), 0.1)
   viewscale = scale*scale
-  sheduleUpdate()
+  scheduleUpdate()
 }
 
 function createWidgetUIs() {
@@ -92,9 +93,8 @@ function createWidgetUIs() {
   })
 }
 
-document.addEventListener("DOMContentLoaded", function(){
-
-  // macos buttons
+function setupButtonEvents() {
+  // macOS button events
   document.getElementById("min-btn").addEventListener("click", function (e) {
        var window = remote.getCurrentWindow();
        window.minimize()
@@ -112,20 +112,23 @@ document.addEventListener("DOMContentLoaded", function(){
        window.close();
   })
 
+  // compare button events
   document.getElementById('btn-compare').addEventListener("mousedown", function(e) {
     updateCanvasMouseCompare()
   })
   document.getElementById('btn-compare').addEventListener("mouseup", function(e) {
     updateCanvasMouse()
   })
+}
 
-  // window panes
+document.addEventListener("DOMContentLoaded", function(){
+
+  // get window panes
   preview = document.getElementById('preview-pane')
   options = document.getElementById('options-pane')
 
-  // buttons
+  // get buttons
   savebutton = document.getElementById('btn-save')
-
 
   // webgl / preview canvas
   pc = document.getElementById('preview_canvas')
@@ -140,55 +143,64 @@ document.addEventListener("DOMContentLoaded", function(){
     return
   }
 
-  // initial sizing
+  // start loading assets
   prepare(pgl)
+  // initial sizing
   resize()
   // and an eventlistener for resizing
   window.addEventListener('resize', resize)
 
+  setupButtonEvents()
+
+  // start the (check for) render loop
   updateCycle()
-  canvasUpdateCycle()
 })
 
 
-// ------ rendering
-function updateCycle () {
+// ------ rendering ------
+
+// this is the render loop
+// the scheduleRender() and scheduleUpdate() functions are used to
+// notify this loop that a render needs to occur.
+async function updateCycle () {
   var start = new Date()
-  pgl.finish()
+
   if (renderRequest) {
     renderRequest = false
     render(pgl)
-    pgl.finish()
-    sheduleUpdate()
+    scheduleUpdate()
   }
-  pgl.finish()
-  // console.log(new Date()-start)
-  setTimeout(function(){ requestAnimationFrame(updateCycle) }, renderrate-(new Date() - start))
-}
 
-function canvasUpdateCycle () {
-  var start = new Date()
+  // this should help ensure that the render occurs before drawing it to the canvas
+  // it is NOT a sync, it just tells the drivers to "encourage eager execution of enqueued commands"
+  pgl.flush()
+
   if (updateRequest){
     updateRequest = false
     updateCanvasMouse()
   }
-  pgl.finish()
-  setTimeout(function(){ requestAnimationFrame(canvasUpdateCycle) } )
+
+  // wait for the gpu finish
+  await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
+
+  // record some stats
+  renderTimeStat = (new Date()-start)
+
+  // do it all over again
+  requestAnimationFrame(updateCycle)
 }
 
-function sheduleRender() {
-  renderRequest = true
-}
+// tell the above render loop to update the final image or canvas
+function scheduleRender() { renderRequest = true }
+function scheduleUpdate() { updateRequest = true }
 
-function sheduleUpdate() {
-  updateRequest = true
-}
-
+// TODO: add history
 function projectChange() {
-  sheduleRender()
+  scheduleRender()
   saveButtonWarning()
 }
 
+// helper functinos for calculating scrolling
 function updateCanvasMouse () {
   var width = window.innerWidth - optionsSize
   var height = window.innerHeight
