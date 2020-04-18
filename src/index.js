@@ -64,15 +64,13 @@ const createMainWindow = () => {
   // switch from the loading window to the main window
   function swapwindows () {
     console.log('swapping to main window')
-    setTimeout(function(){
-      try {
-        mainWindow.show()
-        loadWindow.close()
-        clearTimeout(closetimeout)
-      } catch (err) {
-        console.error('did the main page reload? ', err)
-      }
-    }, 100)
+    try {
+      mainWindow.show()
+      loadWindow.close()
+      clearTimeout(closetimeout)
+    } catch (err) {
+      console.error('did the main page reload? ', err)
+    }
   }
 
   ipcMain.once('request-id', function(event){
@@ -82,7 +80,7 @@ const createMainWindow = () => {
   // when the render process is ready, show the window
   ipcMain.on('mainwindow-loaded', swapwindows)
   // set a timeout in case something goes wrong
-  var closetimeout = setTimeout(swapwindows, 5000)
+  var closetimeout = setTimeout(swapwindows, 8000)
 
   // when the window is closed, prompt to confirm
   // TODO: move this to the render process, and add option to save before closing

@@ -51,12 +51,19 @@ function resize () {
   scheduleUpdate()
 }
 
-function eventImageLoad (image) {
+async function eventImageLoad (image) {
   sourceImageWidth = image.width
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
   scheduleRender(pgl)
-  ipcRenderer.send('mainwindow-loaded')
+  // wait for first render to finish
+  await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
+  // wait for the paint then tell the main process to show this window
+  window.requestAnimationFrame(function(){
+    setTimeout(function(){
+      ipcRenderer.send('mainwindow-loaded')
+    }, 200)
+  })
 }
 
 function mouseMoveHandler (e) {
