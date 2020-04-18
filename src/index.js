@@ -150,6 +150,12 @@ ipcMain.on('request-file-info', (event, arg) => {
   }
 })
 
+ipcMain.on('request-environment-data', (event, arg) => {
+  event.returnValue = {
+    darwin: isDarwin,
+  }
+})
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
