@@ -1,5 +1,6 @@
 const { ipcRenderer, remote } = require('electron')
 const dialog = remote.dialog
+const fs = require('fs')
 
 var preview
 var pc
@@ -30,6 +31,11 @@ var savebutton
 
 var renderrate = 12
 var renderTimeStat = 0
+
+var envdata
+
+// override macos natural scrolling
+var normalscroll = false
 
 function resize () {
   var width = window.innerWidth - optionsSize
@@ -73,7 +79,12 @@ function mouseUpHandler () {
 }
 
 function mouseWheelHandler (e) {
-  scale -= e.wheelDelta/5000
+  // correct for macOS "natural scrolling"
+  if (!envdata.darwin || normalscroll) {
+    scale += e.wheelDelta/5000
+  } else {
+    scale -= e.wheelDelta/5000
+  }
   scale = Math.max(Math.min(scale, 50), 0.1)
   viewscale = scale*scale
   scheduleUpdate()
@@ -121,6 +132,10 @@ function setupButtonEvents() {
   })
 }
 
+function gatherWindowData () {
+  envdata = ipcRenderer.sendSync('request-environment-data')
+}
+
 document.addEventListener("DOMContentLoaded", function(){
 
   // get window panes
@@ -142,6 +157,8 @@ document.addEventListener("DOMContentLoaded", function(){
     remote.getCurrentWindow().close()
     return
   }
+
+  gatherWindowData()
 
   // start loading assets
   prepare(pgl)
