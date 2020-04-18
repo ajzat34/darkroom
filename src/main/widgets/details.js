@@ -124,7 +124,6 @@ module.exports = {
           var s = k['Value Noise'].value/100
           var v = k['Saturation Noise'].value/100
           var sum = h+s+v
-          console.log(sum, [h/sum, s/sum, v/sum])
           set('hsvweights', 'vec3', [h/sum, s/sum, v/sum])
         }
       },
