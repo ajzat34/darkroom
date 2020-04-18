@@ -176,10 +176,10 @@ module.exports = {
           set('balance', 'float', v/400)
         },
         'Sharpen': function(v, set) {
-          set('sharpen', 'float', (v/10))
+          set('sharpen', 'float', (v/5))
         },
         'Denoise': function(v, set) {
-          set('denoise', 'float', (v/10))
+          set('denoise', 'float', (v/2))
         },
         'Visualize Image Analysis': function(v, set) {
           set('showmask', 'bool', v)
