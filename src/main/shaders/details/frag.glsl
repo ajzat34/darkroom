@@ -5,7 +5,6 @@ uniform mediump int ksize;
 uniform mediump int eksize;
 
 uniform highp float blurweights[49];
-uniform highp float edgeweights[25];
 
 uniform highp float masking;
 uniform highp float noisegamma;
@@ -139,7 +138,7 @@ highp vec3 convolution(ivec2 p, highp float weights[49]) {
  return acc;
 }
 
-highp float edgedetect(ivec2 t, highp float weights[25]) {
+highp float edgedetect(ivec2 t) {
   highp float p[13];
 
   p[0] = vsample(t);
@@ -177,7 +176,7 @@ void main (void) {
   highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
 
   highp vec3 blur = convolution(p, blurweights);
-  highp float mask = edgedetect(p, edgeweights);
+  highp float mask = edgedetect(p);
 
   fragmentColor = vec4(blur, mask);
 }
