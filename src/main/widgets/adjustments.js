@@ -73,7 +73,7 @@ module.exports = {
   framebuffers: [],
   stages: [
     {
-      shadername: 'adjustments:main',
+      shadername: 'adjustments',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {

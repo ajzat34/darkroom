@@ -102,7 +102,7 @@ module.exports = {
   framebuffers: ['vary', 'blur'],
   stages: [
     {
-      shadername: 'blur:gaussian',
+      shadername: 'gaussian',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
@@ -141,7 +141,7 @@ module.exports = {
       out: 'vary',
     },
     {
-      shadername: 'blur:gaussian',
+      shadername: 'gaussian',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
@@ -167,7 +167,7 @@ module.exports = {
       out: 'blur',
     },
     {
-      shadername: 'sharpness:masks',
+      shadername: 'sharpness_masks',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {

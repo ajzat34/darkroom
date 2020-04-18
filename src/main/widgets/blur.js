@@ -39,7 +39,7 @@ module.exports = {
   framebuffers: ['mid'],
   stages: [
     {
-      shadername: 'blur:gaussian',
+      shadername: 'gaussian',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
@@ -65,7 +65,7 @@ module.exports = {
       out: 'mid',
     },
     {
-      shadername: 'blur:gaussian',
+      shadername: 'gaussian',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
