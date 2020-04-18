@@ -84,12 +84,13 @@ highp float nlmeans(ivec2 t) {
     acc += dot(rgb2hsv(isample(ivec2(t.x-2, t.y))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x, t.y-2))), sum);
   }
-  if (alphakernel >= 5) {
+  if (alphakernel >= 4) {
     acc += dot(rgb2hsv(isample(ivec2(t.x+2, t.y+1))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x+1, t.y+2))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x-2, t.y+1))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x+1, t.y-2))), sum);
-
+  }
+  if (alphakernel >= 5) {
     acc += dot(rgb2hsv(isample(ivec2(t.x+2, t.y-1))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x-1, t.y+2))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x-2, t.y-1))), sum);
@@ -107,7 +108,7 @@ highp float nlmeans(ivec2 t) {
     acc += dot(rgb2hsv(isample(ivec2(t.x-3, t.y))), sum);
     acc += dot(rgb2hsv(isample(ivec2(t.x, t.y-3))), sum);
   }
-  return acc / float(1+(alphakernel*4));
+  return acc / float(alphakernel*4);
 }
 
 void main(void) {
@@ -115,7 +116,6 @@ void main(void) {
   highp ivec2 direction;
   highp vec3 texture;
   highp vec3 base = isample(p);
-  highp float basea = texelFetch(texSampler, p, 0).a;
   if (mode == 0) {
     // horizontal blur
     direction = ivec2(1,0);
@@ -309,9 +309,9 @@ void main(void) {
     texture += isample(p+(direction*12)) * sizes[13];
     texture += isample(p-(direction*12)) * sizes[13];
   }
-  fragmentColor.rgb = vec3(texture);
+  fragmentColor.rgb = texture;
   if (alphaMode == 0) {
-    fragmentColor.a = basea;
+    fragmentColor.a = texelFetch(texSampler, p, 0).a;
   } else if (alphaMode == 1) {
     fragmentColor.a = nlmeans(p);
   } else if (alphaMode == 2) {

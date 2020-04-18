@@ -3,8 +3,8 @@ uniform sampler2D imageSampler;
 uniform sampler2D blurSampler;
 uniform highp float strength;
 uniform highp float balance;
-uniform mediump float slimit;
-uniform mediump float dlimit;
+uniform highp float sharpen;
+uniform highp float denoise;
 uniform bool showmask;
 uniform ivec2 size;
 
@@ -18,23 +18,36 @@ highp float vsample(ivec2 s)
 
 void main(void) {
   highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
-  highp float vary = vsample(p);
-  vary += vsample(p+ivec2(1,0));
-  vary += vsample(p+ivec2(0,1));
-  vary += vsample(p+ivec2(-1,0));
-  vary += vsample(p+ivec2(0,-1));
+  highp float vary = vsample(p)*2.0;
+  vary += vsample(p+ivec2(1,0))*1.5;
+  vary += vsample(p+ivec2(0,1))*1.5;
+  vary += vsample(p+ivec2(-1,0))*1.5;
+  vary += vsample(p+ivec2(0,-1))*1.5;
 
   vary += vsample(p+ivec2( 1, 1));
   vary += vsample(p+ivec2(-1, 1));
   vary += vsample(p+ivec2( 1,-1));
   vary += vsample(p+ivec2(-1,-1));
 
-  vary = clamp(((vary/9.0)-balance) * -strength, slimit, dlimit);
+  vary = 0.0-((vary/12.0)-balance);
+
+  if (vary < 0.0) {
+    // sharpen pixel
+    vary *= sharpen;
+  } else {
+    // denoise pixel
+    vary *= denoise;
+  }
+
+  vary = clamp(vary, -1.0, 1.0);
+
   if (showmask) {
-    fragmentColor.rgb = vec3(vary);
+    fragmentColor.b = (0.0-vary);
+    fragmentColor.g = vary;
+    fragmentColor.r = 0.0;
     fragmentColor.a = 1.0;
   } else {
-    fragmentColor.rgb = (texelFetch(imageSampler, p, 0).rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*vary);
+    fragmentColor.rgb = (texelFetch(imageSampler, p, 0).rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*(vary));
     fragmentColor.a = 1.0;
   }
 }

@@ -15,21 +15,29 @@ var kernelLut = {
 }
 
 module.exports = {
-  name: 'Sharpness',
+  name: 'Details',
   knobs: {
-    'Strength': {
+    'Sharpen': {
       type: 'slider',
       minValue: 0,
-      maxValue: 120,
+      maxValue: 100,
       value: 0,
-      step: 1,
+      step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
     'Radius': {
       type: 'slider',
       minValue: 0.1,
       maxValue: 10,
-      value: 1,
+      value: 4,
+      step: 0.1,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+    },
+    'Noise Mask': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 8,
       step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
@@ -39,22 +47,6 @@ module.exports = {
       maxValue: 100,
       value: 0,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
-    },
-    'Sharpness Limit': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 2,
-      value: 0,
-      step: 0.01,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
-    },
-    'Denoise Limit': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 2,
-      value: 0,
-      step: 0.01,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
     'Size': {
@@ -77,7 +69,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 50,
+      value: 80,
       step: 0.1,
     },
     'Value Noise': {
@@ -91,7 +83,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 50,
+      value: 10,
       step: 0.1,
     },
     'Visualize Image Analysis': {
@@ -99,7 +91,7 @@ module.exports = {
       value: false,
     },
   },
-  framebuffers: ['vary', 'blur'],
+  framebuffers: ['stage1', 'blur'],
   stages: [
     {
       shadername: 'gaussian',
@@ -138,7 +130,7 @@ module.exports = {
       },
       inputs: ['in'],
       inputBindings: ['texSampler'],
-      out: 'vary',
+      out: 'stage1',
     },
     {
       shadername: 'gaussian',
@@ -162,7 +154,7 @@ module.exports = {
           set('sizes', 'floatarray', gaussianNDist(kernelLut[kernel], stdev))
         },
       },
-      inputs: ['vary'],
+      inputs: ['stage1'],
       inputBindings: ['texSampler'],
       out: 'blur',
     },
@@ -174,25 +166,23 @@ module.exports = {
         // bind name : in-shader name
         '__imagesize__': 'size',
         'balance': 'balance',
-        'strength': 'strength',
         'slimit': 'slimit',
         'dlimit': 'dlimit',
         'showmask': 'showmask',
+        'sharpen': 'sharpen',
+        'denoise': 'denoise',
       },
       knob_bindings: {
-        'Strength': function(v, set) {
-          set('strength', 'float', v/10)
+        'Noise Mask': function(v, set) {
+          set('balance', 'float', v/400)
+        },
+        'Sharpen': function(v, set) {
+          set('sharpen', 'float', (v/10))
         },
         'Denoise': function(v, set) {
-          set('balance', 'float', v/200)
+          set('denoise', 'float', (v/10))
         },
-        'Sharpness Limit': function(v, set) {
-          set('slimit', 'float', (v)-1)
-        },
-        'Denoise Limit': function(v, set) {
-          set('dlimit', 'float', ((1-v)*2)-1)
-        },
-        'Visualize Image Analysis': function(v, set){
+        'Visualize Image Analysis': function(v, set) {
           set('showmask', 'bool', v)
         },
       },
