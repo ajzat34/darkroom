@@ -165,7 +165,7 @@ highp float edgedetect(ivec2 t, highp float weights[25]) {
   // calculate the standard deviation
   highp float acc = 0.0;
   highp float diff = 0.0;
-  for (int i = 0; i <= 13; i++) {
+  for (mediump int i = 0; i <= 13; i++) {
     diff = p[i]-mean;
     acc += diff*diff;
   }
