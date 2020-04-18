@@ -1,5 +1,3 @@
-const fs = require('fs')
-
 function getWebGL (canvas) {
   var gl = canvas.getContext("webgl2")
   if (gl && gl instanceof WebGL2RenderingContext) {
