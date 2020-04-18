@@ -1,7 +1,7 @@
 var model
 var copyprogram
 var widgets = {}
-var widgetOrder = ['adjustments', 'details']
+var widgetOrder = ['adjustments', 'detailsv2']
 var framebuffers = {}
 var sourceImage
 var lastrender

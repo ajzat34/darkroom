@@ -86,7 +86,7 @@ const createMainWindow = () => {
   // TODO: move this to the render process, and add option to save before closing
   mainWindow.on('close', function(e){
     console.log('main window is closing... interupting to confirm this action...')
-    var choice = dialog.showMessageBoxSync(this, {
+    var choice = dialog.showMessageBoxSync({
           type: 'question',
           buttons: ['Yes', 'No'],
           title: 'Confirm',

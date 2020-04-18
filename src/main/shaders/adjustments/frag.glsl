@@ -29,7 +29,7 @@ void main(void) {
   colors.b -= temperature;
   fragmentColor.rgb = colors;
   // clipped black
-  if        (showClipped && colors.r < 0.0 && colors.g < 0.0 && colors.b < 0.0) {
+  if  (showClipped && colors.r < 0.0 && colors.g < 0.0 && colors.b < 0.0) {
     fragmentColor.rgb = vec3 (1.0,1.0,1.0);
 
   // out of gamut black
