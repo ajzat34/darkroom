@@ -1,0 +1,1 @@
+cubic spline curves modified from https://github.com/kuckir/CSPL.js (MIT)
