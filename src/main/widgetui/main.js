@@ -47,6 +47,12 @@ function createWidgetUi (parent, from) {
   }
 
   parent.appendChild(node)
+  r.knobs.forEach((knob, i) => {
+    if (knob.oncreate){
+      knob.oncreate()
+    }
+  });
+
   return r
 }
 
@@ -57,6 +63,9 @@ function createWidgetUiKnob (name, base) {
       break;
     case 'checkbox':
       return createWidgetUiKnobCheckbox(name, base)
+      break;
+    case 'curves':
+      return createWidgetUiKnobCurves(name, base)
       break;
     default:
       throw new Error(`unknown knob type ${base.type}`)
