@@ -159,23 +159,26 @@ input.inputnumber:focus {outline:0;}
 
 .widgetUI-curves-canvas-container {
   width: 100%;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
   background-color: var(--theme-area-color);
   position: relative;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .widgetUI-curves-canvas {
   width: 100%;
 
   position: relative;
+  display: block;
+
+  margin: 0;
+  padding: 0;
 
   top: 0;
   left: 0;
 }
 
-/* TODO: add hover and active */
 .widgetUI-curves-control-point {
   position: absolute;
 
@@ -206,4 +209,16 @@ input.inputnumber:focus {outline:0;}
   cursor: pointer;
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.05);
+}
+
+.widgetUI-curves-chin {
+  width: 100%;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background-color: var(--theme-area-color-dark);
+  min-height: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 4px 8px;
 }
