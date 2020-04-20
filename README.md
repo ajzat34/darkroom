@@ -1,4 +1,4 @@
-# Open-Darkroom
+# Open Darkroom
 A simple, cross platform photo editor. The overall design and functionality is similar to Adobe Lightroom.
 
 ![screenshot](/readme/screenshot.png)
@@ -26,6 +26,7 @@ Currently in early-development, don't expect stability or features.
 * Sharpness and Noise Reduction
 * Save Projects
 * Export to Jpeg or PNG
+* Cross Platform
 
 # Building
 * Clone & cd
