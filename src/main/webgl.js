@@ -1,3 +1,4 @@
+// gets the webgl2 renderign context from a canvas
 function getWebGL (canvas) {
   var gl = canvas.getContext("webgl2")
   if (gl && gl instanceof WebGL2RenderingContext) {
@@ -7,6 +8,7 @@ function getWebGL (canvas) {
   }
 }
 
+// resize to the viewport
 function glResize (gl) {
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight)
 }
@@ -89,7 +91,7 @@ function gluse (gl, program, model) {
     gl.enableVertexAttribArray( program.attribLocations.aVertex )
   }
 
-  // texturemap buffer
+  // texture map buffer
   {
     const num = 2;            // every coordinate composed of 2 values
     const type = gl.FLOAT;    // the data in the buffer is 32 bit float
@@ -106,7 +108,6 @@ function gluse (gl, program, model) {
 
 function useTextures(gl, program, textures) {
   textures.forEach((texture, i) => {
-    console.log(texture, program.imageBindings[program.imageBindingsMappings[i]])
     gl.activeTexture(gl[`TEXTURE${i}`])
     gl.bindTexture(gl.TEXTURE_2D, texture)
     gl.uniform1i(program.imageBindings[program.imageBindingsMappings[i]], i)
@@ -169,6 +170,7 @@ function loadTexture(gl, imageFormat, imageData) {
   return texture;
 }
 
+// draws the model with the current program and framebuffers
 function draw (gl) {
   gl.clear(gl.COLOR_BUFFER_BIT)
   const offset = 0;
