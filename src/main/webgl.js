@@ -106,10 +106,36 @@ function gluse (gl, program, model) {
 
 function useTextures(gl, program, textures) {
   textures.forEach((texture, i) => {
+    console.log(texture, program.imageBindings[program.imageBindingsMappings[i]])
     gl.activeTexture(gl[`TEXTURE${i}`])
     gl.bindTexture(gl.TEXTURE_2D, texture)
     gl.uniform1i(program.imageBindings[program.imageBindingsMappings[i]], i)
   })
+}
+
+function newGlTexture(gl){
+  var texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  return texture
+}
+
+function loadTextureData(gl, texture, width, height, data, alignment) {
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  const level = 0;
+  const internalFormat = gl.RGBA;
+  const border = 0;
+  const srcFormat = gl.RGBA;
+  const srcType = gl.UNSIGNED_BYTE;
+  if (alignment) {
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4)
+  }
+  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                width, height, border, srcFormat, srcType,
+                data)
 }
 
 // Initialize a texture and load an image.

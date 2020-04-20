@@ -20,5 +20,13 @@ function loadShaderPack (gl, path, descriptor) {
     })
   }
   pack.imageBindingsMappings = descriptor.inputBindings
+  if (descriptor.textures) {
+    pack.textures = {}
+    descriptor.textures.forEach((texture) => {
+      pack.textures[texture] = newGlTexture(gl)
+      pack.imageBindings[texture] = gl.getUniformLocation(shaderprogram, texture)
+      pack.imageBindingsMappings.push(texture)
+    })
+  }
   return pack
 }

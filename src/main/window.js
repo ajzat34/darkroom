@@ -108,6 +108,7 @@ function createWidgetUIs() {
       })
       projectChange()
     }
+    w.triggerUpdate()
   })
 }
 
@@ -188,8 +189,9 @@ document.addEventListener("DOMContentLoaded", function(){
 // notify this loop that a render needs to occur.
 async function updateCycle () {
   var start = new Date()
-
+  var rendered = false
   if (renderRequest) {
+    rendered = true
     renderRequest = false
     render(pgl)
     scheduleUpdate()
@@ -209,6 +211,9 @@ async function updateCycle () {
 
   // record some stats
   renderTimeStat = (new Date()-start)
+  if (rendered) {
+    console.log('render took', renderTimeStat, 'ms')
+  }
 
   // do it all over again
   requestAnimationFrame(updateCycle)

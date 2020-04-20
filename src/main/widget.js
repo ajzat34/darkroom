@@ -15,6 +15,7 @@ function loadWidget (gl, path) {
     if (shader.glshaderpack.attribLocations.aVertex === -1) console.error(`could not get AttribLocation for atrribVertexCoord: ${shader.atrribVertexCoord}`)
     if (shader.glshaderpack.attribLocations.textureCoord === -1) console.error(`could not get AttribLocation for atrribTextureCoord: ${shader.atrribTextureCoord}`)
   })
+
   return widget
 }
 
@@ -50,6 +51,9 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
             gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 0)
           }
           break;
+        case 'texture':
+          loadTextureData(gl, shader.glshaderpack.textures[bind], setdata.width, setdata.height, setdata.data, setdata.format, setdata.alignment)
+          break;
         default:
           throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
       }
@@ -58,6 +62,12 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   if ('__imagesize__' in shader.uniforms) {
     gl.uniform2i(shader.glshaderpack.uniformLocations['__imagesize__'], sourceImageWidth, sourceImageHeight)
   }
+  if (shader.textures) {
+    shader.textures.forEach((texture) => {
+      imgs.push(shader.glshaderpack.textures[texture])
+    })  
+  }
+
   useTextures(gl, shader.glshaderpack, imgs)
   useFB(gl, fb)
 }

@@ -12,8 +12,6 @@ module.exports = {
           color: '#ffffff',
           default: [
             {x: 0, y: 0},
-            {x: 0.3333, y: 0.33},
-            {x: 0.6666, y: 0.66},
             {x: 1, y: 1}
           ]
         },

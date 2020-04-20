@@ -15,7 +15,7 @@ function createWidgetUiKnobCurves (name, base) {
           title.appendChild(document.createTextNode(name))
           titlerow.appendChild(title)
       }
-      
+
     // create the canvas, its container, and row
     var inputrow = document.createElement("div")
     // create a 2d canvas context
@@ -30,14 +30,16 @@ function createWidgetUiKnobCurves (name, base) {
       // make the first tab active by default
       switchCurvesTab(knob, knob.tabs[0])
       // when the canvas is clicked, create a control point there
-      canvas.addEventListener("click", function(e){
+      canvas.addEventListener("mousedown", function(e){
         // calculate the inital position of the new point
         var x = (e.clientX - container.getBoundingClientRect().left) / container.scrollWidth;
         var y = 1-((e.clientY - container.getBoundingClientRect().top) / container.scrollHeight);
         var pt = widgetUICurvesCreateControlPoint(container, x, y)
         pt.onmove = function() {
           updateCurveCanvas(knob)
+          knob.widgetUiOnUpdate()
         }
+        pt.dragging = true
         pt.unhide()
         knob.activeTab.controlpoints.push( pt )
         updateCurveCanvas(knob)
@@ -63,15 +65,30 @@ function createWidgetUiKnobCurves (name, base) {
         el.addEventListener("click", function() {
           switchCurvesTab(knob, el)
         })
-        // unordered list of control point elements
-        el.controlpoints = []
-        base.tabs[tab].default.forEach((pt, i) => {
-          var pt = widgetUICurvesCreateControlPoint(container, base.tabs[tab].default[i].x, base.tabs[tab].default[i].y)
-          pt.onmove = function() {
-            updateCurveCanvas(knob)
-          }
-          el.controlpoints.push( pt )
-        })
+        // function that creates the default control points
+        // used below and when reseting the curve
+        el.create = function () {
+          // remove old control points
+          if (el.controlpoints) { el.controlpoints.forEach((controlpoint) => { controlpoint.remove() })   }
+          // unordered list of control point elements
+          el.controlpoints = []
+          base.tabs[tab].default.forEach((pt, i) => {
+            var pt = widgetUICurvesCreateControlPoint(container, base.tabs[tab].default[i].x, base.tabs[tab].default[i].y)
+            pt.onmove = function() {
+              updateCurveCanvas(knob)
+              knob.widgetUiOnUpdate()
+            }
+            el.controlpoints.push( pt )
+          })
+        }
+        // create the default control points
+        el.create()
+        // create the inital curve
+        createCurve(el)
+        // create a function for getting an x value
+        el.get = function(x) {
+          return curveEval(el, x)
+        }
         // add it to the row, and knob
         tabrow.appendChild(el)
         knob.tabs.push(el)
@@ -82,6 +99,10 @@ function createWidgetUiKnobCurves (name, base) {
       chinrow.classList.add("widgetUI-curves-chin")
       var btn_reset = document.createElement("button")
       btn_reset.appendChild(document.createTextNode("reset"))
+      btn_reset.addEventListener("click", function(){
+        knob.activeTab.create()
+        updateCurveCanvas(knob)
+      })
       chinrow.appendChild(btn_reset)
 
   // add everything above to the knob in the correct order
@@ -89,6 +110,12 @@ function createWidgetUiKnobCurves (name, base) {
   knob.appendChild(tabrow)
   knob.appendChild(inputrow)
   knob.appendChild(chinrow)
+
+  // link the value reporter
+  knob.widgetUiValue = {}
+  knob.tabs.forEach((tab) => {
+    knob.widgetUiValue[tab.title] = tab
+  })
 
   return knob
 }
@@ -104,13 +131,13 @@ function widgetUICurvesCreateControlPoint(container, x, y) {
   // dragging events
   var dragging
   pt.addEventListener("mousedown", function(e) {
-    dragging = true
+    pt.dragging = true
   })
-  window.addEventListener("mouseup", function(e) {
-    dragging = false
-  })
-  window.addEventListener("mousemove", function(e) {
-    if (dragging) {
+  const mouseup = function(e) {
+    pt.dragging = false
+  }
+  const mousemove = function(e) {
+    if (pt.dragging) {
       // calculate the new x and y by taking the difference between
       // the mouse position and the corner of the canvas contrainer
       var x = e.clientX - container.getBoundingClientRect().left;
@@ -122,9 +149,20 @@ function widgetUICurvesCreateControlPoint(container, x, y) {
       pt.style.left = `${pt.x * 100}%`
       pt.style.top = `${(1-pt.y) * 100}%`  // we set the style from top: 1-y, rather than bottom: y, or the control points can become offset
       // if a callback for moving has been set, run it now
-      if (pt.onmove){ pt.onmove() }
+      pt.onmove()
     }
-  })
+  }
+  window.addEventListener("mouseup", mouseup)
+  window.addEventListener("mousemove", mousemove)
+  // self destruct on right/ctrl click
+  pt.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      window.removeEventListener("mouseup", mouseup)
+      window.removeEventListener("mousemove", mousemove)
+      pt.remove()
+      pt.destroy = true
+      pt.onmove()
+  }, false);
   pt.hide = function() { pt.style.display = "none" }
   pt.unhide = function() { pt.style.display = null }
   pt.hide()
@@ -155,18 +193,21 @@ function switchCurvesTab(knob, newtab) {
 }
 
 // update the canvas with the active tab
+// TODO: draw all tabs
 function updateCurveCanvas (knob) {
   // start by unhiding all of the control points
   knob.activeTab.controlpoints.forEach((pt) => { pt.unhide() })
 
-  // create ordered lists (x low to high)
-  controlPointSort(knob.activeTab)
+  // purge any removed control points
+  knob.activeTab.controlpoints.forEach((pt, i) => {
+    if (pt.destroy){
+      pt.remove()
+      delete knob.activeTab.controlpoints[i]
+    }
+  })
 
-  // create the cubic spline k values
-  // getNaturalKs insures that the diriviteves of the peicewise functions are the same at each junction
-  // we also pass empty k values, to be created by cspl
-  knob.activeTab.ok = new Array()
-  CSPL.getNaturalKs (knob.activeTab.ox, knob.activeTab.oy, knob.activeTab.ok)
+  // get all the values needed for interpolation
+  createCurve(knob.activeTab)
 
   // get the 2d context
   var ctx = knob.canvas.getContext("2d")
@@ -176,6 +217,19 @@ function updateCurveCanvas (knob) {
   canvasGrid(ctx)
   // draw the curve onto the canvas
   canvasCubicSpline(ctx, knob.activeTab.ox, knob.activeTab.oy, knob.activeTab.ok, knob.activeTab.color)
+}
+
+function createCurve(tab) {
+
+  // create ordered lists (x low to high)
+  controlPointSort(tab)
+
+  // create the cubic spline k values
+  // getNaturalKs insures that the diriviteves of the peicewise functions are the same at each junction
+  // we also pass empty k values, to be created by cspl
+  tab.ok = new Array()
+  CSPL.getNaturalKs(tab.ox, tab.oy, tab.ok)
+
 }
 
 // create ordered lists of control points for cubic spline calculations
@@ -233,11 +287,16 @@ function canvasGrid(ctx) {
   ctx.stroke()
 }
 
+// plug an x value into a curve
+function curveEval(tab, x) {
+  return clamp(CSPL.evalSpline(x, tab.ox, tab.oy, tab.ok), 0, 1)
+}
+
 // draws the spline curve
 function canvasCubicSpline(ctx, xs, ys, ks, color) {
   // draw to the canvas
   var width = ctx.canvas.width
-  var step = 2/width
+  var step = 4/width
   ctx.moveTo(0, 0)
   ctx.beginPath()
   ctx.strokeStyle = color

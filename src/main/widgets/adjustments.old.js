@@ -1,55 +1,6 @@
 var sliderDark = 'rgba(120, 120, 120, 1)'
 var sliderLight = 'rgba(255,255,255,1)'
 
-function cleanLut256() {
-  var lut = []
-  for (var i = 0; i<256; i++){
-    lut[i] = i/255
-  }
-  return lut
-}
-
-function map(lut, callback) {
-  var result = []
-  for (var i = 0; i<256; i++){
-    result[i] = callback(lut[i])
-  }
-  return result
-}
-
-function filter(lut, gamma, brightness, contrast, blacks, whites) {
-  var c
-  return map(lut, function(n){
-    c = Math.pow(n, gamma)
-    c = ((c - 0.5)*contrast)+0.5+brightness
-    c = whites * ((blacks * (c-1.0))+1.0)
-    c = Math.max(Math.min(c, 1), 0)
-    return c
-  })
-}
-
-function lutLookup(lut, filter) {
-  return map(lut, function(n){
-    return filter.get(n)
-  })
-}
-
-function makeLutImage(gamma, brightness, contrast, whites, blacks, tabs) {
-  var base = lutLookup(filter(cleanLut256(), gamma, brightness, contrast, whites, blacks), tabs.Luma)
-  let image = new Uint8Array(4 * 256)
-  for (var i = 0; i<256; i++) {
-    var index = getIndex(i, 0, 256)
-    image[index  ] = tabs['Red'].get(base[i]) * 255
-    image[index+1] = tabs['Green'].get(base[i]) * 255
-    image[index+2] = tabs['Blue'].get(base[i]) * 255
-  }
-  return image
-}
-
-function getIndex(x, y, width) {
-  return y * (width * 4) + x * 4
-}
-
 module.exports = {
   name: 'Adjustments',
   knobs: {
@@ -156,19 +107,48 @@ module.exports = {
   framebuffers: [],
   stages: [
     {
-      shadername: 'adjustmentsv2',
+      shadername: 'adjustments',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
-        'lut': 'lut',
+        'brightness': 'brightness',
+        'contrast': 'contrast',
+        'blacks': 'blacks',
+        'whites': 'whites',
+        'gamma': 'gamma',
         'saturation': 'saturation',
         'temperature': 'temperature',
         'hue': 'hue',
+        'showClipped': 'showClipped',
+        'showGamut': 'showGamut',
       },
-      textures: ['lut'],
       knob_bindings: {
+        'Brightness':  function(v, set) {
+            set('brightness', 'float', v/100)
+        },
+        'Contrast':  function(v, set) {
+            if (v >= 0){
+              set('contrast', 'float', 1+(v/100))
+            } else {
+              set('contrast', 'float', (100+v)/100)
+            }
+        },
+        'Blacks':  function(v, set) {
+            if (v >= 0){
+              set('blacks', 'float', 1-(v/100))
+            } else {
+              set('blacks', 'float', (100-v)/100)
+            }
+        },
+        'Whites':  function(v, set) {
+            if (v >= 0){
+              set('whites', 'float', 1+(v/100))
+            } else {
+              set('whites', 'float', (100+v)/100)
+            }
+        },
         'Gamma':  function(v, set) {
           set('gamma', 'float', v)
         },
@@ -185,36 +165,18 @@ module.exports = {
         'Hue':  function(v, set) {
           set('hue', 'float', v/1000)
         },
-        'Curves': function(v, set, k) {
-          var gamma =  k['Gamma'].value
-          var brightness = k['Brightness'].value/100
-          var contrast = k['Contrast'].value
-          if (contrast >= 0){
-            contrast = 1+(contrast/100)
-          } else {
-            contrast = (100+contrast)/100
-          }
-          var blacks = k['Blacks'].value
-          if (blacks >= 0){
-            blacks = 1-(blacks/100)
-          } else {
-            blacks = (100-blacks)/100
-          }
-          var whites = k['Whites'].value
-          if (whites >= 0){
-            whites = 1+(whites/100)
-          } else {
-            whites = (100+whites)/100
-          }
-          set('lut', 'texture', {
-            width: 256,
-            height: 1,
-            data: makeLutImage(gamma, brightness, contrast, blacks, whites, v),
-          })
+        'Show clipping': function(v, set){
+          set('showClipped', 'bool', v)
+        },
+        'Show out of gamut colors': function(v, set){
+          set('showGamut', 'bool', v)
+        },
+        'Curves': function(v, set) {
+          console.log(v)
         }
       },
       inputs: ['in'],
-      inputBindings: ['texSampler', 'lut'],
+      inputBindings: ['texSampler'],
       out: 'out',
     }
   ],

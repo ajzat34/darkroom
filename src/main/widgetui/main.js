@@ -4,6 +4,17 @@ function createWidgetUi (parent, from) {
   r.knobs = []
   r.onchange = function(){}
 
+  function update() {
+    var data = {}
+    r.knobs.forEach((knob, i) => {
+      data[knob.name] = knob.widgetUiValue
+    });
+    r.onchange(data)
+  }
+  r.triggerUpdate = function(){
+    update()
+  }
+
   var node = document.createElement("div")
   node.classList.add("widgetUI-base")
   {
@@ -36,14 +47,6 @@ function createWidgetUi (parent, from) {
       r.knobs.push(knob)
       content.appendChild(knob)
     })
-  }
-
-  function update() {
-    var data = {}
-    r.knobs.forEach((knob, i) => {
-      data[knob.name] = knob.widgetUiValue
-    });
-    r.onchange(data)
   }
 
   parent.appendChild(node)
