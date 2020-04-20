@@ -1,0 +1,103 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+  color: rgb(25, 28, 29);
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  width: 100vw;
+  position: fixed;
+  background-color: rgba(255,255,255, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 10%;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.linkbutton {
+  padding: 8px 16px;
+  margin: 12px;
+  background-color: rgb(45, 49, 64);
+  color: rgb(255,255,255);
+  font-weight: bold;
+  font-size: 14pt;
+  border-radius: 8px;
+}
+
+
+header * {
+  width: 100%;
+  text-align: center;
+}
+
+header span.title {
+  flex-grow: 2;
+  font-size: 18pt;
+  font-weight: bold;
+  text-align: left;
+}
+
+section {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 56px;
+}
+
+section.hero {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 25vh;
+}
+
+section h1 {
+  font-size: 56pt;
+  margin: 0;
+  padding: 0 24px;
+  text-align: center;
+}
+
+section h2 {
+  font-size: 28pt;
+  padding: 0 24px;
+  max-width: 80vw;
+  text-align: center;
+  margin: 0;
+}
+
+section.hero .buttonrow {
+  padding: 12px;
+  margin: 12px;
+}
+
+section.hero img {
+  margin-top: 10vh;
+  width: 95%;
+}
+
+section.full {
+  width: 100vw;
+  height: 100vh;
+}
