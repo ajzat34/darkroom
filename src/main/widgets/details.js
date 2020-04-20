@@ -1,19 +1,6 @@
 var sliderDark = 'rgba(120, 120, 120, 1)'
 var sliderLight = 'rgba(255,255,255,1)'
 
-var kernelLut = {
-   3: 2,
-   5: 3,
-   7: 4,
-   9: 5,
-  11: 6,
-  13: 7,
-  15: 8,
-  17: 9,
-  19: 10,
-  21: 11,
-}
-
 module.exports = {
   name: 'Details',
   knobs: {
@@ -27,17 +14,17 @@ module.exports = {
     },
     'Radius': {
       type: 'slider',
-      minValue: 0.1,
-      maxValue: 10,
-      value: 4,
+      minValue: 0,
+      maxValue: 120,
+      value: 50,
       step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
-    'Noise Mask': {
+    'Masking': {
       type: 'slider',
-      minValue: 0,
+      minValue: -100,
       maxValue: 100,
-      value: 8,
+      value: 0,
       step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
@@ -47,22 +34,6 @@ module.exports = {
       maxValue: 100,
       value: 0,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
-    },
-    'Size': {
-      type: 'slider',
-      minValue: 3,
-      maxValue: 15,
-      value: 3,
-      step: 2,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
-    },
-    'Search Area': {
-      type: 'slider',
-      minValue: 1,
-      maxValue: 8,
-      value: 2,
-      step: 1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
     'Color Noise': {
@@ -86,38 +57,64 @@ module.exports = {
       value: 10,
       step: 0.1,
     },
-    'Visualize Image Analysis': {
+    'Kernel': {
+      type: 'slider',
+      minValue: 3,
+      maxValue: 7,
+      value: 3,
+      step: 2,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+    },
+    'Noise Gamma': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 300,
+      value: 100,
+      step: 0.1,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+    },
+    'Visualize Image Processing': {
       type: 'checkbox',
       value: false,
     },
   },
-  framebuffers: ['stage1', 'blur'],
+  framebuffers: ['maps'],
   stages: [
     {
-      shadername: 'gaussian',
+      shadername: 'details',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
-        'kernel': 'kernel',
-        'sizes': 'sizes',
-        'mode': 'mode',
-        'alphaMode': 'alphaMode',
-        'alphakernel': 'alphakernel',
-        'hsvweights': 'sum',
+        'kernel-size': 'ksize',
+        'edge-detect-kernel-size': 'eksize',
+        'sharpen-weights': 'blurweights',
+        'edge-detect-weights': 'edgeweights',
+        'masking': 'masking',
+        'noisegamma': 'noisegamma',
+        'sharpen': 'sharpen',
+        'denoise': 'denoise',
+        'hsvweights': 'hsvweights',
       },
       knob_bindings: {
-        'Size': function(v, set, k) {
+        'Kernel': function(v, set, k) {
           var kernel = v
-          var stdev = (k['Radius'].value/10)*kernelLut[kernel]
-          set('mode', 'int', 0)
-          set('kernel', 'int', kernel)
-          set('alphaMode', 'int', 1)
-          set('sizes', 'floatarray', gaussianNDist(kernelLut[kernel], stdev))
+          var stdev = ((k['Radius'].value/100) * nFromKsize(kernel))
+          set('kernel-size', 'int', kernel)
+          set('sharpen-weights', 'floatarray', gaussianNDist2D(kernel, stdev))
         },
-        'Search Area': function(v, set, k) {
-            set('alphakernel', 'int', v)
+        "Masking": function(v, set) {
+          set('masking', 'float', v/1000)
+        },
+        "Noise Gamma": function(v, set) {
+          set('noisegamma', 'float', 1/(v/100))
+        },
+        "Sharpen": function(v, set) {
+          set('sharpen', 'float', v/2)
+        },
+        "Denoise": function(v, set) {
+          set('denoise', 'float', v/4)
         },
         'Color Noise': function(v, set, k){
           var h = k['Color Noise'].value/100
@@ -129,40 +126,16 @@ module.exports = {
       },
       inputs: ['in'],
       inputBindings: ['texSampler'],
-      out: 'stage1',
+      out: 'maps',
     },
+
     {
-      shadername: 'gaussian',
+      shadername: 'detailsmixer',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
         // bind name : in-shader name
-        '__imagesize__': 'size',
-        'kernel': 'kernel',
-        'sizes': 'sizes',
-        'mode': 'mode',
-        'alphaMode': 'alphaMode',
-      },
-      knob_bindings: {
-        'Size': function(v, set, k) {
-          var kernel = v
-          var stdev = (k['Radius'].value/10)*kernelLut[kernel]
-          set('mode', 'int', 1)
-          set('kernel', 'int', kernel)
-          set('alphaMode', 'int', 2)
-          set('sizes', 'floatarray', gaussianNDist(kernelLut[kernel], stdev))
-        },
-      },
-      inputs: ['stage1'],
-      inputBindings: ['texSampler'],
-      out: 'blur',
-    },
-    {
-      shadername: 'sharpness_masks',
-      atrribVertexCoord: 'aVertex',
-      atrribTextureCoord: 'aTextureCoord',
-      uniforms: {
-        // bind name : in-shader name
+
         '__imagesize__': 'size',
         'balance': 'balance',
         'slimit': 'slimit',
@@ -172,8 +145,8 @@ module.exports = {
         'denoise': 'denoise',
       },
       knob_bindings: {
-        'Noise Mask': function(v, set) {
-          set('balance', 'float', v/400)
+        'Masking': function(v, set) {
+          set('balance', 'float', v/1000)
         },
         'Sharpen': function(v, set) {
           set('sharpen', 'float', (v/5))
@@ -181,11 +154,11 @@ module.exports = {
         'Denoise': function(v, set) {
           set('denoise', 'float', (v/2))
         },
-        'Visualize Image Analysis': function(v, set) {
+        'Visualize Image Processing': function(v, set) {
           set('showmask', 'bool', v)
         },
       },
-      inputs: ['in','blur'],
+      inputs: ['in', 'maps'],
       inputBindings: ['imageSampler', 'blurSampler'],
       out: 'out',
     },

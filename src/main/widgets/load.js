@@ -1,1 +1,1 @@
-widgetimports = ["adjustments", "blur", "detailsv2"]
+widgetimports = ["adjustments", "blur", "details"]
