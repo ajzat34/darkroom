@@ -17,6 +17,7 @@ body {
 header {
   width: 100vw;
   position: fixed;
+  top: 0;
   background-color: rgba(255,255,255, 0.5);
   backdrop-filter: blur(8px);
   display: flex;
@@ -30,6 +31,10 @@ header {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+a.blue {
+  color: rgb(50, 90, 150);
 }
 
 a.linkbutton {
@@ -46,6 +51,7 @@ a.linkbutton {
 header * {
   width: 100%;
   text-align: center;
+  z-index: 10;
 }
 
 header span.title {
@@ -53,6 +59,7 @@ header span.title {
   font-size: 18pt;
   font-weight: bold;
   text-align: left;
+  z-index: 10;
 }
 
 section {
@@ -73,18 +80,28 @@ section.hero {
   padding-top: 25vh;
 }
 
-section h1 {
+ h1 {
   font-size: 56pt;
   margin: 0;
   padding: 0 24px;
   text-align: center;
 }
 
-section h2 {
+h2.big {
+  font-size: 56pt;
+  padding: 0 24px;
+}
+
+h2 {
   font-size: 28pt;
   padding: 0 24px;
   max-width: 80vw;
   text-align: center;
+  margin: 0;
+}
+
+h3 {
+  font-size: 20pt;
   margin: 0;
 }
 
@@ -101,6 +118,59 @@ section.hero img {
 section.full {
   width: 100vw;
   min-height: 100vh;
+}
+
+table.downloads {
+  min-width: 80%;
+  max-width: 96%;
+  border-collapse: separate;
+  border-spacing: 0px 24px;
+}
+
+table.downloads th {
+  text-align: left;
+}
+
+table.downloads td {
+  border-color: rgb(71, 71, 71);
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+div.col2  {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-top: 56px;
+}
+
+div.col2 div.col {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+div.col2 div.col div {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+div.col2 div.col div span {
+  padding-top: 56px;
+}
+
+div.col2 div.col div img {
+  max-width: 40%;
+  margin: 24px;
+  font-size: 12pt;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1)) drop-shadow(0 20px 24px rgba(0, 0, 0, 0.2)) drop-shadow(0 40px 32px rgba(0, 0, 0, 0.1));
+}
+
+.readme h3 {
+  font-size: 28pt;
+  font-weight: bold;
 }
 
 @media only screen and (max-width: 620px) {
@@ -125,6 +195,9 @@ section.full {
   }
 
   section h1 {
+    font-size: 38pt;
+  }
+  section h2.big {
     font-size: 38pt;
   }
   section h2 {
