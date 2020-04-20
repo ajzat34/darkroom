@@ -179,13 +179,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // start the (check for) render loop
   updateCycle()
+  updateCanvasCycle()
 })
 
 
 // ------ rendering ------
 
-// this is the render loop
-// the scheduleRender() and scheduleUpdate() functions are used to
+// this is the main render loop
+// the scheduleRender() function is used to
 // notify this loop that a render needs to occur.
 async function updateCycle () {
   var start = new Date()
@@ -194,20 +195,18 @@ async function updateCycle () {
     rendered = true
     renderRequest = false
     render(pgl)
-    scheduleUpdate()
   }
 
   // this should help ensure that the render occurs before drawing it to the canvas
   // it is NOT a sync, it just tells the drivers to "encourage eager execution of enqueued commands"
   pgl.flush()
 
-  if (updateRequest){
-    updateRequest = false
-    updateCanvasMouse()
-  }
-
   // wait for the gpu finish
   await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
+
+  if (rendered) {
+    scheduleUpdate()
+  }
 
   // record some stats
   renderTimeStat = (new Date()-start)
@@ -215,8 +214,22 @@ async function updateCycle () {
     console.log('render took', renderTimeStat, 'ms')
   }
 
-  // do it all over again
   requestAnimationFrame(updateCycle)
+}
+
+// this is the canvas update loop
+// scheduleUpdate() function is used to
+// notify this loop that an update needs to occur.
+async function updateCanvasCycle () {
+    if (updateRequest) {
+      updateRequest = false
+      console.log('update')
+      updateCanvasMouse()
+    }
+    // do it all over again
+    setTimeout(function(){
+      requestAnimationFrame(updateCanvasCycle)
+    }, 1)
 }
 
 // tell the above render loop to update the final image or canvas
