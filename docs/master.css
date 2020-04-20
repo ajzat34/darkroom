@@ -102,3 +102,49 @@ section.full {
   width: 100vw;
   min-height: 100vh;
 }
+
+@media only screen and (max-width: 620px) {
+
+  header span.title {
+    flex-grow: 2;
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: left;
+  }
+
+  section {
+    padding-top: 40px;
+  }
+
+  section.hero {
+    padding-top: 20vh;
+  }
+
+  section.hero img {
+    margin-top: 20vh;
+  }
+
+  section h1 {
+    font-size: 38pt;
+  }
+  section h2 {
+    font-size: 18pt;
+  }
+
+  a.linkbutton {
+    padding: 8px 16px;
+    margin: 12px;
+    font-size: 10pt;
+    border-radius: 8px;
+  }
+
+}
+
+@media only screen and (max-width: 340px) {
+    a.linkbutton {
+      padding: 8px 12px;
+      margin: 10px;
+      font-size: 9pt;
+      border-radius: 8px;
+    }
+}
