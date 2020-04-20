@@ -13,14 +13,19 @@ Currently in early-development, don't expect stability or features.
 
 # The Current State
 ### Missing Features:
-* Exporting
 * Histogram Display
 
 ### Working on:
 * Improving saving
 * Stability
 * Optomization
-* Color curves and mixing filters
+* Color mixing filters
+
+## Feautres
+* Contrast, Brightness, Gamma, Blacks, Whites, Color Temperature, Hue, Saturation, Color Curves
+* Sharpness and Noise Reduction
+* Save Projects
+* Export to Jpeg or PNG
 
 # Building
 * Clone & cd
