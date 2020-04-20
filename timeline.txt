@@ -1,2 +1,4 @@
-April 13, 2020: created project
-April 17, 2020: almost ready for first testing build. added project saving and loading, no exporting.
+April 13,    2020: created project
+April 17,    2020: almost ready for first testing build. added project saving and loading, no exporting.
+April 18-29, 2020: overhauled both adjustments and details filter. adjustments now primarily works on a lut.
+April 20,    2020: added exporting. preparing for initial builds. 
