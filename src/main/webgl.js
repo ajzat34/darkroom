@@ -182,6 +182,44 @@ function isPowerOf2(value) {
  return (value & (value - 1)) == 0;
 }
 
+// downloads data from a framebuffer
+function donwloadFramebuffer(gl, framebuffer) {
+  var imgdata = new ImageData(framebuffer.width, framebuffer.height)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.frambuffer)
+  gl.readPixels(0, 0, framebuffer.width, framebuffer.height, gl.RGBA, gl.UNSIGNED_BYTE, imgdata.data)
+  return imgdata
+}
+
+// return a dataURL string from a framebuffer
+function framebufferToBlob(gl, format, framebuffer, opt) {
+  var p = new Promise(function(resolve, reject){
+    var data = donwloadFramebuffer(gl, framebuffer)
+    // var imgData = new ImageData(framebuffer.width, framebuffer.height)
+    // imgData.data = data
+    console.log(data)
+    var canvas = document.createElement("canvas")
+    canvas.width = framebuffer.width
+    canvas.height = framebuffer.height
+    var ctx = canvas.getContext("2d")
+    ctx.putImageData(data, 0, 0);
+    // remove this
+    // document.body.appendChild(canvas)
+    var callback = function(blob) {
+      resolve(blob)
+    }
+    if (format === "PNG") {
+      canvas.toBlob(callback, "image/png")
+    } else if (format === "JPEG") {
+      if (opt && opt.quality) {
+        canvas.toBlob(callback, "image/jpeg", opt.quality)
+      } else {
+        canvas.toBlob(callback, "image/jpeg")
+      }
+    }
+  })
+  return p
+}
+
 // sets a callback for a webgl fence to finish
 function callbackGlFence(gl, sync, callback, rate) {
   if (gl.getSyncParameter(sync, gl.SYNC_STATUS) === gl.SIGNALED) {
