@@ -26,7 +26,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "imgedit"
+            "name": "Open Darkroom"
           }
         },
         {
@@ -48,7 +48,6 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
-    "popper.js": "^1.16.1"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.50",
