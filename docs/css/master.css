@@ -1,0 +1,17 @@
+* {
+  box-sizing: content-box;
+}
+
+body {
+  background-color: rgb(26, 27, 29);
+  color: rgb(255, 255, 255);
+}
+
+section.hero {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
