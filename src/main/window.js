@@ -69,6 +69,9 @@ async function eventImageLoad (image) {
       ipcRenderer.send('mainwindow-loaded')
     }, 200)
   })
+  // start the (check for) render loop
+  updateCycle()
+  updateCanvasCycle()
 }
 
 // callback for canvas event mousemove
@@ -183,10 +186,6 @@ document.addEventListener("DOMContentLoaded", function(){
   window.addEventListener('resize', resize)
 
   setupButtonEvents()
-
-  // start the (check for) render loop
-  updateCycle()
-  updateCanvasCycle()
 })
 
 
