@@ -35,9 +35,6 @@ function prepare (gl) {
   // loads the widgets in /widgets/load.js
   loadWidgets(gl)
 
-  // TODO: get rid of this?
-  framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
-
   // ask the main process for the image path
   var resp = ipcRenderer.sendSync('request-file-info')
   var fileName = resp.path.split('/')
