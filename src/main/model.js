@@ -9,7 +9,6 @@ const rect = {
     -1, -1,
   ],
 
-
   texture: [
     0, 1,
     1, 1,

@@ -10,8 +10,19 @@ var imageFormat
 var imagePath
 var srcPackage
 
+// does most of the webgl/widget setup
+// - loads model
+// - loads shaders
+// - loads widgets
+// - creates the widget-ui elements
+// - creates the framebuffers
+// - loads the image
+// when done, loadTexture() will call eventImageLoad() to finish loading and show the window
 function prepare (gl) {
+  // to render the image we use two texture-mapped triangles
   model = prepareModelBuffer(gl)
+
+  // load the shader used for drawing the result to the viewport/canvas
   copyprogram = loadShaderPack(gl, __dirname + '/shaders/copy', {
     atrribVertexCoord: 'aVertex',
     atrribTextureCoord: 'aTextureCoord',
@@ -20,36 +31,45 @@ function prepare (gl) {
       'texture': 'texSampler',
     }
   })
+
+  // loads the widgets in /widgets/load.js
   loadWidgets(gl)
+
+  // TODO: get rid of this?
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, 640, 480)
 
-  // ask for the image path
+  // ask the main process for the image path
   var resp = ipcRenderer.sendSync('request-file-info')
   var fileName = resp.path.split('/')
   document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
   console.log('image', resp)
   if (resp.type === 'image') {
+    // if we are loading an image, pass it to loadTexture directly as a base64 string
     imagePath = resp.path
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
     imageFormat = imageFormat[imageFormat.length-1]
     sourceImage = loadTexture(gl, imageFormat, imageB64)
   } else if (resp.type === 'project') {
+    // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
     imagePath = null
     srcPackage = JSON.parse(fs.readFileSync(resp.path))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
     sourceImage = loadTexture(gl, imageFormat, imageB64)
+    // load the saved state
     loadPackage(srcPackage, widgetOrder, widgets, resp.path)
   }
-  createWidgetUIs()
 
+  // create the options widgets
+  createWidgetUIs()
 }
 
 function triggerRecreateFrameBuffers (gl) {
-  framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, sourceImageWidth * renderquality, sourceImageHeight * renderquality)
+  framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, sourceImageWidth, sourceImageHeight)
 }
 
+// renders the result image to a framebuffer for later use
 function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
   var lastchain = 0
   widgetOrder.forEach((widgetname, i) => {
@@ -75,6 +95,13 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
   });
 }
 
+// stateful wrapper for update()
+function render (gl) {
+  update(gl, framebuffers, widgets, widgetOrder, sourceImage)
+}
+
+// renders a framebuffer's texture image to a WebGL2RenderingContext
+// this is used to render the result to the viewport
 function updateFromFramebuffers (gl, framebuffer, dst, tin) {
   // bind the program and framebuffer
   gluse(gl, copyprogram, model)
@@ -91,6 +118,7 @@ function updateFromFramebuffers (gl, framebuffer, dst, tin) {
   draw (gl)
 }
 
+// uses the above function to draw a framebuffers's texture to a WebGL2RenderingContext with proper a transform matrix
 function updateCanvas (gl, x,y, scale, framebuffer) {
   requestAnimationFrame(function(){
     updateFromFramebuffers(gl, framebuffer, null, {
@@ -98,8 +126,4 @@ function updateCanvas (gl, x,y, scale, framebuffer) {
       scale: [scale, -(pcaspect)/(framebuffers.final.width/framebuffers.final.height)*scale, 1],
     })
   })
-}
-
-function render (gl) {
-  update(gl, framebuffers, widgets, widgetOrder, sourceImage)
 }

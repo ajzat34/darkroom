@@ -20,6 +20,7 @@ function allocTextureFB (gl, width, height, linearFilter) {
   const attachmentPoint = gl.COLOR_ATTACHMENT0;
   gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, texture, 0);
 
+  // return an object with all of the information about the framebuffer
   return {
     frambuffer: fb,
     texture: texture,
@@ -33,6 +34,7 @@ function deleteFB (gl, fb) {
   gl.deleteTexture(fb.texture)
 }
 
+// makes a framebuffer active
 function useFB (gl, fb) {
   if (fb) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb.frambuffer);

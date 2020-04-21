@@ -1,3 +1,7 @@
+// widgets describe a set of glsl shaders, how they are connected,
+// and the ui elements attached to them (widgetUi)
+// this file provides functions for reading and loading shaders into the gpu
+
 // loads a widget and its shaders from disk
 function loadWidget (gl, path) {
   var widget
@@ -22,53 +26,33 @@ function loadWidget (gl, path) {
 // sets up opengl to use a widget
 function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   var shader = widget.stages[shaderidx]
+  // tell webgl to use a shader, and the rectangle model
   gluse(gl, shader.glshaderpack, model)
+  // run a call back to load the uniform data for the shader
   Object.keys(shader.knob_bindings).forEach((key) => {
     if (!widget.knobs[key]) {
       throw new Error(`invalid knob binding: ${key}`)
     }
-    shader.knob_bindings[key](widget.knobs[key].value, function(bind, type, setdata){
-      switch (type) {
-        case 'float':
-          gl.uniform1f(shader.glshaderpack.uniformLocations[bind], setdata)
-          break;
-        case 'vec4':
-          gl.uniform4f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2], setdata[3])
-          break;
-        case 'vec3':
-          gl.uniform3f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2])
-          break;
-        case 'floatarray':
-          gl.uniform1fv(shader.glshaderpack.uniformLocations[bind], setdata)
-          break;
-        case 'int':
-          gl.uniform1i(shader.glshaderpack.uniformLocations[bind], setdata)
-          break;
-        case 'bool':
-          if (setdata) {
-            gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 1)
-          } else {
-            gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 0)
-          }
-          break;
-        case 'texture':
-          loadTextureData(gl, shader.glshaderpack.textures[bind], setdata.width, setdata.height, setdata.data, setdata.format, setdata.alignment)
-          break;
-        default:
-          throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
-      }
+    shader.knob_bindings[key](widget.knobs[key].value, function(bind, type, setdata) {
+      glSetUniformOrTextureData(gl, shader, bind, type, setdata)
     }, widget.knobs)
   })
+
+  // special value for passing the image size to the texture
   if ('__imagesize__' in shader.uniforms) {
     gl.uniform2i(shader.glshaderpack.uniformLocations['__imagesize__'], sourceImageWidth, sourceImageHeight)
   }
+
+  // if the shader uses custom data textures, add them to the active image set
   if (shader.textures) {
     shader.textures.forEach((texture) => {
       imgs.push(shader.glshaderpack.textures[texture])
-    })  
+    })
   }
 
+  // tell webgl wich textures are used by the shader
   useTextures(gl, shader.glshaderpack, imgs)
+  // set the output framebuffer
   useFB(gl, fb)
 }
 
@@ -115,6 +99,7 @@ function createFramebuffers (gl, widgets, widgetOrder, width, height) {
   }
 }
 
+// delete the old framebuffers and make new ones
 function recreateFrameBuffers (gl, old, widgets, widgetOrder, width, height) {
   if (old.chain) old.chain.forEach((fb) => { deleteFB(gl, fb) });
   if (old.extra) old.extra.forEach((fb) => { deleteFB(gl, fb) });

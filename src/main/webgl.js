@@ -239,3 +239,36 @@ function asyncGlFence(gl, sync, rate) {
     }, rate)
   })
 }
+
+// wrapper for many kinds of webgl2context.unifomXX and webgl2context.textureXX
+function glSetUniformOrTextureData (gl, shader, bind, type, setdata){
+  switch (type) {
+    case 'float':
+      gl.uniform1f(shader.glshaderpack.uniformLocations[bind], setdata)
+      break;
+    case 'vec4':
+      gl.uniform4f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2], setdata[3])
+      break;
+    case 'vec3':
+      gl.uniform3f(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1], setdata[2])
+      break;
+    case 'floatarray':
+      gl.uniform1fv(shader.glshaderpack.uniformLocations[bind], setdata)
+      break;
+    case 'int':
+      gl.uniform1i(shader.glshaderpack.uniformLocations[bind], setdata)
+      break;
+    case 'bool':
+      if (setdata) {
+        gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 1)
+      } else {
+        gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 0)
+      }
+      break;
+    case 'texture':
+      loadTextureData(gl, shader.glshaderpack.textures[bind], setdata.width, setdata.height, setdata.data, setdata.format, setdata.alignment)
+      break;
+    default:
+      throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)
+  }
+}

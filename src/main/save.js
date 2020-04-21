@@ -1,3 +1,6 @@
+// NEEDS TESTING
+// NEEDS LOTS OF WORK
+
 var FORMAT = {
   version: '0.1',
   compatable: ['0.1'],
@@ -5,6 +8,7 @@ var FORMAT = {
 
 var projectPath = null
 
+// creates an object with all of the save-data
 function createBundle (activeWidgets, widgets, imageFormat, imageB64) {
   var result = {}
   result.version = FORMAT.version
@@ -32,6 +36,7 @@ function createBundle (activeWidgets, widgets, imageFormat, imageB64) {
   return result
 }
 
+// loads a bundle into the objects passed into it and the global state
 function loadPackage (pkg, order, widgets, srcpath) {
   // TODO: add version checking
   var pkgWidgets = Object.keys(pkg.settings)
@@ -58,20 +63,12 @@ function saveBundle (file, bundle, callback) {
   fs.writeFile(file, JSON.stringify(bundle), callback)
 }
 
+// shows a dialog for file selection, and writes a bundle to disk
 async function saveProject() {
+  // if there is no path already chosen, use saveAs
   if (projectPath === null) {
-    var file = await dialog.showSaveDialog({
-      title: 'Save Project',
-      properties: ['createDirectory', 'showOverwriteConfirmation'],
-      filters: [
-        { name: 'Open Darkroom Package', extensions: ['dkg'] },
-      ]
-    })
-    if (file.canceled) {
-      return
-    } else {
-      projectPath = file.filePath
-    }
+    saveProjectAs()
+    return
   }
   console.log('saving to', projectPath)
   saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){
@@ -90,6 +87,7 @@ async function saveProject() {
   })
 }
 
+// same as above, does not use global projectPath for path
 async function saveProjectAs() {
   var file = await dialog.showSaveDialog({
     title: 'Save Project',
@@ -104,27 +102,16 @@ async function saveProjectAs() {
     projectPath = file.filePath
   }
   console.log('saving to', projectPath)
-  saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){
-    if (err) {
-      saveButtonDanger()
-      dialog.showMessageBoxSync(this, {
-        type: 'error',
-        buttons: ['Yes', 'No'],
-        title: 'Confirm',
-        message: 'Saving Failed!',
-        detail: err.toString(),
-      });
-    } else {
-      saveButtonSuccess()
-    }
-  })
+  saveProject()
 }
 
 // exporting
+// TODO: add format selection dialog
 async function exportProject(){
   exportImage('JPEG', {quality: 1.0})
 }
 
+// exports the result texture to file
 async function exportImage (format, opt) {
   // create an anchor to download from
   var a = document.createElement('a')
@@ -143,7 +130,7 @@ async function exportImage (format, opt) {
   setTimeout(function () { a.click() }, 0)
 }
 
-// convert data url to a blob
+// convert a data url to a blob
 function dataURItoBlob(dataURI) {
   // convert base64 to raw binary data held in a string
   // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this

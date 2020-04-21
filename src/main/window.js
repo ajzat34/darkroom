@@ -54,10 +54,12 @@ function resize () {
   scheduleUpdate()
 }
 
+// callback when the image loads
 async function eventImageLoad (image) {
   sourceImageWidth = image.width
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
+  // shedule the first render
   scheduleRender(pgl)
   // wait for first render to finish
   await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
@@ -69,6 +71,8 @@ async function eventImageLoad (image) {
   })
 }
 
+// callback for canvas event mousemove
+// updates the canvas position and schedules an update when the mouse moves
 function mouseMoveHandler (e) {
   if (mouse === 'down'){
     deltaX = (e.clientX - mosusepos[0]) / viewscale
@@ -217,7 +221,10 @@ async function updateCycle () {
     console.log('render took', renderTimeStat, 'ms')
   }
 
-  requestAnimationFrame(updateCycle)
+  // do it all over again at least 1ms later
+  setTimeout(function(){
+    requestAnimationFrame(updateCycle)
+  }, 1)
 }
 
 // this is the canvas update loop
@@ -226,10 +233,9 @@ async function updateCycle () {
 async function updateCanvasCycle () {
     if (updateRequest) {
       updateRequest = false
-      console.log('update')
       updateCanvasMouse()
     }
-    // do it all over again
+    // do it all over again at least 1ms later
     setTimeout(function(){
       requestAnimationFrame(updateCanvasCycle)
     }, 1)
