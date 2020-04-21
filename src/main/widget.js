@@ -76,7 +76,7 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
   });
 }
 
-// creates all of the needed framebuffers give the widget order
+// creates all of the needed framebuffers for the widgets in widgetOrder
 function createFramebuffers (gl, widgets, widgetOrder, width, height) {
   var chainFrameBuffersCount = 2
   var extraFrameBuffersCount = 0
