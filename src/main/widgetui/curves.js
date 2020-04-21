@@ -102,6 +102,7 @@ function createWidgetUiKnobCurves (name, base) {
       btn_reset.addEventListener("click", function(){
         knob.activeTab.create()
         updateCurveCanvas(knob)
+        knob.widgetUiOnUpdate()
       })
       chinrow.appendChild(btn_reset)
 
