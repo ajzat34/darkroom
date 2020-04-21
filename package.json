@@ -1,7 +1,7 @@
 {
   "name": "opendarkroom",
   "productName": "Darkroom",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Open Source Image Editor",
   "main": "src/index.js",
   "scripts": {
@@ -26,7 +26,8 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Darkroom"
+            "name": "Darkroom",
+            "iconUrl": "build/opendarkroom.ico"
           }
         },
         {

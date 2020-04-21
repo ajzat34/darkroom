@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
+// windows things
+if (require('electron-squirrel-startup')) return;
+
 // macOS acts differently, this is will make it easier to tell if
 // we are running on macOS later
 var isDarwin = false
