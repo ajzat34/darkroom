@@ -2,39 +2,42 @@ const { ipcRenderer, remote } = require('electron')
 const dialog = remote.dialog
 const fs = require('fs')
 
-var preview
-var pc
-var pgl
-var pcaspect
-var options
+// preview pane
+var preview     // preview pane element (the big one on the left)
+var pc          // preview canvas
+var pgl         // preview canvas webgl2 context
+var pcaspect    // preview canvas aspect ratio
 
-var optionsSize = 320
+// options bar
+var options             // options pane element
+var optionsSize = 320   // width of the options pane
+
+// height of the top toolbar
 var toolbarSize = 48
 
+// width and height of the image
+// this gets changed when the image is loaded
 var sourceImageWidth = 2
 var sourceImageHeight = 2
 
-var renderquality = 1.0
-
-var scroll = [0,0]
+// viewport data
+var scroll = [0,0]             // current window scroll
 var mosusepos = [0,0]
-var scale = 0.99
-var viewscale = scale*scale
-var mouse
+var scale = 0.99               // current zoom amount
+var viewscale = scale*scale    // the render scale = zoom^2
+var mouse                      // is the mouse up or down
 
-var updateRequest = false
-var renderRequest = false
+var updateRequest = false      // set to when signalling that the image needs to be re-rendered
+var renderRequest = false      // same for canvas updates
 
-var widgetUiElements = []
+var widgetUiElements = []      // array of dom elements for widget knobs
 
-var savebutton
+var renderTimeStat = 0         // stores how long the last render took
 
-var renderrate = 12
-var renderTimeStat = 0
+var envdata   // data about the environment
 
-var envdata
-
-// override macos natural scrolling
+// override macos natural scrolling reversal
+// this will be a preference later
 var normalscroll = false
 
 function resize () {

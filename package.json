@@ -1,7 +1,7 @@
 {
   "name": "opendarkroom",
   "productName": "Darkroom",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Open Source Image Editor",
   "main": "src/index.js",
   "scripts": {
@@ -20,7 +20,8 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "build/icon"
+        "icon": "build/icon",
+        "asar": true
       },
       "makers": [
         {

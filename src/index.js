@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
-// windows things
+// windows packager things
 if (require('electron-squirrel-startup')) return;
 
 // macOS acts differently, this is will make it easier to tell if
@@ -11,9 +11,10 @@ if (process.platform === 'darwin') {
   isDarwin = true
 }
 
-// hold the active file path and if it is an image or project
-var loadmode
+// the path of the current open file
 var filepath
+// is it a image, or darkroom file
+var loadmode
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -143,7 +144,7 @@ const createOpenWindow = () => {
   })
 }
 
-// when the window request a file, give it the last selected file
+// when the window requests a file to open, give it the last selected file
 ipcMain.on('request-file-info', (event, arg) => {
   event.returnValue = {
     type: loadmode,
@@ -151,13 +152,14 @@ ipcMain.on('request-file-info', (event, arg) => {
   }
 })
 
+// when the window requests environment data, send it
 ipcMain.on('request-environment-data', (event, arg) => {
   event.returnValue = {
     darwin: isDarwin,
   }
 })
 
-// Quit when all windows are closed.
+// Quit when all windows are closed (non-mac).
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
