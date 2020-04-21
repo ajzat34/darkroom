@@ -26,16 +26,17 @@ function loadWidget (gl, path) {
 // sets up opengl to use a widget
 function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   var shader = widget.stages[shaderidx]
+  var state = widgetState[widget.widgetname]
   // tell webgl to use a shader, and the rectangle model
   gluse(gl, shader.glshaderpack, model)
   // run a call back to load the uniform data for the shader
   Object.keys(shader.knob_bindings).forEach((key) => {
-    if (!widget.knobs[key]) {
+    if (!(key in state)) {
       throw new Error(`invalid knob binding: ${key}`)
     }
-    shader.knob_bindings[key](widget.knobs[key].value, function(bind, type, setdata) {
+    shader.knob_bindings[key](state[key].value, function(bind, type, setdata) {
       glSetUniformOrTextureData(gl, shader, bind, type, setdata)
-    }, widget.knobs)
+    }, state)
   })
 
   // special value for passing the image size to the texture
@@ -112,5 +113,6 @@ function loadWidgets(gl) {
   widgetimports.forEach((widget) => {
     console.log('loading widget:', widget)
     widgets[widget] = loadWidget(gl, __dirname + `/widgets/${widget}.js`)
+    widgets[widget].widgetname = widget
   });
 }

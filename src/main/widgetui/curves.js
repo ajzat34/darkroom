@@ -65,26 +65,34 @@ function createWidgetUiKnobCurves (name, base) {
         el.addEventListener("click", function() {
           switchCurvesTab(knob, el)
         })
+
         // function that creates the default control points
         // used below and when reseting the curve
         el.create = function () {
+          el.createFrom(base.tabs[tab].default)
+        }
+
+        // switch to a set of control points
+        el.createFrom = function(newpts) {
           // remove old control points
           if (el.controlpoints) { el.controlpoints.forEach((controlpoint) => { controlpoint.remove() })   }
           // unordered list of control point elements
           el.controlpoints = []
-          base.tabs[tab].default.forEach((pt, i) => {
-            var pt = widgetUICurvesCreateControlPoint(container, base.tabs[tab].default[i].x, base.tabs[tab].default[i].y)
+          newpts.forEach((newpt, i) => {
+            var pt = widgetUICurvesCreateControlPoint(container, newpt.x, newpt.y)
+            // setup a callback for the point moving
             pt.onmove = function() {
               updateCurveCanvas(knob)
               knob.widgetUiOnUpdate()
             }
-            el.controlpoints.push( pt )
+            el.controlpoints.push(pt)
           })
+          createCurve(el)
         }
+
         // create the default control points
         el.create()
-        // create the inital curve
-        createCurve(el)
+
         // create a function for getting an x value
         el.get = function(x) {
           return curveEval(el, x)
@@ -117,6 +125,14 @@ function createWidgetUiKnobCurves (name, base) {
   knob.tabs.forEach((tab) => {
     knob.widgetUiValue[tab.title] = tab
   })
+
+  knob.morphTo = function(data) {
+    knob.tabs.forEach((tab, i) => {
+      console.log('mophing', tab, 'to', data.value[tab.title])
+      tab.createFrom(data.value[tab.title])
+    })
+    updateCurveCanvas(knob)
+  }
 
   return knob
 }
@@ -318,5 +334,34 @@ function clamp (value, min, max) {
 function disableTab (tab) {
   tab.controlpoints.forEach((cp) => {
     cp.hide()
+  })
+}
+
+// creates an object with the savestate data for a curves knob
+function getCurvesData (data) {
+  var result = {}
+  Object.keys(data).forEach((tabname, i) => {
+    result[tabname] = []
+    data[tabname].controlpoints.forEach((pt) => {
+      result[tabname].push({x: pt.x, y:pt.y})
+    });
+  })
+  return result
+}
+
+// writes data from getCurvesData() back into an element
+function loadCurvesData(el, data) {
+  Object.keys(data).forEach((tabname) => {
+    // get the index of the tab with a matching title
+    var tabid = false
+    el.tabs.forEach((tab, i) => {
+      if (tab.title === tabname) tabid = i
+    })
+    if (!tabid) throw new Error(`could not find tab ${tabname} while loading curves data`)
+    var elementTab = el.tabs[tabid]
+    var dataTab = data[tabname]
+    // recreate the tab from the new data
+    console.log('receating tab control points from', dataTab.controlpoints)
+    elementTab.createFrom(dataTab.controlpoints)
   })
 }

@@ -6,8 +6,11 @@ function createWidgetUi (parent, from) {
 
   function update() {
     var data = {}
-    r.knobs.forEach((knob, i) => {
-      data[knob.name] = knob.widgetUiValue
+    Object.keys(r.knobs).forEach((knobname, i) => {
+      var knob = r.knobs[knobname]
+      data[knob.name] = {}
+      data[knob.name].valueType = knob.widgetUiValueType
+      data[knob.name].value = knob.widgetUiValue
     });
     r.onchange(data)
   }
@@ -44,35 +47,62 @@ function createWidgetUi (parent, from) {
       var knob = createWidgetUiKnob(name, from.knobs[name])
       knob.name = name
       knob.widgetUiOnUpdate = update
-      r.knobs.push(knob)
+      r.knobs[name] = knob
       content.appendChild(knob)
     })
   }
 
   parent.appendChild(node)
-  r.knobs.forEach((knob, i) => {
-    if (knob.oncreate){
-      knob.oncreate()
+  Object.keys(r.knobs).forEach((knobname, i) => {
+    if (r.knobs[knobname].oncreate){
+      r.knobs[knobname].oncreate()
     }
   });
+
+  r.remove = function() {
+    Object.keys(r.knobs).forEach((knobname, i) => {
+      var knob = r.knobs[knobname]
+      knob.remove()
+      delete knob
+    })
+    node.remove()
+  }
+
+  r.morphTo = function(data) {
+    morphWidget(r, data)
+    update()
+  }
 
   return r
 }
 
+function morphWidget(widget, data) {
+  Object.keys(widget.knobs).forEach((knobname, i) => {
+    console.log('mophing knob', knobname)
+    widget.knobs[knobname].morphTo(data[knobname])
+  })
+}
+
 function createWidgetUiKnob (name, base) {
+  var widget
   switch (base.type) {
     case 'slider':
-      return createWidgetUiKnobSlider(name, base)
-      break;
+      widget = createWidgetUiKnobSlider(name, base)
+      widget.widgetUiValueType = 'value'
+      break
     case 'checkbox':
-      return createWidgetUiKnobCheckbox(name, base)
-      break;
+      widget = createWidgetUiKnobCheckbox(name, base)
+      widget.widgetUiValueType = 'value'
+      break
     case 'curves':
-      return createWidgetUiKnobCurves(name, base)
-      break;
+      widget = createWidgetUiKnobCurves(name, base)
+      widget.widgetUiValueType = 'curves'
+      break
     default:
       throw new Error(`unknown knob type ${base.type}`)
+      return
   }
+  return widget
 }
 
 function createWidgetUiKnobSlider (name, base) {
@@ -129,6 +159,13 @@ function createWidgetUiKnobSlider (name, base) {
           knob.widgetUiOnUpdate()
         }
         inputrow.appendChild(slider)
+
+  knob.morphTo = function(data) {
+    slider.value = data.value
+    number.value = data.value
+    knob.widgetUiValue = data.value
+  }
+
   return knob
 }
 
@@ -161,5 +198,11 @@ function createWidgetUiKnobCheckbox (name, base) {
           knob.widgetUiOnUpdate()
         }
         titlerow.appendChild(checkbox)
+
+  knob.morphTo = function(data) {
+    checkbox.checked = data.value
+    knob.widgetUiValue = data.value
+  }
+
   return knob
 }

@@ -52,13 +52,11 @@ function prepare (gl) {
     sourceImage = loadTexture(gl, imageFormat, imageB64)
   } else if (resp.type === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
-    imagePath = null
+    imagePath = resp.path
     srcPackage = JSON.parse(fs.readFileSync(resp.path))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
     sourceImage = loadTexture(gl, imageFormat, imageB64)
-    // load the saved state
-    loadPackage(srcPackage, widgetOrder, widgets, resp.path)
   }
 
   // create the options widgets

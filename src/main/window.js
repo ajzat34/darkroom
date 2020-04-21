@@ -30,7 +30,7 @@ var mouse                      // is the mouse up or down
 var updateRequest = false      // set to when signalling that the image needs to be re-rendered
 var renderRequest = false      // same for canvas updates
 
-var widgetUiElements = []      // array of dom elements for widget knobs
+var widgetUiElements           // array of widgets (collections of dom elements)
 
 var renderTimeStat = 0         // stores how long the last render took
 
@@ -39,6 +39,9 @@ var envdata   // data about the environment
 // override macos natural scrolling reversal
 // this will be a preference later
 var normalscroll = false
+
+// holds to global state of all adjustments (widget knobs)
+var widgetState = {}
 
 function resize () {
   var width = window.innerWidth - optionsSize
@@ -69,7 +72,11 @@ async function eventImageLoad (image) {
       ipcRenderer.send('mainwindow-loaded')
     }, 200)
   })
-  // start the (check for) render loop
+  // load the saved state
+  if (srcPackage) {
+    loadPackage(srcPackage, imagePath)
+  }
+  // start the render loop
   updateCycle()
   updateCanvasCycle()
 }
@@ -105,21 +112,6 @@ function mouseWheelHandler (e) {
   scale = Math.max(Math.min(scale, 50), 0.1)
   viewscale = scale*scale
   scheduleUpdate()
-}
-
-function createWidgetUIs() {
-  widgetUiElements = []
-  widgetOrder.forEach((widgetname) => {
-    var widget = widgets[widgetname]
-    var w = createWidgetUi(options, widget)
-    w.onchange = function(data) {
-      Object.keys(widget.knobs).forEach((knob) => {
-        widget.knobs[knob].value = data[knob]
-      })
-      projectChange()
-    }
-    w.triggerUpdate()
-  })
 }
 
 function setupButtonEvents() {

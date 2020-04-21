@@ -2,59 +2,33 @@
 // NEEDS LOTS OF WORK
 
 var FORMAT = {
-  version: '0.1',
-  compatable: ['0.1'],
+  version: '0.2',
+  compatable: ['0.2'],
 }
 
 var projectPath = null
 
 // creates an object with all of the save-data
-function createBundle (activeWidgets, widgets, imageFormat, imageB64) {
+function createBundle (activeWidgets, widgetData, imageFormat, imageB64) {
   var result = {}
   result.version = FORMAT.version
-  result.settings = {}
-
-  // copy over current knobs
-  activeWidgets.forEach((widgetname, i) => {
-    var widget = widgets[widgetname]
-    var w = {}
-    Object.keys(widget.knobs).forEach((knobname, i) => {
-      var knob = widget.knobs[knobname]
-      w[knobname] = {
-        name: knobname,
-        // type: knob.type,
-        value: knob.value,
-      }
-    })
-    result.settings[widgetname] = w
-  })
+  result.saveState = genSaveState(activeWidgets, widgetState)
+  console.log(result.saveState)
   result.image = {
     format: imageFormat,
     data: imageB64,
   }
-
   return result
 }
 
 // loads a bundle into the objects passed into it and the global state
-function loadPackage (pkg, order, widgets, srcpath) {
+function loadPackage (pkg, srcpath) {
   // TODO: add version checking
-  var pkgWidgets = Object.keys(pkg.settings)
-  order = []
-  pkgWidgets.forEach((widgetname, i) => {
-    var widget = widgets[widgetname]
-    var pkgWidget = pkg.settings[widgetname]
-    if (!widget) {
-      // TODO: better error handling
-      alert('unable to load package')
-      throw new Error('loading error')
-    } else {
-      order.push(widgetname)
-      Object.keys(pkgWidget).forEach((knob) => {
-        widget.knobs[knob].value = pkgWidget[knob].value
-      });
-    }
-  })
+  try {
+    loadSaveState(pkg.saveState)
+  } catch(err) {
+    alert('Error loading state data, the file you are attempting to load may be corrupted. \n\n' + err.toString())
+  }
   projectPath = srcpath
   saveButtonSuccess()
 }
