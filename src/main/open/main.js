@@ -1,6 +1,7 @@
 const { ipcRenderer, remote } = require('electron')
 const { dialog } = require('electron').remote
 
+// callback for the page loading
 document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("open-btn").addEventListener("click", async function(e) {

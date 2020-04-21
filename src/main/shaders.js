@@ -1,3 +1,4 @@
+// parse a shader descriptor and load it
 function loadShaderPack (gl, path, descriptor) {
   var shaderprogram = loadShaderProgram(gl, path)
   var pack = {

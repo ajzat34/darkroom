@@ -1,3 +1,6 @@
+// main electron process
+// mostly just spwans windows as needed, and moves data between windows
+
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
@@ -17,12 +20,12 @@ var filepath
 var loadmode
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
+if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
 // creates a loading window
-function makeLoadWindow () {
+function spawnLoadWindow () {
   // Create the loading window
   const loadWindow = new BrowserWindow({
     width: 300,
@@ -44,11 +47,11 @@ function makeLoadWindow () {
 }
 
 // creates the main editor window
-const createMainWindow = () => {
+const spawnEditorWindow = () => {
   // create the loading window
-  const loadWindow = makeLoadWindow ();
+  const loadWindow = spawnLoadWindow ()
 
-  // Create the browser window.
+  // Create the editor window.
   const mainWindow = new BrowserWindow({
     width: 1366,
     height: 768,
@@ -73,40 +76,36 @@ const createMainWindow = () => {
       loadWindow.close()
       clearTimeout(closetimeout)
     } catch (err) {
-      console.error('did the main page reload? ', err)
+      console.error('did the editor reload? ', err)
     }
   }
 
-  ipcMain.once('request-id', function(event){
-    event.returnValue = id
-  })
-
   // when the render process is ready, show the window
   ipcMain.on('mainwindow-loaded', swapwindows)
-  // set a timeout in case something goes wrong
+  // set a timeout in case something goes wrong while creating the editor
+  // and we never recive the signal to show it
   var closetimeout = setTimeout(swapwindows, 8000)
 
   // when the window is closed, prompt to confirm
-  // TODO: move this to the render process, and add option to save before closing
   mainWindow.on('close', function(e){
     console.log('main window is closing... interupting to confirm this action...')
     var choice = dialog.showMessageBoxSync({
-          type: 'question',
-          buttons: ['Yes', 'No'],
-          title: 'Confirm',
-          message: 'Are you sure you want to exit?'
-       });
-       if(choice == 1){
-         e.preventDefault();
-       }
-    });
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Are you sure you want to exit?'
+     })
+     if (choice == 1) {
+       e.preventDefault();
+     }
+  })
 
   return mainWindow
 }
 
 // window for selecting a file to open
-const createOpenWindow = () => {
-  // Create the browser window.
+const spawnFileSelectionWindow = () => {
+  // Create the file selection window
   const openWindow = new BrowserWindow({
     width: 960,
     height: 540,
@@ -125,20 +124,21 @@ const createOpenWindow = () => {
   // and load the index.html of the app.
   openWindow.loadFile(path.join(__dirname, 'main/open.html'))
 
-  // wait until content is loaded to show
+  // wait until the content is loaded to show
   openWindow.on('ready-to-show', function(){
     openWindow.show()
   })
 
   // when open is selected, create a main window and send it the path
+  ipcMain.once('image-select', onopen)
   function onopen (event, arg) {
     console.log('image', arg, 'selected')
     loadmode = arg.type
     filepath = arg.path
-    createMainWindow()
+    spawnEditorWindow()
     openWindow.close()
   }
-  ipcMain.once('image-select', onopen)
+  // if the window closes, we dont want to handle the next message here
   openWindow.on('close', function(e){
     ipcMain.removeListener('image-select', onopen)
   })
@@ -172,11 +172,11 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createOpenWindow();
+    spawnFileSelectionWindow();
   }
 })
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createOpenWindow)
+app.on('ready', spawnFileSelectionWindow)

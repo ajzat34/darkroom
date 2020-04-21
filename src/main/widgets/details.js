@@ -20,7 +20,7 @@ module.exports = {
       step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
-    'Masking': {
+    'Sharpen/Denoise Masking Balance': {
       type: 'slider',
       minValue: -100,
       maxValue: 100,
@@ -40,7 +40,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 80,
+      value: 10,
       step: 0.1,
     },
     'Value Noise': {
@@ -54,7 +54,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 10,
+      value: 80,
       step: 0.1,
     },
     'Kernel': {
@@ -65,11 +65,11 @@ module.exports = {
       step: 2,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
-    'Noise Gamma': {
+    'Detection Strength': {
       type: 'slider',
       minValue: 0,
       maxValue: 300,
-      value: 100,
+      value: 200,
       step: 0.1,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
@@ -104,10 +104,7 @@ module.exports = {
           set('kernel-size', 'int', kernel)
           set('sharpen-weights', 'floatarray', gaussianNDist2D(kernel, stdev))
         },
-        "Masking": function(v, set) {
-          set('masking', 'float', v/1000)
-        },
-        "Noise Gamma": function(v, set) {
+        "Detection Strength": function(v, set) {
           set('noisegamma', 'float', 1/(v/100))
         },
         "Sharpen": function(v, set) {
@@ -145,7 +142,7 @@ module.exports = {
         'denoise': 'denoise',
       },
       knob_bindings: {
-        'Masking': function(v, set) {
+        'Sharpen/Denoise Masking Balance': function(v, set) {
           set('balance', 'float', v/1000)
         },
         'Sharpen': function(v, set) {

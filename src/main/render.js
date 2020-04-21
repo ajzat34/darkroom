@@ -17,7 +17,7 @@ var srcPackage
 // - creates the widget-ui elements
 // - creates the framebuffers
 // - loads the image
-// when done, loadTexture() will call eventImageLoad() to finish loading and show the window
+// when done loading the image, loadTexture() will call eventImageLoad() to finish preparing and show the window
 function prepare (gl) {
   // to render the image we use two texture-mapped triangles
   model = prepareModelBuffer(gl)

@@ -26,6 +26,7 @@ header {
   padding: 8px 10%;
   border-bottom-style: solid;
   border-bottom-width: 1px;
+  box-shadow: 0 0px 12px rgba(0,0,0, 0.1);
 }
 
 a {
@@ -121,6 +122,8 @@ section.full {
 }
 
 table.downloads {
+  margin-top: 8vh;
+  padding-top: 12px;
   min-width: 80%;
   max-width: 96%;
   border-collapse: separate;
@@ -138,7 +141,7 @@ table.downloads td {
 }
 
 div.col2  {
-  width: 80%;
+  width: 80vw;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -149,6 +152,7 @@ div.col2 div.col {
   width: 50%;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
 }
 
 div.col2 div.col div {
@@ -164,13 +168,36 @@ div.col2 div.col div span {
 div.col2 div.col div img {
   max-width: 40%;
   margin: 24px;
-  font-size: 12pt;
+  object-fit: contain;
+  object-position: top;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1)) drop-shadow(0 20px 24px rgba(0, 0, 0, 0.2)) drop-shadow(0 40px 32px rgba(0, 0, 0, 0.1));
 }
 
 .readme h3 {
   font-size: 28pt;
   font-weight: bold;
+}
+
+@media only screen and (max-width: 900px) {
+  section h1 {
+    font-size: 38pt;
+  }
+  section h2.big {
+    font-size: 38pt;
+  }
+  section h2 {
+    font-size: 18pt;
+  }
+  h3 {
+    font-size: 16px;
+  }
+  div.col2 div.col {
+    width: 100%;
+    font-size: 10px;
+  }
+  div.col2  {
+    width: 90%;
+  }
 }
 
 @media only screen and (max-width: 620px) {
@@ -209,6 +236,30 @@ div.col2 div.col div img {
     margin: 12px;
     font-size: 10pt;
     border-radius: 8px;
+  }
+
+  div.col2  {
+    width: 90%;
+    flex-direction: column;
+  }
+
+  h3 {
+    font-size: 16px;
+  }
+
+  div.col2 div.col {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  div.col2 div.col div img {
+    margin: 12px;
+    margin-right: 24px;
+    width: 200px;
+  }
+
+  body {
+
   }
 
 }

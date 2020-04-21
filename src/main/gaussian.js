@@ -1,18 +1,19 @@
 // functions for gaussian distributions and 2d arrays
 
+// calculate the area <x under the normal curve
 function normalcdf(x) {
   return 0.5 * (1 + erf(x));
 }
 
-function erf(x) {
-    // constants
-    var a1 =  0.254829592;
-    var a2 = -0.284496736;
-    var a3 =  1.421413741;
-    var a4 = -1.453152027;
-    var a5 =  1.061405429;
-    var p  =  0.3275911;
+// constants for erf
+var a1 =  0.254829592;
+var a2 = -0.284496736;
+var a3 =  1.421413741;
+var a4 = -1.453152027;
+var a5 =  1.061405429;
+var p  =  0.3275911;
 
+function erf(x) {
     // Save the sign of x
     var sign = 1;
     if (x < 0) {
@@ -31,6 +32,7 @@ function gaussian(x, stdev) {
   return normalcdf(x/stdev)
 }
 
+// get the area between two values on the normal curve
 function gaussianRange(a, b, stdev) {
 	var av = gaussian(a, stdev)
 	var bv = gaussian(b, stdev)
@@ -40,6 +42,7 @@ function gaussianRange(a, b, stdev) {
 	return av - bv
 }
 
+// gets the area under the normal curve inside a pixel
 function gaussianPixel (n, spread) {
 	return gaussianRange(n - 0.5, n + 0.5, spread)
 }
@@ -60,10 +63,12 @@ function gaussianNDist(n, spread) {
   return result
 }
 
+// gets the number of samples after the center sample
 function nFromKsize(n) {
   return ((n-1)/2)+1
 }
 
+// makes the sum of the array 1
 function normalizeArray(arr) {
   var sum = arr.reduce((accumulator, currentValue) => accumulator + currentValue)
   for (var i = 0; i < arr.length; i++) {
@@ -72,6 +77,7 @@ function normalizeArray(arr) {
   return arr
 }
 
+// create a gaussian 2d distribution
 function gaussianNDist2D(ksize, spread) {
   var n = nFromKsize(ksize)
   var gdist = gaussianNDist(n, spread)
@@ -91,45 +97,4 @@ function gaussianNDist2D(ksize, spread) {
     }
   }
   return normalizeArray(result)
-}
-
-function scale2dArray(arr, scale) {
-  for (var i = 0; i < arr.length; i++) {
-    arr[i] *= scale
-  }
-  return arr
-}
-
-function center2dArray(dist) {
-  return ((dist.length-1)/2)+1
-}
-
-function offset2dArray(small, large) {
-  return center2dArray(large) - center2dArray(small)
-}
-
-// writes sm to lg, sm is smaller, lg is larger
-// does modify lg
-function combine2dArray(lg, sm) {
-  var offset = offset2dArray(sm, lg)
-  console.log(offset)
-  for (i = offset; i<sm.length+offset; i++) {
-    lg[i] += sm[i-offset]
-  }
-  return lg
-}
-
-function kernalstack(arr, normalize) {
-  var current = arr.shift()
-  arr.forEach((next) => {
-    if (current.length > next.length) {
-      current = combine2dArray(current, next)
-    } else {
-      current = combine2dArray(next, current)
-    }
-  })
-  if (normalize) {
-    return normalizeArray(current)
-  }
-  return current
 }

@@ -1,6 +1,4 @@
-var sliderDark = 'rgba(120, 120, 120, 1)'
-var sliderLight = 'rgba(255,255,255,1)'
-
+// creates a linear 256 value lut
 function cleanLut256() {
   var lut = []
   for (var i = 0; i<256; i++){
@@ -9,6 +7,7 @@ function cleanLut256() {
   return lut
 }
 
+// runs a callback on each value of a lut
 function map(lut, callback) {
   var result = []
   for (var i = 0; i<256; i++){
@@ -17,6 +16,7 @@ function map(lut, callback) {
   return result
 }
 
+// does the usualy adjustments to a lut
 function filter(lut, gamma, brightness, contrast, blacks, whites) {
   var c
   return map(lut, function(n){
@@ -28,12 +28,14 @@ function filter(lut, gamma, brightness, contrast, blacks, whites) {
   })
 }
 
+// lookup one lut against another, effectivly combines two luts
 function lutLookup(lut, filter) {
   return map(lut, function(n){
     return filter.get(n)
   })
 }
 
+// genorate a lut texture
 function makeLutImage(gamma, brightness, contrast, whites, blacks, tabs) {
   var base = lutLookup(filter(cleanLut256(), gamma, brightness, contrast, whites, blacks), tabs.Luma)
   let image = new Uint8Array(4 * 256)
@@ -46,9 +48,13 @@ function makeLutImage(gamma, brightness, contrast, whites, blacks, tabs) {
   return image
 }
 
+// calculates the index of a red pixel
 function getIndex(x, y, width) {
   return y * (width * 4) + x * 4
 }
+
+var sliderDark = 'rgba(120, 120, 120, 1)'
+var sliderLight = 'rgba(255,255,255,1)'
 
 module.exports = {
   name: 'Adjustments',
@@ -169,8 +175,29 @@ module.exports = {
       },
       textures: ['lut'],
       knob_bindings: {
-        'Gamma':  function(v, set) {
-          set('gamma', 'float', v)
+        'Curves': function(v, set, k) {
+          // get the values from other sliders
+          var gamma =  k['Gamma'].value
+          var brightness = k['Brightness'].value/100
+          var contrast = k['Contrast'].value
+          var blacks = k['Blacks'].value
+          var whites = k['Whites'].value
+          // negetive contrast, blacks and whites values must be mapped to a fraction
+          if (contrast >= 0)  contrast = 1+(contrast/100)
+          else                contrast = (100+contrast)/100
+
+          if (blacks >= 0)  blacks = 1-(blacks/100)
+          else              blacks = (100-blacks)/100
+
+          if (whites >= 0)  whites = 1+(whites/100)
+          else              whites = (100+whites)/100
+
+          // upload the lut
+          set('lut', 'texture', {
+            width: 256,
+            height: 1,
+            data: makeLutImage(gamma, brightness, contrast, blacks, whites, v),
+          })
         },
         'Saturation':  function(v, set) {
             if (v >= 0){
@@ -185,33 +212,6 @@ module.exports = {
         'Hue':  function(v, set) {
           set('hue', 'float', v/1000)
         },
-        'Curves': function(v, set, k) {
-          var gamma =  k['Gamma'].value
-          var brightness = k['Brightness'].value/100
-          var contrast = k['Contrast'].value
-          if (contrast >= 0){
-            contrast = 1+(contrast/100)
-          } else {
-            contrast = (100+contrast)/100
-          }
-          var blacks = k['Blacks'].value
-          if (blacks >= 0){
-            blacks = 1-(blacks/100)
-          } else {
-            blacks = (100-blacks)/100
-          }
-          var whites = k['Whites'].value
-          if (whites >= 0){
-            whites = 1+(whites/100)
-          } else {
-            whites = (100+whites)/100
-          }
-          set('lut', 'texture', {
-            width: 256,
-            height: 1,
-            data: makeLutImage(gamma, brightness, contrast, blacks, whites, v),
-          })
-        }
       },
       inputs: ['in'],
       inputBindings: ['texSampler', 'lut'],
