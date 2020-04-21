@@ -43,7 +43,6 @@ function prepare (gl) {
   }
   document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
   console.log('image', resp)
-  console.log('image', resp)
   if (resp.type === 'image') {
     // if we are loading an image, pass it to loadTexture directly as a base64 string
     imagePath = resp.path
