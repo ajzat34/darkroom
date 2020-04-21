@@ -24,6 +24,10 @@ function createBundle (activeWidgets, widgetData, imageFormat, imageB64) {
 // loads a bundle into the objects passed into it and the global state
 function loadPackage (pkg, srcpath) {
   // TODO: add version checking
+  if (!FORMAT.compatable.includes(pkg.version)) {
+    alert('The file you are trying to load is not compatable with this version of darkroom')
+    throw new Error('incompatable file version ' + pkg.versoin)
+  }
   try {
     loadSaveState(pkg.saveState)
   } catch(err) {
