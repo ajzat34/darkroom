@@ -24,7 +24,7 @@ function prepare (gl) {
   loadWidgets(gl)
 
   // ask the main process for the image path
-  var resp = remote.getGlobal('activeFile')
+  var resp = ipcRenderer.sendSync('request-active-file')
   imagePath = resp.filepath
   console.log(resp)
   var fileName = resp.filepath.split('/')

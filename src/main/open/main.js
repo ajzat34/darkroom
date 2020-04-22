@@ -7,7 +7,13 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("open-btn").addEventListener("click", async function(e) {
     var file = await dialog.showOpenDialog({
       title: 'Select an Image',
-      properties: ['openFile']
+      properties: ['openFile'],
+      filters: [
+        // TODO: fix tiff! for some reason mac cannot select tiff with filter
+        // { name: 'Joint Photographic Experts Group', extensions: ['jpg', 'jpeg'] },
+        // { name: 'Portable Network Graphics', extensions: ['png'] },
+        // { name: 'Graphic Interchange Format', extensions: ['gif'] },
+      ]
     })
     if (file.canceled) {
       return

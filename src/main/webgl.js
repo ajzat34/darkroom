@@ -194,9 +194,6 @@ function donwloadFramebuffer(gl, framebuffer) {
 function framebufferToBlob(gl, format, framebuffer, opt) {
   var p = new Promise(function(resolve, reject){
     var data = donwloadFramebuffer(gl, framebuffer)
-    // var imgData = new ImageData(framebuffer.width, framebuffer.height)
-    // imgData.data = data
-    console.log(data)
     var canvas = document.createElement("canvas")
     canvas.width = framebuffer.width
     canvas.height = framebuffer.height
@@ -215,6 +212,8 @@ function framebufferToBlob(gl, format, framebuffer, opt) {
       } else {
         canvas.toBlob(callback, "image/jpeg")
       }
+    } else if (format === "TIFF") {
+      CanvasToTIFF.toBlob(canvas, callback)
     }
   })
   return p

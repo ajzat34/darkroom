@@ -121,32 +121,32 @@ async function autosave(callback) {
 // TODO: add format selection dialog
 async function exportProject(){
   // exportImage('JPEG', {quality: 1.0})
-  exportImage()
+  var settings = ipcRenderer.sendSync('create-child', {path: 'dialog/export.html'})
+  if (settings.window.closed) {
+    return
+  }
+  exportImage(settings.window.format, settings.window.quality)
 }
 
 // export with write file
-async function exportImage() {
+async function exportImage(format, quality) {
   var path
   var format
+  var filters = []
+  if (format === "JPEG") filters.push({ name: 'JPEG', extensions: ['jpg', 'jpeg'] })
+  if (format === "PNG") filters.push({ name: 'PNG', extensions: ['png'] })
+  if (format === "TIFF") filters.push({ name: 'TIFF', extensions: ['tiff'] })
   var file = await dialog.showSaveDialog({
     title: 'Export Image',
     properties: ['createDirectory', 'showOverwriteConfirmation'],
-    filters: [
-      { name: 'JPEG', extensions: ['jpg'] },
-      { name: 'PNG', extensions: ['png'] },
-    ]
+    filters: filters,
   })
   if (file.canceled) {
     return
   } else {
     path = file.filePath
   }
-  var ext = path.split('.')
-  ext = ext[ext.length-1]
-  if (ext === 'png') format = "JPEG"
-  else if (ext === 'jpg') format = "PNG"
-  console.log('exporing to', path, 'format', format)
-  var blob = await framebufferToBlob(pgl, format, framebuffers.final, {})
+  var blob = await framebufferToBlob(pgl, format, framebuffers.final, {quality: quality})
   var reader = new FileReader()
   reader.onload = function(){
       var buffer = new Buffer(reader.result)

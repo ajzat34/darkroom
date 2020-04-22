@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="dialog.css">
+    <title>Export Setings</title>
+
+  </head>
+  <body>
+
+    <div class="tabs">
+      <button class="tablink active" onclick="openTab(event, 'jpeg')">JPEG</button>
+      <button class="tablink" onclick="openTab(event, 'png')">PNG</button>
+      <button class="tablink" onclick="openTab(event, 'tiff')">TIFF</button>
+    </div>
+
+    <div class="main" id="jpeg">
+      <div>
+        <div>Export a JPEG file for photographs and detailed images. Opens in most web browsers and applications.</div>
+        <div>
+          <span>Quality: </span><input type="number" min="0" max="100" value="80" class="numberin" step="1" id="jpegq" name="jpegq">
+        </div>
+      </div>
+      <div class="buttons">
+        <button type="button" name="accept" onClick="jpeg()">Accept</button>
+        <button type="button" name="cancel" onClick="exit()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="main" id="png" style="display: none;">
+      <div>
+        <span>Export a PNG file for design and images. Opens in most web browsers and applications.</span>
+      </div>
+      <div class="buttons">
+        <button type="button" name="accept" onClick="png()">Accept</button>
+        <button type="button" name="cancel" onClick="exit()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="main" id="tiff" style="display: none;">
+      <div>
+        <span>Export a TIFF file for design and images. Opens in photo editors. Expect Large Files.</span>
+      </div>
+      <div class="buttons">
+        <button type="button" name="accept" onClick="tiff()">Accept</button>
+        <button type="button" name="cancel" onClick="exit()">Cancel</button>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      const { ipcRenderer } = require('electron')
+      function openTab(evt, name) {
+        var i, tabcontent, tablinks;
+        // Get all elements with class="main" and hide them
+        tabcontent = document.getElementsByClassName("main");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(name).style.display = "flex";
+        evt.currentTarget.className += " active";
+      }
+    </script>
+
+    <script type="text/javascript">
+
+      function exit() {
+        ipcRenderer.send('child-exit-data', {closed: true})
+      }
+
+      function jpeg() {
+        ipcRenderer.send('child-exit-data', {closed: false, format: 'JPEG', quality: document.getElementById('jpegq').value/100})
+      }
+
+      function png() {
+        ipcRenderer.send('child-exit-data', {closed: false, format: 'PNG'})
+      }
+
+      function tiff() {
+        ipcRenderer.send('child-exit-data', {closed: false, format: 'TIFF'})
+      }
+    </script>
+
+    <script type="text/javascript">
+
+    </script>
+
+  </body>
+</html>

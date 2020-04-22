@@ -7,9 +7,6 @@ const path = require('path');
 // windows packager things
 if (require('electron-squirrel-startup')) return;
 
-// for window ids
-var idCounter = 0
-
 // macOS acts differently, this is will make it easier to tell if
 // we are running on macOS later
 var isDarwin = false
@@ -45,7 +42,7 @@ function spawnLoadWindow () {
 }
 
 // creates the main editor window
-const spawnEditorWindow = () => {
+const spawnEditorWindow = (loadmode, filepath) => {
   // create the loading window
   const loadWindow = spawnLoadWindow ()
 
@@ -98,6 +95,34 @@ const spawnEditorWindow = () => {
      }
   })
 
+  ipcMain.on('request-active-file', (event, arg) => {
+    if (event.sender === mainWindow.webContents) {
+      event.returnValue = {
+        loadmode: loadmode,
+        filepath: filepath,
+      }
+    }
+  })
+
+  ipcMain.on('create-child', async function (event, arg) {
+    if (event.sender === mainWindow.webContents) {
+      console.log('window requested child window')
+      try {
+        if (!arg || !arg.path) throw new Error('no path specified')
+        resultData = await childWindow(mainWindow, arg),
+        event.returnValue = {
+          error: false,
+          window: resultData,
+        }
+      } catch (err) {
+        console.error(err)
+        event.returnValue = {
+          error: err.toString()
+        }
+      }
+    }
+  })
+
   return mainWindow
 }
 
@@ -130,17 +155,57 @@ const spawnFileSelectionWindow = () => {
   // when open is selected, create a main window and send it the path
   ipcMain.once('image-select', onopen)
   function onopen (event, arg) {
-    global.nextWindowId = idCounter
-    global.activeFile = {
-      loadmode: arg.type,
-      filepath: arg.path,
-    }
-    spawnEditorWindow()
+    spawnEditorWindow(arg.type, arg.path)
     openWindow.close()
   }
   // if the window closes, we dont want to handle the next message here
   openWindow.on('close', function(e){
     ipcMain.removeListener('image-select', onopen)
+  })
+}
+
+function childWindow(parent, opt) {
+  return new Promise(function(resolve, reject) {
+
+    let child = new BrowserWindow({
+      parent: parent,
+      width: 512,
+      height: 200,
+      resizable: false,
+      webPreferences: {
+        nodeIntegration: true,
+      },
+    })
+
+    var done = false
+
+    function finish (arg) {
+      if (!done) {
+        done = true
+        resolve(arg)
+      }
+    }
+
+    var dataListener = function (event, arg) {
+      try {
+        if (event.sender === child.webContents) {
+          finish(arg)
+          child.close()
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    ipcMain.on('child-exit-data', dataListener)
+
+    child.on('close', function(e){
+      ipcMain.removeListener('child-exit-data', dataListener)
+      finish({closed: true})
+    })
+
+    child.loadFile(path.join(__dirname, opt.path))
+
+    console.log('created child window')
   })
 }
 
