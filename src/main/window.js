@@ -43,6 +43,27 @@ var normalscroll = false
 // holds to global state of all adjustments (widget knobs)
 var widgetState = {}
 
+// autosave and undo history
+var undoHistory = [] // holds the undo history
+var historyTimer     // timer to batch change events
+var historySize = 64 // how many undo steps are held
+var lastSave = null  // holds a reference to the last saved undo history state
+var stagingState     // holds the current state to be written to histroy opon a change to the project
+
+// webgl objects
+var model             // holds the webgl object for the model
+var copyprogram       // webgl shader program for
+var widgets = {}      // holds the widget descriptors
+var widgetOrder = ['adjustments', 'details'] // order to apply widgets
+var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
+var sourceImage       // texture with the source image
+
+// image loading
+var imageB64          // base64 encoded copy of the original image
+var imageFormat       // what format (png, jpeg) was the original image in
+var imagePath         // where was the loaded image located
+var srcPackage        // holds a copy of the loaded dkg/dkr if one was loaded
+
 function resize () {
   var width = window.innerWidth - optionsSize
   var height = window.innerHeight - toolbarSize
@@ -63,7 +84,7 @@ async function eventImageLoad (image) {
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
   // shedule the first render
-  scheduleRender(pgl)
+  scheduleRender()
   // wait for first render to finish
   await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
   // wait for the paint then tell the main process to show this window
@@ -76,6 +97,10 @@ async function eventImageLoad (image) {
   if (srcPackage) {
     loadPackage(srcPackage, imagePath)
   }
+
+  // create the initial history snapshot
+  createHistorySnapshot()
+
   // start the render loop
   updateCycle()
   updateCanvasCycle()
@@ -237,9 +262,9 @@ function scheduleRender() { renderRequest = true }
 function scheduleUpdate() { updateRequest = true }
 
 // TODO: add history
-function projectChange() {
+function projectChange(fromUndo) {
   scheduleRender()
-  saveButtonWarning()
+  historyEventProjectChanged(fromUndo)
 }
 
 // helper functinos for calculating scrolling

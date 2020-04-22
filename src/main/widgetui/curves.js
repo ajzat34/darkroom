@@ -128,7 +128,6 @@ function createWidgetUiKnobCurves (name, base) {
 
   knob.morphTo = function(data) {
     knob.tabs.forEach((tab, i) => {
-      console.log('mophing', tab, 'to', data.value[tab.title])
       tab.createFrom(data.value[tab.title])
     })
     updateCurveCanvas(knob)

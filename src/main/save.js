@@ -34,7 +34,7 @@ function loadPackage (pkg, srcpath) {
     alert('Error loading state data, the file you are attempting to load may be corrupted. \n\n' + err.toString())
   }
   projectPath = srcpath
-  saveButtonSuccess()
+  stateSaved()
 }
 
 // helper function for writing files
@@ -62,7 +62,7 @@ async function saveProject() {
         detail: err.toString(),
       });
     } else {
-      saveButtonSuccess()
+      historyEventSaved()
     }
   })
 }
@@ -112,26 +112,4 @@ async function exportImage (format, opt) {
   setTimeout(function () { URL.revokeObjectURL(a.href) }, 4E4)
   // "click" the button immediately
   setTimeout(function () { a.click() }, 0)
-}
-
-// changing the save buttons colors
-function clearSaveButtonColor() {
-  savebutton.classList.remove('background-success')
-  savebutton.classList.remove('background-warning')
-  savebutton.classList.remove('background-danger')
-}
-
-function saveButtonSuccess() {
-  clearSaveButtonColor()
-  savebutton.classList.add('background-success')
-}
-
-function saveButtonWarning() {
-  clearSaveButtonColor()
-  savebutton.classList.add('background-warning')
-}
-
-function saveButtonDanger() {
-  clearSaveButtonColor()
-  savebutton.classList.add('background-danger')
 }

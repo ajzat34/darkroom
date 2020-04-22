@@ -1,15 +1,3 @@
-var model
-var copyprogram
-var widgets = {}
-var widgetOrder = ['adjustments', 'details']
-var framebuffers = {}
-var sourceImage
-var lastrender
-var imageB64
-var imageFormat
-var imagePath
-var srcPackage
-
 // does most of the webgl/widget setup
 // - loads model
 // - loads shaders

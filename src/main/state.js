@@ -16,11 +16,14 @@ function createWidgetUIs() {
     widgetState[widgetname] = {}
     console.log('made widget', widgetname)
     // callback to update widget data
-    wui.onchange = function(data) {
+    wui.ondata = function(data) {
       widgetState[widgetname] = data
-      projectChange()
     }
-    wui.triggerUpdate()
+    // callback only for when the user changes the data
+    wui.onchange = function() {
+      setTimeout(projectChange, 0)
+    }
+    wui.getData()
     widgetUiElements[widgetname] = wui
   })
 }
@@ -45,18 +48,38 @@ function genSaveState(activeWidgets, widgetData) {
     return result
 }
 
+// wrapper for genSaveState
+function newSaveState() {
+  return genSaveState(widgetOrder, widgetState)
+}
+
 // gets the storage version of a knob (no extra data, no methods)
 function getStoreValue(data) {
   if (data.valueType == "value") return data.value
   else if (data.valueType == "curves") return getCurvesData(data.value)
 }
 
-function loadSaveState(data) {
-  widgetOrder = data.activeWidgets
-  createWidgetUIs()
-  triggerRecreateFrameBuffers(pgl)
+function loadSaveState(data, fromUndo) {
+  if (!arraysEqual(widgetOrder, data.activeWidgets)) {
+    console.log('new widget order != to new one, remaking widgetUi elements, and framebuffer resources')
+    widgetOrder = data.activeWidgets
+    createWidgetUIs()
+    triggerRecreateFrameBuffers(pgl)
+  }
   console.log('data', data.data)
   Object.keys(data.data).forEach((widgetname) => {
-    widgetUiElements[widgetname].morphTo(data.data[widgetname])
+    widgetUiElements[widgetname].morphTo(data.data[widgetname], fromUndo)
   })
+  projectChange(fromUndo)
+}
+
+// helper function
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }

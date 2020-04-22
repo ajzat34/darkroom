@@ -2,9 +2,10 @@ function createWidgetUi (parent, from) {
   var r = {}
   r.partent = parent
   r.knobs = []
-  r.onchange = function(){}
+  r.onchange = function(){console.log('onchange callback unset', r)}
+  r.ondata = function(){console.log('ondata callback unset', r)}
 
-  function update() {
+  function sendData() {
     var data = {}
     Object.keys(r.knobs).forEach((knobname, i) => {
       var knob = r.knobs[knobname]
@@ -12,10 +13,16 @@ function createWidgetUi (parent, from) {
       data[knob.name].valueType = knob.widgetUiValueType
       data[knob.name].value = knob.widgetUiValue
     });
-    r.onchange(data)
+    r.ondata(data)
   }
-  r.triggerUpdate = function(){
-    update()
+
+  function update() {
+    sendData()
+    r.onchange()
+  }
+
+  r.getData = function(){
+    sendData()
   }
 
   var node = document.createElement("div")
@@ -68,9 +75,9 @@ function createWidgetUi (parent, from) {
     node.remove()
   }
 
-  r.morphTo = function(data) {
+  r.morphTo = function(data, fromUndo) {
     morphWidget(r, data)
-    update()
+    sendData()
   }
 
   return r
