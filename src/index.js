@@ -81,7 +81,22 @@ const spawnEditorWindow = (loadmode, filepath) => {
   // and we never recive the signal to show it
   var closetimeout = setTimeout(swapwindows, 8000)
 
-  // when the window is closed, prompt to confirm
+  function activeFileListener (event, arg) {
+    try {
+      if (event.sender === mainWindow.webContents) {
+        event.returnValue = {
+          loadmode: loadmode,
+          filepath: filepath,
+        }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  ipcMain.on('request-active-file', activeFileListener)
+
+  // when the window is closed, prompt to confirm and remove listeners
   mainWindow.on('close', function(e){
     console.log('main window is closing... interupting to confirm this action...')
     var choice = dialog.showMessageBoxSync({
@@ -92,16 +107,9 @@ const spawnEditorWindow = (loadmode, filepath) => {
      })
      if (choice == 1) {
        e.preventDefault();
+     } else {
+       ipcMain.removeListener('request-active-file', activeFileListener)
      }
-  })
-
-  ipcMain.on('request-active-file', (event, arg) => {
-    if (event.sender === mainWindow.webContents) {
-      event.returnValue = {
-        loadmode: loadmode,
-        filepath: filepath,
-      }
-    }
   })
 
   ipcMain.on('create-child', async function (event, arg) {
