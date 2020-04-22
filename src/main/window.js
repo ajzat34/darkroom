@@ -44,11 +44,9 @@ var normalscroll = false
 var widgetState = {}
 
 // autosave and undo history
-var undoHistory = [] // holds the undo history
-var historyTimer     // timer to batch change events
-var historySize = 64 // how many undo steps are held
-var lastSave = null  // holds a reference to the last saved undo history state
-var stagingState     // holds the current state to be written to histroy opon a change to the project
+var undoHistory = new UndoHistory(32) // holds the undo history
+var historyTimer                      // timer to batch change events
+var autosaveTimer                     // same as above, but for autosave
 
 // webgl objects
 var model             // holds the webgl object for the model
@@ -168,7 +166,7 @@ function setupButtonEvents() {
 }
 
 function gatherWindowData () {
-  envdata = ipcRenderer.sendSync('request-environment-data')
+  envdata = remote.getGlobal('envdata')
 }
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -201,6 +199,12 @@ document.addEventListener("DOMContentLoaded", function(){
   resize()
   // and an eventlistener for resizing
   window.addEventListener('resize', resize)
+
+  // listen for ipc for menu items
+  ipcRenderer.on('undo', undo)
+  ipcRenderer.on('redo', redo)
+  ipcRenderer.on('save', saveProject)
+  ipcRenderer.on('save-as', saveProjectAs)
 
   setupButtonEvents()
 })

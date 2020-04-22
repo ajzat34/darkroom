@@ -66,8 +66,8 @@ function loadSaveState(data, fromUndo) {
     createWidgetUIs()
     triggerRecreateFrameBuffers(pgl)
   }
-  console.log('data', data.data)
   Object.keys(data.data).forEach((widgetname) => {
+    console.log('morphing widget', widgetname)
     widgetUiElements[widgetname].morphTo(data.data[widgetname], fromUndo)
   })
   projectChange(fromUndo)

@@ -13,7 +13,6 @@ function createBundle (activeWidgets, widgetData, imageFormat, imageB64) {
   var result = {}
   result.version = FORMAT.version
   result.saveState = genSaveState(activeWidgets, widgetState)
-  console.log(result.saveState)
   result.image = {
     format: imageFormat,
     data: imageB64,
@@ -81,8 +80,41 @@ async function saveProjectAs() {
   } else {
     projectPath = file.filePath
   }
-  console.log('saving to', projectPath)
   saveProject()
+}
+
+async function requestAutosave(callback) {
+  clearTimeout(autosaveTimer)
+  autosaveTimer = setTimeout(function(){autosave(callback)}, 1000)
+}
+
+async function autosave(callback) {
+
+  // if there is no path already chosen, give up
+  if (projectPath === null) {
+    return
+  }
+
+  // wait for idle before autosaving
+  requestIdleCallback(function(){
+    console.log('autosaving to', projectPath)
+    saveBundle(projectPath, createBundle(widgetOrder, widgets, imageFormat, imageB64), function(err){
+      if (err) {
+        saveButtonDanger()
+        dialog.showMessageBoxSync(this, {
+          type: 'error',
+          buttons: ['Yes', 'No'],
+          title: 'Confirm',
+          message: 'Saving Failed!',
+          detail: err.toString(),
+        });
+      } else {
+        historyEventSaved()
+        callback()
+      }
+    })
+  }, { timeout: 5000 })
+
 }
 
 // exporting

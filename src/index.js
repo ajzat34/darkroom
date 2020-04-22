@@ -1,11 +1,14 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const path = require('path');
 
 // windows packager things
 if (require('electron-squirrel-startup')) return;
+
+// for window ids
+var idCounter = 0
 
 // macOS acts differently, this is will make it easier to tell if
 // we are running on macOS later
@@ -13,11 +16,6 @@ var isDarwin = false
 if (process.platform === 'darwin') {
   isDarwin = true
 }
-
-// the path of the current open file
-var filepath
-// is it a image, or darkroom file
-var loadmode
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -132,9 +130,11 @@ const spawnFileSelectionWindow = () => {
   // when open is selected, create a main window and send it the path
   ipcMain.once('image-select', onopen)
   function onopen (event, arg) {
-    console.log('image', arg, 'selected')
-    loadmode = arg.type
-    filepath = arg.path
+    global.nextWindowId = idCounter
+    global.activeFile = {
+      loadmode: arg.type,
+      filepath: arg.path,
+    }
     spawnEditorWindow()
     openWindow.close()
   }
@@ -144,20 +144,58 @@ const spawnFileSelectionWindow = () => {
   })
 }
 
-// when the window requests a file to open, give it the last selected file
-ipcMain.on('request-file-info', (event, arg) => {
-  event.returnValue = {
-    type: loadmode,
-    path: filepath,
-  }
-})
+// set the application menu
+Menu.setApplicationMenu(Menu.buildFromTemplate([
+  {
+    label: 'Menu',
+    submenu: [
+      { role: 'about' },
+      { type: 'separator' },
+      { role: 'quit' }
+    ]
+  },
 
-// when the window requests environment data, send it
-ipcMain.on('request-environment-data', (event, arg) => {
-  event.returnValue = {
-    darwin: isDarwin,
-  }
-})
+  {
+    label: 'File',
+    submenu: [
+      { label:'Open', click(menuItem, focusedWin) { spawnFileSelectionWindow() }, accelerator: 'CommandOrControl+o'},
+      { type: 'separator' },
+      { label:'Save', click(menuItem, focusedWin) { focusedWin.webContents.send('save') }, accelerator: 'CommandOrControl+s'},
+      { label:'Save As', click(menuItem, focusedWin) { focusedWin.webContents.send('save-as') }, accelerator: 'CommandOrControl+Shift+s'}
+    ]
+  },
+
+  {
+    label: 'Edit',
+    submenu: [
+      { label:'Undo', click(menuItem, focusedWin) { focusedWin.webContents.send('undo') }, accelerator: 'CommandOrControl+z'},
+      { label:'Redo', click(menuItem, focusedWin) { focusedWin.webContents.send('redo') }, accelerator: 'CommandOrControl+y'}
+    ]
+  },
+
+  {
+    label: 'View',
+    submenu: [
+      { role: 'togglefullscreen' },
+    ]
+  },
+
+  {
+    label: 'Window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'zoom' },
+      { role: 'close' },
+      { type: 'separator' },
+      { label:'Reload', click(menuItem, focusedWin) { focusedWin.webContents.reload() }, accelerator: 'CommandOrControl+shift+r'},
+      { label:'Open Dev Tools', click(menuItem, focusedWin) { focusedWin.webContents.openDevTools() }, accelerator: 'CommandOrControl+Option+i'},
+    ]
+  },
+]))
+
+global.envdata = {
+  darwin: isDarwin,
+}
 
 // Quit when all windows are closed (non-mac).
 app.on('window-all-closed', () => {

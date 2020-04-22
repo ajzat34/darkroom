@@ -85,7 +85,6 @@ function createWidgetUi (parent, from) {
 
 function morphWidget(widget, data) {
   Object.keys(widget.knobs).forEach((knobname, i) => {
-    console.log('mophing knob', knobname)
     widget.knobs[knobname].morphTo(data[knobname])
   })
 }

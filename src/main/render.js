@@ -24,23 +24,23 @@ function prepare (gl) {
   loadWidgets(gl)
 
   // ask the main process for the image path
-  var resp = ipcRenderer.sendSync('request-file-info')
-  var fileName = resp.path.split('/')
+  var resp = remote.getGlobal('activeFile')
+  imagePath = resp.filepath
+  console.log(resp)
+  var fileName = resp.filepath.split('/')
   if (fileName.length === 1) {
-    fileName = resp.path.split("\\")
+    fileName = resp.filepath.split("\\")
   }
   document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
   console.log('image', resp)
-  if (resp.type === 'image') {
+  if (resp.loadmode === 'image') {
     // if we are loading an image, pass it to loadTexture directly as a base64 string
-    imagePath = resp.path
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
     imageFormat = imageFormat[imageFormat.length-1]
     sourceImage = loadTexture(gl, imageFormat, imageB64)
   } else if (resp.type === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
-    imagePath = resp.path
     srcPackage = JSON.parse(fs.readFileSync(resp.path))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
