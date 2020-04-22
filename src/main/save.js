@@ -120,28 +120,44 @@ async function autosave(callback) {
 // exporting
 // TODO: add format selection dialog
 async function exportProject(){
-  exportImage('JPEG', {quality: 1.0})
+  // exportImage('JPEG', {quality: 1.0})
+  exportImage()
 }
 
-// exports the result texture to file
-// TODO: try to use election dialog for saving
-async function exportImage (format, opt) {
-  // create an anchor to download from
-  var a = document.createElement('a')
-  // TODO: figure out why the extension dissapers on windows
-  if (format === "PNG"){
-    a.download = 'image.png'
-  } else if (format === "JPEG"){
-    a.download = 'image.jpeg'
+// export with write file
+async function exportImage() {
+  var path
+  var format
+  var file = await dialog.showSaveDialog({
+    title: 'Export Image',
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+    filters: [
+      { name: 'JPEG', extensions: ['jpg'] },
+      { name: 'PNG', extensions: ['png'] },
+    ]
+  })
+  if (file.canceled) {
+    return
   } else {
-    throw new Error('unknown format ' + format)
+    path = file.filePath
   }
-  // get the final render framebuffer as a blob
-  var blob = await framebufferToBlob(pgl, format, framebuffers.final, opt)
-  // attach it to the anchor
-  a.href = URL.createObjectURL(blob)
-  // set a timeout to revoke the url
-  setTimeout(function () { URL.revokeObjectURL(a.href) }, 4E4)
-  // "click" the button immediately
-  setTimeout(function () { a.click() }, 0)
+  var ext = path.split('.')
+  ext = ext[ext.length-1]
+  if (ext === 'png') format = "JPEG"
+  else if (ext === 'jpg') format = "PNG"
+  console.log('exporing to', path, 'format', format)
+  var blob = await framebufferToBlob(pgl, format, framebuffers.final, {})
+  var reader = new FileReader()
+  reader.onload = function(){
+      var buffer = new Buffer(reader.result)
+      fs.writeFile(path, buffer, {}, (err, res) => {
+          if(err){
+              alert('exporting failed! \n\n' + err.toString())
+              console.error(err)
+              return
+          }
+          console.log('exported')
+      })
+  }
+  reader.readAsArrayBuffer(blob)
 }
