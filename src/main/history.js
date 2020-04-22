@@ -1,7 +1,4 @@
-// create a rolling queue type that has fixed indexes, and removes old versions
-// then compare indexes for versioning, and combine undo and redo queues
-// dont forget to wipe redo queue on changes
-
+// rolling undo and redo stacks
 class UndoHistory {
   constructor (size) {
     this.keepsize = size
@@ -10,11 +7,11 @@ class UndoHistory {
     this.data = []
     console.log(this)
   }
-
+  // upates the save pointer
   save () {
     this.savePtr = this.currentPtr
   }
-
+  // true the current step is on the saved step
   isOnSave () {
     return this.savePtr === this.currentPtr
   }
