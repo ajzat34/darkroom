@@ -39,9 +39,9 @@ function prepare (gl) {
     imageFormat = imagePath.split('.')
     imageFormat = imageFormat[imageFormat.length-1]
     sourceImage = loadTexture(gl, imageFormat, imageB64)
-  } else if (resp.type === 'project') {
+  } else if (resp.loadmode === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
-    srcPackage = JSON.parse(fs.readFileSync(resp.path))
+    srcPackage = JSON.parse(fs.readFileSync(imagePath))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
     sourceImage = loadTexture(gl, imageFormat, imageB64)

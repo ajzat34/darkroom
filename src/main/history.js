@@ -131,7 +131,7 @@ function stateSaved() {
 }
 
 function stateUnsaved() {
-  saveButtonWarning()
+  clearSaveButtonColor()
 }
 
 // changing the save buttons colors

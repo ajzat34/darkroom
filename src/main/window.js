@@ -81,16 +81,7 @@ async function eventImageLoad (image) {
   sourceImageWidth = image.width
   sourceImageHeight = image.height
   triggerRecreateFrameBuffers(pgl)
-  // shedule the first render
-  scheduleRender()
-  // wait for first render to finish
-  await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
-  // wait for the paint then tell the main process to show this window
-  window.requestAnimationFrame(function(){
-    setTimeout(function(){
-      ipcRenderer.send('mainwindow-loaded')
-    }, 200)
-  })
+
   // load the saved state
   if (srcPackage) {
     loadPackage(srcPackage, imagePath)
@@ -102,6 +93,19 @@ async function eventImageLoad (image) {
   // start the render loop
   updateCycle()
   updateCanvasCycle()
+
+  // shedule the first render
+  scheduleRender()
+
+  // wait for first render to finish
+  await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 5)
+
+  // wait for the paint then tell the main process to show this window
+  window.requestAnimationFrame(function(){
+    setTimeout(function(){
+      ipcRenderer.send('mainwindow-loaded')
+    }, 200)
+  })
 }
 
 // callback for canvas event mousemove
