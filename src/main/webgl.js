@@ -1,4 +1,4 @@
-// gets the webgl2 renderign context from a canvas
+// gets the webgl2 rendering context from a canvas
 function getWebGL (canvas) {
   var gl = canvas.getContext("webgl2")
   if (gl && gl instanceof WebGL2RenderingContext) {
@@ -131,48 +131,90 @@ function loadTextureData(gl, texture, width, height, data, alignment) {
   const border = 0;
   const srcFormat = gl.RGBA;
   const srcType = gl.UNSIGNED_BYTE;
-  if (alignment) {
-    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4)
-  }
+  if (alignment) gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment)
   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 width, height, border, srcFormat, srcType,
                 data)
 }
 
-// Initialize a texture and load an image.
-// When the image finished loading copy it into the texture.
-function loadTexture(gl, imageFormat, imageData) {
-  const texture = gl.createTexture();
+function loadTextureDataFormat(gl, texture, internalFormat, srcFormat, width, height, data, offset, alignment) {
   gl.bindTexture(gl.TEXTURE_2D, texture);
   const level = 0;
-  const internalFormat = gl.RGBA;
-  const width = 1;
-  const height = 1;
   const border = 0;
-  const srcFormat = gl.RGBA;
   const srcType = gl.UNSIGNED_BYTE;
+  if (alignment) gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment)
   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 width, height, border, srcFormat, srcType,
+                data, offset)
+}
+
+// Initialize a texture and load an image.
+// When the image finished loading copy it into the texture.
+function loadTexture(gl, internalFormat, srcFormat, imageFormat, imageData, callback, filter) {
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  const srcType = gl.UNSIGNED_BYTE;
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat,
+                1, 1, 0, srcFormat, srcType,
                 new Uint8Array([0, 0, 0, 0]));
 
-  const image = new Image();
-  image.onload = function() {
+  loadImageBase64(imageFormat, imageData, function(image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    eventImageLoad(image)
-  };
-  image.src = `data:image/${imageFormat};base64,` + imageData;
+    gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, image);
+    if (callback) callback(image)
+  })
 
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  if (filter) {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter)
+  } else {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  }
+
+  return texture;
+}
+
+function loadTexturePath(gl, internalFormat, srcFormat, path, callback, filter){
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  const srcType = gl.UNSIGNED_BYTE;
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat,
+                1, 1, 0, srcFormat, srcType,
+                new Uint8Array([0, 0, 0, 0]));
+
+  loadImage(path, function(image) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, image);
+    if (callback) callback(image)
+  })
+
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  if (filter) {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter)
+  } else {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  }
   return texture;
 }
 
 // draws the model with the current program and framebuffers
 function draw (gl) {
+  gl.clearColor(0,0,0,0)
   gl.clear(gl.COLOR_BUFFER_BIT)
+  const offset = 0;
+  const vertexCount = 6;
+  gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
+}
+
+function pushDraw(gl) {
   const offset = 0;
   const vertexCount = 6;
   gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
@@ -185,7 +227,7 @@ function isPowerOf2(value) {
 // downloads data from a framebuffer
 function donwloadFramebuffer(gl, framebuffer) {
   var imgdata = new ImageData(framebuffer.width, framebuffer.height)
-  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.frambuffer)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer.framebuffer)
   gl.readPixels(0, 0, framebuffer.width, framebuffer.height, gl.RGBA, gl.UNSIGNED_BYTE, imgdata.data)
   return imgdata
 }

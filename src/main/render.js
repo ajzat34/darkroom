@@ -38,20 +38,24 @@ function prepare (gl) {
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
     imageFormat = imageFormat[imageFormat.length-1]
-    sourceImage = loadTexture(gl, imageFormat, imageB64)
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, imageFormat, imageB64, eventImageLoad)
   } else if (resp.loadmode === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
     srcPackage = JSON.parse(fs.readFileSync(imagePath))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
-    sourceImage = loadTexture(gl, imageFormat, imageB64)
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, imageFormat, imageB64, eventImageLoad)
   }
+
+  // prepare resources for masks
+  maskInit(gl)
 
   // create the options widgets
   createWidgetUIs()
 }
 
 function triggerRecreateFrameBuffers (gl) {
+  createMasks(gl, widgets, widgetOrder)
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, sourceImageWidth, sourceImageHeight)
 }
 

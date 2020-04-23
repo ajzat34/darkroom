@@ -161,3 +161,30 @@ async function exportImage(format, quality) {
   }
   reader.readAsArrayBuffer(blob)
 }
+
+async function exportFrameBuffer(fb) {
+  var path
+  var file = await dialog.showSaveDialog({
+    title: 'Export Framebuffer',
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+  })
+  if (file.canceled) {
+    return
+  } else {
+    path = file.filePath
+  }
+  var blob = await framebufferToBlob(pgl, 'PNG', fb)
+  var reader = new FileReader()
+  reader.onload = function(){
+      var buffer = new Buffer(reader.result)
+      fs.writeFile(path, buffer, {}, (err, res) => {
+          if(err){
+              alert('exporting failed! \n\n' + err.toString())
+              console.error(err)
+              return
+          }
+          console.log('exported')
+      })
+  }
+  reader.readAsArrayBuffer(blob)
+}

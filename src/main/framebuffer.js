@@ -2,7 +2,7 @@ function allocTextureFB (gl, width, height, linearFilter) {
   // allocate a texture to render to
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
-  // create a frambuffer
+  // create a framebuffer
   const fb = gl.createFramebuffer();
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -22,7 +22,7 @@ function allocTextureFB (gl, width, height, linearFilter) {
 
   // return an object with all of the information about the framebuffer
   return {
-    frambuffer: fb,
+    framebuffer: fb,
     texture: texture,
     width: width,
     height: height,
@@ -30,17 +30,17 @@ function allocTextureFB (gl, width, height, linearFilter) {
 }
 
 function deleteFB (gl, fb) {
-  gl.deleteFramebuffer(fb.frambuffer)
+  gl.deleteFramebuffer(fb.framebuffer)
   gl.deleteTexture(fb.texture)
 }
 
 // makes a framebuffer active
 function useFB (gl, fb) {
   if (fb) {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb.frambuffer);
-    gl.viewport(0, 0, fb.width, fb.height);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb.framebuffer)
+    gl.viewport(0, 0, fb.width, fb.height)
     return
   }
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight)
 }
