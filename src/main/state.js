@@ -45,6 +45,18 @@ function genSaveState(activeWidgets, widgetData) {
       });
     })
 
+    result.layerMasks = {}
+    // loop over all active widgets
+    activeWidgets.forEach((widgetname) => {
+      var widget = widgets[widgetname]
+      if (widget.takesMask) {
+        // json is for deep clone
+        result.layerMasks[widgetname] = JSON.parse(JSON.stringify(widget.mask.strokes))
+      }
+    })
+
+    console.log(result.layerMasks)
+
     return result
 }
 
@@ -70,6 +82,17 @@ function loadSaveState(data, fromUndo) {
     console.log('morphing widget', widgetname)
     widgetUiElements[widgetname].morphTo(data.data[widgetname], fromUndo)
   })
+
+  // loop over all active widgets
+  Object.keys(data.layerMasks).forEach((widgetname) => {
+    var widget = widgets[widgetname]
+    if (widget.takesMask) {
+      widget.mask.strokes = data.layerMasks[widgetname]
+      console.log('morphing', data.layerMasks[widgetname])
+      widget.mask.make()
+    }
+  })
+
   projectChange(fromUndo)
 }
 

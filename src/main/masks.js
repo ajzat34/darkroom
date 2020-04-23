@@ -91,8 +91,6 @@ class Mask {
 
     this.strokes.forEach((stroke) => {
 
-      console.log(stroke)
-
       const transform = mat4.create()
       mat4.translate(transform, transform, [stroke.x,stroke.y,0])
       mat4.scale(transform, transform, [stroke.radius,stroke.radius*(this.width/this.height),1])
