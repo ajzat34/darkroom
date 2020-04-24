@@ -1,4 +1,5 @@
 # Open Darkroom
+### Check out the [Open Darkroom Website](https://darkroom.js.org)
 A simple, cross platform photo editor. The overall design and functionality is similar to Adobe Lightroom.
 
 ![screenshot](/docs/image/screenshot.jpg)
