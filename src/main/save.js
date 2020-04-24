@@ -118,7 +118,6 @@ async function autosave(callback) {
 }
 
 // exporting
-// TODO: add format selection dialog
 async function exportProject(){
   // exportImage('JPEG', {quality: 1.0})
   var settings = ipcRenderer.sendSync('create-child', {path: 'dialog/export.html'})
