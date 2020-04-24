@@ -50,13 +50,31 @@ a.linkbutton {
 
 
 header * {
-  width: 100%;
+  min-width: 40px;
   text-align: center;
   z-index: 10;
+  margin: 0 1%;
+}
+
+header .shrinkspacer {
+  flex-shrink: 100;
+  max-width: 80%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  content: "";
+}
+
+header a {
+  flex-shrink: 2;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 40px;
 }
 
 header span.title {
-  flex-grow: 2;
+  flex-grow: 8;
+  flex-shrink: 1.5;
   font-size: 18pt;
   font-weight: bold;
   text-align: left;

@@ -27,7 +27,8 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Darkroom"
+            "name": "Darkroom",
+            "loadingGif": "build/installer.gif"
           }
         },
         {
