@@ -289,14 +289,12 @@ function canvasGrid(ctx) {
     ctx.lineTo(width, width * p)
   }
 
-  ctx.lineWidth = 4
+  ctx.lineWidth = 2 * widow.devicePixelRatio
   ctx.beginPath()
 
   lines(1/2)
-
   lines(1/3)
   lines(2/3)
-
   lines(1/6)
   lines(5/6)
 
@@ -316,7 +314,7 @@ function canvasCubicSpline(ctx, xs, ys, ks, color) {
   ctx.moveTo(0, 0)
   ctx.beginPath()
   ctx.strokeStyle = color
-  ctx.lineWidth = 8
+  ctx.lineWidth = 4 * widow.devicePixelRatio
   for (x = 0; x <= 1; x+=step) {
     var y = CSPL.evalSpline(x, xs, ys, ks)
     ctx.lineTo(x*width, (1-y)*width)
