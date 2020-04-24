@@ -32,32 +32,40 @@ function prepare (gl) {
     fileName = resp.filepath.split("\\")
   }
   document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
-  console.log('image', resp)
   if (resp.loadmode === 'image') {
     // if we are loading an image, pass it to loadTexture directly as a base64 string
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
     imageFormat = imageFormat[imageFormat.length-1]
-    sourceImage = loadTexture(gl, imageFormat, imageB64)
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, imageFormat, imageB64, eventImageLoad)
   } else if (resp.loadmode === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
     srcPackage = JSON.parse(fs.readFileSync(imagePath))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
-    sourceImage = loadTexture(gl, imageFormat, imageB64)
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, imageFormat, imageB64, eventImageLoad)
   }
+
+  // prepare resources for masks
+  maskInit(gl)
 
   // create the options widgets
   createWidgetUIs()
 }
 
 function triggerRecreateFrameBuffers (gl) {
+  createMasks(gl, widgets, widgetOrder)
   framebuffers = recreateFrameBuffers(gl, framebuffers, widgets, widgetOrder, sourceImageWidth, sourceImageHeight)
 }
 
 // renders the result image to a framebuffer for later use
 function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
   var lastchain = 0
+  // update masks
+  widgetOrder.forEach((widgetname, i) => {
+    var widget = widgets[widgetname]
+    if (widget.mask) widget.mask.bakeIf()
+  })
   widgetOrder.forEach((widgetname, i) => {
     var widget = widgets[widgetname]
     var widgetFramebuffers = {}

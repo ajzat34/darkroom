@@ -66,15 +66,16 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
     shader.inputs.forEach((inp) => {
       if (inp === 'in') imgs.push(img_in)
       else if (inp === 'original') imgs.push(sourceImage)
+      else if (inp === 'mask') imgs.push(widget.mask.texture)
       else if (inp in privateframebuffers) imgs.push(privateframebuffers[inp].texture)
-    });
+    })
 
     if (shader.out === 'out') fb = fb_out
     else if (shader.out in privateframebuffers) fb = privateframebuffers[shader.out]
 
     useWidgetShader(gl, widget, i, imgs, fb)
     draw(gl)
-  });
+  })
 }
 
 // creates all of the needed framebuffers for the widgets in widgetOrder
@@ -100,11 +101,22 @@ function createFramebuffers (gl, widgets, widgetOrder, width, height) {
   }
 }
 
-// delete the old framebuffers and make new ones
+function createMasks(gl, widgets, widgetOrder) {
+  widgetOrder.forEach((widgetname) => {
+    if (!(widgetname in widgets)) throw new Error (`widget ${widgetname} does not exist`)
+    var widget = widgets[widgetname]
+    // free the old mask
+    if (widget.mask) widget.mask.delete()
+    // make a new one
+    if (widget.takesMask) widget.mask = newMask(gl)
+  })
+}
+
+// delete the old framebuffers and masks and make new ones
 function recreateFrameBuffers (gl, old, widgets, widgetOrder, width, height) {
   if (old.chain) old.chain.forEach((fb) => { deleteFB(gl, fb) });
   if (old.extra) old.extra.forEach((fb) => { deleteFB(gl, fb) });
-  if (old.final) deleteFB(gl, old.final);
+  if (old.final) deleteFB(gl, old.final)
   return createFramebuffers(gl, widgets, widgetOrder, width, height)
 }
 

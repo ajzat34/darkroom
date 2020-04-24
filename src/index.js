@@ -242,7 +242,7 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([
     label: 'Edit',
     submenu: [
       { label:'Undo', click(menuItem, focusedWin) { focusedWin.webContents.send('undo') }, accelerator: 'CommandOrControl+z'},
-      { label:'Redo', click(menuItem, focusedWin) { focusedWin.webContents.send('redo') }, accelerator: 'CommandOrControl+y'}
+      { label:'Redo', click(menuItem, focusedWin) { focusedWin.webContents.send('redo') }, accelerator: 'CommandOrControl+Shift+z'}
     ]
   },
 
@@ -259,6 +259,7 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([
       { role: 'minimize' },
       { role: 'zoom' },
       { role: 'close' },
+      { role: 'togglefullscreen' },
       { type: 'separator' },
       { label:'Reload', click(menuItem, focusedWin) { focusedWin.webContents.reload() }, accelerator: 'CommandOrControl+shift+r'},
       { label:'Open Dev Tools', click(menuItem, focusedWin) { focusedWin.webContents.openDevTools() }, accelerator: 'CommandOrControl+Option+i'},

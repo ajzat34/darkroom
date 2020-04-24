@@ -1,5 +1,6 @@
 # version 300 es
 uniform sampler2D texSampler;
+uniform sampler2D maskSampler;
 uniform sampler2D lut;
 
 uniform highp float saturation;
@@ -15,6 +16,7 @@ out highp vec4 fragmentColor;
 void main(void) {
   // get the texel value
   highp vec4 color = texelFetch(texSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0);
+  highp float mask = texelFetch(maskSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0).r;
 
   // lut
   highp vec3 lutc = vec3(
@@ -28,6 +30,7 @@ void main(void) {
   saturationc.g += hue;
   saturationc.b -= temperature;
 
-  fragmentColor.rgb = saturationc;
+  // blend the original with the filtered, based on the mask
+  fragmentColor.rgb = (saturationc * mask) + (color.rgb * (1.0 - mask));
   fragmentColor.a = color.a;
 }

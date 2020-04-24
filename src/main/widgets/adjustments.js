@@ -150,16 +150,17 @@ module.exports = {
         },
       },
     },
-    'Show clipping': {
-      type: 'checkbox',
-      value: false,
-    },
-    'Show out of gamut colors': {
-      type: 'checkbox',
-      value: false,
-    },
+    // 'Show clipping': {
+    //   type: 'checkbox',
+    //   value: false,
+    // },
+    // 'Show out of gamut colors': {
+    //   type: 'checkbox',
+    //   value: false,
+    // },
   },
   framebuffers: [],
+  takesMask: true,
   stages: [
     {
       shadername: 'adjustmentsv2',
@@ -213,8 +214,8 @@ module.exports = {
           set('hue', 'float', v/1000)
         },
       },
-      inputs: ['in'],
-      inputBindings: ['texSampler', 'lut'],
+      inputs: ['in', 'mask'],
+      inputBindings: ['texSampler', 'maskSampler', 'lut'],
       out: 'out',
     }
   ],

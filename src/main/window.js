@@ -27,6 +27,11 @@ var scale = 0.99               // current zoom amount
 var viewscale = scale*scale    // the render scale = zoom^2
 var mouse                      // is the mouse up or down
 
+var controlmode = 'view'       // how should main viewport input be interperated
+
+var contextualMode = 'view'    // mode of the contextualMenu
+var contextual                 // dom element for contextual menu
+
 var updateRequest = false      // set to when signalling that the image needs to be re-rendered
 var renderRequest = false      // same for canvas updates
 
@@ -44,7 +49,7 @@ var normalscroll = false
 var widgetState = {}
 
 // autosave and undo history
-var undoHistory = new UndoHistory(32) // holds the undo history
+var undoHistory = new UndoHistory(64) // holds the undo history
 var historyTimer                      // timer to batch change events
 var autosaveTimer                     // same as above, but for autosave
 
@@ -62,9 +67,17 @@ var imageFormat       // what format (png, jpeg) was the original image in
 var imagePath         // where was the loaded image located
 var srcPackage        // holds a copy of the loaded dkg/dkr if one was loaded
 
+function calcCanvasSizeWidth () {
+  return window.innerWidth - optionsSize
+}
+
+function calcCanvasSizeHeight () {
+  return window.innerHeight - toolbarSize - contextual.clientHeight
+}
+
 function resize () {
-  var width = window.innerWidth - optionsSize
-  var height = window.innerHeight - toolbarSize
+  var width = calcCanvasSizeWidth()
+  var height = calcCanvasSizeHeight()
   options.style.width = `${optionsSize}px`
   preview.style.width = `${width}px`
   pc.width = (width) * window.devicePixelRatio
@@ -73,6 +86,21 @@ function resize () {
   pc.style.height = `${height}px`
   pcaspect = pc.width/pc.height
   glResize(pgl)
+  scheduleUpdate()
+}
+
+function viewreset() {
+  scale = 0.99
+  scroll = [0,0]
+  scheduleUpdate()
+}
+
+function viewabs(n) {
+  var width = calcCanvasSizeWidth() * window.devicePixelRatio
+  var height = calcCanvasSizeHeight() * window.devicePixelRatio
+  var wr = sourceImageWidth/width * n
+  var hr = sourceImageHeight/height * n
+  scale = Math.sqrt(Math.min(wr,hr))
   scheduleUpdate()
 }
 
@@ -111,21 +139,27 @@ async function eventImageLoad (image) {
 // callback for canvas event mousemove
 // updates the canvas position and schedules an update when the mouse moves
 function mouseMoveHandler (e) {
-  if (mouse === 'down'){
+  if (mouse === 'down') {
     deltaX = (e.clientX - mosusepos[0]) / viewscale
     deltaY = (e.clientY - mosusepos[1]) / viewscale
-    scroll = [scroll[0]+deltaX, scroll[1]+deltaY]
     mosusepos = [e.clientX, e.clientY]
-    scheduleUpdate()
+    if (controlmode === 'view') {
+      scroll = [scroll[0]+deltaX, scroll[1]+deltaY]
+      scheduleUpdate()
+    }
+    maskEditorTick(mosusepos)
   }
 }
 
 function mouseDownHandler (e) {
-  mosusepos = [e.clientX, e.clientY]
   mouse = 'down'
+  mosusepos = [e.clientX, e.clientY]
+  if (controlmode === 'view') pc.style.cursor = "move"
+  maskEditorTick(mosusepos)
 }
 
 function mouseUpHandler () {
+  pc.style.cursor = "default"
   mouse = 'up'
 }
 
@@ -199,6 +233,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // start loading assets
   prepare(pgl)
+
+  // prepare the contextual menu
+  loadContexts()
+  setContextualMode('view')
+
   // initial sizing
   resize()
   // and an eventlistener for resizing
@@ -275,15 +314,17 @@ function projectChange(fromUndo) {
   historyEventProjectChanged(fromUndo)
 }
 
-// helper functinos for calculating scrolling
+// helper functions for calculating scrolling
 function updateCanvasMouse () {
-  var width = window.innerWidth - optionsSize
-  var height = window.innerHeight
+  viewscale = scale*scale
+  var width = calcCanvasSizeWidth()
+  var height = calcCanvasSizeHeight()
   updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, framebuffers.final.texture)
 }
 
 function updateCanvasMouseCompare () {
-  var width = window.innerWidth - optionsSize
-  var height = window.innerHeight
+  viewscale = scale*scale
+  var width = calcCanvasSizeWidth()
+  var height = calcCanvasSizeHeight()
   updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, sourceImage)
 }

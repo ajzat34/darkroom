@@ -40,9 +40,14 @@ function createWidgetUi (parent, from) {
       title.appendChild(document.createTextNode(from.name))
       titlerow.appendChild(title)
 
-    var close = document.createElement("button")
-      close.appendChild(document.createTextNode('✕'))
-      titlerow.appendChild(close)
+    if (from.takesMask) {
+      var mask = document.createElement("button")
+        mask.appendChild(document.createTextNode('Mask'))
+        mask.addEventListener('click', function(){
+          toggleEditingMask(from.mask)
+        })
+        titlerow.appendChild(mask)
+    }
   }
   {
     // create the knobs
