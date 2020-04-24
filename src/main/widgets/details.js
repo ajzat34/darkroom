@@ -79,6 +79,7 @@ module.exports = {
     },
   },
   framebuffers: ['maps'],
+  takesMask: true,
   stages: [
     {
       shadername: 'details',
@@ -155,8 +156,8 @@ module.exports = {
           set('showmask', 'bool', v)
         },
       },
-      inputs: ['in', 'maps'],
-      inputBindings: ['imageSampler', 'blurSampler'],
+      inputs: ['in', 'maps', 'mask'],
+      inputBindings: ['imageSampler', 'blurSampler', 'maskSampler'],
       out: 'out',
     },
   ],

@@ -32,6 +32,5 @@ void main(void) {
 
   // blend the original with the filtered, based on the mask
   fragmentColor.rgb = (saturationc * mask) + (color.rgb * (1.0 - mask));
-  // fragmentColor.rgb = vec3(mask);
   fragmentColor.a = color.a;
 }

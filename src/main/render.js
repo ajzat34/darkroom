@@ -32,7 +32,6 @@ function prepare (gl) {
     fileName = resp.filepath.split("\\")
   }
   document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
-  console.log('image', resp)
   if (resp.loadmode === 'image') {
     // if we are loading an image, pass it to loadTexture directly as a base64 string
     imageB64 = fs.readFileSync(imagePath).toString('base64')
@@ -62,6 +61,11 @@ function triggerRecreateFrameBuffers (gl) {
 // renders the result image to a framebuffer for later use
 function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
   var lastchain = 0
+  // update masks
+  widgetOrder.forEach((widgetname, i) => {
+    var widget = widgets[widgetname]
+    if (widget.mask) widget.mask.bakeIf()
+  })
   widgetOrder.forEach((widgetname, i) => {
     var widget = widgets[widgetname]
     var widgetFramebuffers = {}

@@ -1,6 +1,7 @@
 # version 300 es
 uniform sampler2D imageSampler;
 uniform sampler2D blurSampler;
+uniform sampler2D maskSampler;
 uniform highp float strength;
 uniform highp float balance;
 uniform highp float sharpen;
@@ -18,6 +19,7 @@ highp float vsample(ivec2 s)
 
 void main(void) {
   highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
+  highp float mask = texelFetch(maskSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0).r;
   highp float vary = vsample(p)*2.0;
   vary += vsample(p+ivec2(1,0))*1.5;
   vary += vsample(p+ivec2(0,1))*1.5;
@@ -42,12 +44,12 @@ void main(void) {
   vary = clamp(vary, -1.0, 1.0);
 
   if (showmask) {
-    fragmentColor.b = vary;
-    fragmentColor.g = 0.0-vary;
-    fragmentColor.r = 0.0;
+    fragmentColor.b = vary * mask;
+    fragmentColor.g = (0.0-vary) * mask;
     fragmentColor.a = 1.0;
   } else {
-    fragmentColor.rgb = (texelFetch(imageSampler, p, 0).rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*(vary));
-    fragmentColor.a = 1.0;
+    highp vec4 color = texelFetch(imageSampler, p, 0);
+    fragmentColor.rgb = (((color.rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*(vary))) * mask) + (color.rgb * (1.0 - mask));
+    fragmentColor.a = color.a;
   }
 }

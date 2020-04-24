@@ -55,8 +55,6 @@ function genSaveState(activeWidgets, widgetData) {
       }
     })
 
-    console.log(result.layerMasks)
-
     return result
 }
 
@@ -79,7 +77,6 @@ function loadSaveState(data, fromUndo) {
     triggerRecreateFrameBuffers(pgl)
   }
   Object.keys(data.data).forEach((widgetname) => {
-    console.log('morphing widget', widgetname)
     widgetUiElements[widgetname].morphTo(data.data[widgetname], fromUndo)
   })
 
@@ -87,9 +84,7 @@ function loadSaveState(data, fromUndo) {
   Object.keys(data.layerMasks).forEach((widgetname) => {
     var widget = widgets[widgetname]
     if (widget.takesMask) {
-      widget.mask.strokes = data.layerMasks[widgetname]
-      console.log('morphing', data.layerMasks[widgetname])
-      widget.mask.make()
+      widget.mask.load(data.layerMasks[widgetname])
     }
   })
 

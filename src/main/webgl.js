@@ -207,6 +207,7 @@ function loadTexturePath(gl, internalFormat, srcFormat, path, callback, filter){
 
 // draws the model with the current program and framebuffers
 function draw (gl) {
+  gl.disable(gl.BLEND)
   gl.clearColor(0,0,0,0)
   gl.clear(gl.COLOR_BUFFER_BIT)
   const offset = 0;
@@ -214,10 +215,17 @@ function draw (gl) {
   gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
 }
 
+// draws without clearing
 function pushDraw(gl) {
   const offset = 0;
   const vertexCount = 6;
   gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
+}
+
+// clear the canvas
+function clearNow(gl){
+  gl.clearColor(0,0,0,0)
+  gl.clear(gl.COLOR_BUFFER_BIT)
 }
 
 function isPowerOf2(value) {

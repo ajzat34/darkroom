@@ -52,7 +52,10 @@ class Mask {
     this.gl = gl
     this.strokes = []
 
-    this.clear()
+    this.updateTimeout = null
+
+    this.needsBake = true
+    this.stagingPtr = 0
   }
 
   useFB() {
@@ -67,11 +70,46 @@ class Mask {
 
   stroke(r,x,y,v) {
     this.strokes.push({radius: (r/128)*(128/this.height), x: x, y: y, value: v})
-    this.make()
-    projectChange()
   }
 
-  make() {
+  load(strokes) {
+    this.strokes = strokes
+    this.needsBake = true
+  }
+
+  bakeIf() {
+    if (this.needsBake) this.bake()
+    if (this.stagingPtr < this.strokes.length) this.update()
+  }
+
+  requestBake() {
+    this.needsBake = true
+  }
+
+  update() {
+    var gl = this.gl
+    console.log('updating mask')
+    // enable blending
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    // get the resources we need ready
+    this.useFB()
+    gluse(gl, brushProgram, model)
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, brushTexture)
+    gl.uniform1i(brushProgram.uniformLocations.texture, 0)
+    for (; this.stagingPtr < this.strokes.length; this.stagingPtr++) {
+      var stroke = this.strokes[this.stagingPtr]
+      const transform = mat4.create()
+      mat4.translate(transform, transform, [stroke.x,stroke.y,0])
+      mat4.scale(transform, transform, [stroke.radius,stroke.radius*(this.width/this.height),1])
+      gl.uniformMatrix4fv(brushProgram.uniformLocations.transform, false, transform)
+      gl.uniform1f(brushProgram.uniformLocations.value, stroke.value)
+      pushDraw(gl)
+    }
+  }
+
+  bake() {
     var gl = this.gl
 
     // reset the texture and framebuffer
@@ -84,7 +122,6 @@ class Mask {
     // get the resources we need ready
     this.useFB()
     gluse(gl, brushProgram, model)
-
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, brushTexture)
     gl.uniform1i(brushProgram.uniformLocations.texture, 0)
@@ -99,7 +136,10 @@ class Mask {
       pushDraw(gl)
 
     })
+    this.stagingPtr = this.strokes.length
+    this.needsBake = false
   }
+
 }
 
 

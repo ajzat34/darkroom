@@ -66,9 +66,7 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
     shader.inputs.forEach((inp) => {
       if (inp === 'in') imgs.push(img_in)
       else if (inp === 'original') imgs.push(sourceImage)
-      else if (inp === 'mask') {
-        imgs.push(widget.mask.texture)
-      }
+      else if (inp === 'mask') imgs.push(widget.mask.texture)
       else if (inp in privateframebuffers) imgs.push(privateframebuffers[inp].texture)
     })
 

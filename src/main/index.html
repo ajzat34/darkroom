@@ -13,8 +13,9 @@
 
   </head>
   <body>
+
     <div class="preview" id="preview-pane">
-      <div class="toolbar line bottom" id="toolbar">
+      <div class="toolbar toolbartop line bottom" id="toolbar">
         <section class="left">
           <div class="osx_buttons">
             <span class="close" id="close-btn"><span class="button">x</span></span>
@@ -33,6 +34,43 @@
         </section>
       </div>
       <canvas id="preview_canvas"></canvas>
+      <div class="toolbar toolbarbottom line top" id="contextual-toolbar">
+        <div class="context hidden" id="context-view">
+          <div class="vcenter">
+            <h4>View</h4>
+          </div>
+          <div class="divider"></div>
+          <button type="button" id="btn-view-reset" class="blockb" >Reset</button>
+          <button type="button" id="btn-view-1"     class="blockb" >1:1</button>
+          <button type="button" id="btn-view-2"     class="blockb" >2:1</button>
+          <button type="button" id="btn-view-3"     class="blockb" >4:1</button>
+        </div>
+        <div class="context hidden" id="context-editmask">
+          <div class="ftop">
+            <h4>Mask</h4>
+            <button type="button" id="btn-maskedit-exit" class="inlineb spacetop">Exit [esc]</button>
+          </div>
+          <div class="divider"></div>
+          <div class="ftop">
+            <table>
+              <tr>
+                <td>Size:</td>
+                <td>
+                  <input class="slider" type="range" oninput="maskEditorInput('slider-size')" id="range-editmask-brushsize" step="4" value="0" min="1" max="2048">
+                  <input class="num" type="number" value="0" onchange="maskEditorInput('number-size')" step="4" id="number-editmask-brushsize">
+                </td>
+              </tr>
+              <tr>
+                <td>Add/Sub:</td>
+                <td>
+                  <input class="slider" type="range" oninput="maskEditorInput('slider-value')" id="range-editmask-value" value="1" min="0" max="100">
+                  <input class="num" type="number" value="0" min="0" max="100" onchange="maskEditorInput('number-value')" id="number-editmask-value">
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="options line left" id="options-pane"></div>
 
@@ -59,6 +97,9 @@
     <script type="text/javascript" src="save.js"></script>
     <script type="text/javascript" src="render.js"></script>
     <script type="text/javascript" src="state.js"></script>
+    <script type="text/javascript" src="maskeditor.js"></script>
+    <script type="text/javascript" src="contextual.js"></script>
+    <script type="text/javascript" src="shortcuts.js"></script>
     <script type="text/javascript" src="history.js"></script>
     <script type="text/javascript" src="window.js"></script>
   </body>
