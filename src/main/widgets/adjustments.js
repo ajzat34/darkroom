@@ -150,14 +150,14 @@ module.exports = {
         },
       },
     },
-    'Show clipping': {
-      type: 'checkbox',
-      value: false,
-    },
-    'Show out of gamut colors': {
-      type: 'checkbox',
-      value: false,
-    },
+    // 'Show clipping': {
+    //   type: 'checkbox',
+    //   value: false,
+    // },
+    // 'Show out of gamut colors': {
+    //   type: 'checkbox',
+    //   value: false,
+    // },
   },
   framebuffers: [],
   takesMask: true,

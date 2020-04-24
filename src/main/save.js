@@ -2,8 +2,8 @@
 // NEEDS LOTS OF WORK
 
 var FORMAT = {
-  version: '0.2',
-  compatable: ['0.2'],
+  version: '0.3',
+  compatable: ['0.3'],
 }
 
 var projectPath = null

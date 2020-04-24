@@ -88,7 +88,7 @@ function updateMaskSlider() {
 function maskEditorInput(from) {
   if (from==='slider-size') maskBrushSize = maskEditBrushSizeSlider.value
   else if (from==='number-size') maskBrushSize = maskEditBrushSizeNumber.value
-  else if (from==='number-slider') maskBrushValue = maskEditValueSlider.value / 100
+  else if (from==='slider-value') maskBrushValue = maskEditValueSlider.value / 100
   else if (from==='number-value') maskBrushValue = maskEditValueNumber.value / 100
   updateMaskSlider()
 }

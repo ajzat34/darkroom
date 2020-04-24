@@ -6,6 +6,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--theme-background-color);
   color: var(--theme-text-color);
+  user-select: none;
 }
 
 .maincontent {
