@@ -5,6 +5,8 @@ const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const path = require('path');
 
 // windows packager things
+// when installing on windows, squirrel creates multiple processes
+// we can use this to ignore them
 if (require('electron-squirrel-startup')) return;
 
 // macOS acts differently, this is will make it easier to tell if
