@@ -29,6 +29,7 @@ Currently in early-development, don't expect stability or features.
 * Cross Platform
 
 # Building
+* Make sure you have NodeJS installed
 * Clone & cd
 * `npm install` & `npm run make`
 * Check `out/` for your build
