@@ -3,9 +3,8 @@
 // overview
 // mask object:
 // - opengl framebuffer, for rendering mask into
-// - opengl texture, for storing mask data, single channel
+// - opengl texture, for storing mask data
 // - procedural genoration (ie step 1: create a stroke here), for undo history
-// - shader for creating such masks
 
 var maxStrokeRadius = 64
 

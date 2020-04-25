@@ -3,3 +3,4 @@ April 17,    2020: almost ready for first testing build. added project saving an
 April 18-29, 2020: overhauled both adjustments and details filter. adjustments now primarily works on a lut.
 April 20,    2020: added exporting. preparing for initial builds. Make macOS and windows build for versions 0.5.0 and 0.5.1 pre
 April 21,    2020: code review, overhauling save
+April 25,    2020: masking added, undo bug fixed.

@@ -1,3 +1,7 @@
+// for detaching copys
+const clone = require('lodash').clone
+const clonedeep = require('lodash').cloneDeep
+
 // this file links the widgets/shaders with their ui elements
 
 // creates the ui elements and links them to the global state
@@ -51,11 +55,12 @@ function genSaveState(activeWidgets, widgetData) {
       var widget = widgets[widgetname]
       if (widget.takesMask) {
         // json is for deep clone
-        result.layerMasks[widgetname] = JSON.parse(JSON.stringify(widget.mask.strokes))
+        result.layerMasks[widgetname] = widget.mask.strokes
       }
     })
 
-    return result
+    // finally, we use a deep clone to entirely sepereate this state from the current one
+    return clonedeep(result)
 }
 
 // wrapper for genSaveState
@@ -69,7 +74,10 @@ function getStoreValue(data) {
   else if (data.valueType == "curves") return getCurvesData(data.value)
 }
 
-function loadSaveState(data, fromUndo) {
+function loadSaveState(loadData, fromUndo) {
+  // use a deep clone to detach the original from the data that will be loaded
+  // this will prevent updates from modifing the save state
+  var data = clonedeep(loadData)
   if (!arraysEqual(widgetOrder, data.activeWidgets)) {
     console.log('new widget order != to new one, remaking widgetUi elements, and framebuffer resources')
     widgetOrder = data.activeWidgets

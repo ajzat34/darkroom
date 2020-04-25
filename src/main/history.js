@@ -23,6 +23,7 @@ class UndoHistory {
   backup() {
     if (this.data[this.currentPtr-1]) {
       this.currentPtr--
+      console.log('backed up to step', this.currentPtr)
       this.cleanup()
       return true
     }
@@ -32,6 +33,7 @@ class UndoHistory {
   forward() {
     if (this.data[this.currentPtr+1]) {
       this.currentPtr++
+      console.log('jumped to step', this.currentPtr)
       this.cleanup()
       return true
     }
@@ -40,6 +42,7 @@ class UndoHistory {
 
   add(snap) {
     this.currentPtr++
+    console.log('writing to', this.currentPtr)
     this.data[this.currentPtr] = snap
     this.cleanup()
     this.cleanForward()
@@ -90,20 +93,20 @@ function createHistorySnapshot () {
 function undo () {
   if (undoHistory.backup()) {
     loadSaveState(undoHistory.getCurrent(), true)
+    requestAutosave(updateSaveSatus) // set the callback to update save status as well (only called on success)
   } else {
     console.log('no more undo history')
   }
-  requestAutosave(updateSaveSatus) // set the callback to update save status as well (only called on success)
   updateSaveSatus()
 }
 
 function redo () {
   if (undoHistory.forward()) {
     loadSaveState(undoHistory.getCurrent(), true)
+    requestAutosave(updateSaveSatus) // set the callback to update save status as well (only called on success)
   } else {
     console.log('no more redo queue')
   }
-  requestAutosave(updateSaveSatus) // set the callback to update save status as well (only called on success)
   updateSaveSatus()
 }
 
