@@ -1,12 +1,18 @@
 var editingMask // what mask is being edited at the moment
 var lastmouse = [0,0]
-var maskBrushSize = 16
+var maskBrushSize = 64
 var maskBrushValue = 0
+var maskBrushHardness = 1
+var maskBrushOpacity = 100
 
 var maskEditBrushSizeSlider = document.getElementById('range-editmask-brushsize')
 var maskEditBrushSizeNumber = document.getElementById('number-editmask-brushsize')
-var maskEditValueSlider = document.getElementById('range-editmask-value')
-var maskEditValueNumber = document.getElementById('number-editmask-value')
+var maskEditBrushHardnessSlider = document.getElementById('range-editmask-hardness')
+var maskEditBrushHardnessNumber = document.getElementById('number-editmask-hardness')
+var maskEditBrushOpacitySlider = document.getElementById('range-editmask-opacity')
+var maskEditBrushOpacityNumber = document.getElementById('number-editmask-opacity')
+
+var maskEditBrushValue = document.getElementById('radio-editmask-value')
 updateMaskSlider()
 
 function getGlNormalCoord(c) {
@@ -74,21 +80,29 @@ function maskEditorTick() {
 
 function stroke(mosusepos) {
   var coord = getGlNormalCoord(mosusepos)
-  editingMask.stroke(maskBrushSize, coord[0], coord[1], maskBrushValue)
+  // squaring the opacity adjustment makes it feel more linear, as brush strokes overlap
+  // multiply !maskEditBrushValue.checked by 1 to make false=1, and true=0
+  editingMask.stroke(maskBrushSize, coord[0], coord[1], !maskEditBrushValue.checked*1, maskBrushHardness * 2, Math.pow(maskBrushOpacity / 100, 2))
   projectChange()
 }
 
 function updateMaskSlider() {
   maskEditBrushSizeSlider.value = maskBrushSize
   maskEditBrushSizeNumber.value = Math.round(maskBrushSize)
-  maskEditValueSlider.value = maskBrushValue * 100
-  maskEditValueNumber.value = Math.round(maskBrushValue * 100)
+  maskEditBrushHardnessSlider.value = maskBrushHardness
+  maskEditBrushHardnessNumber.value = Math.round(maskBrushHardness)
+  maskEditBrushOpacitySlider.value = maskBrushOpacity
+  maskEditBrushOpacityNumber.value = Math.round(maskBrushOpacity)
 }
 
 function maskEditorInput(from) {
   if (from==='slider-size') maskBrushSize = maskEditBrushSizeSlider.value
   else if (from==='number-size') maskBrushSize = maskEditBrushSizeNumber.value
-  else if (from==='slider-value') maskBrushValue = maskEditValueSlider.value / 100
-  else if (from==='number-value') maskBrushValue = maskEditValueNumber.value / 100
+
+  else if (from==='slider-hardness') maskBrushHardness = maskEditBrushHardnessSlider.value
+  else if (from==='number-hardness') maskBrushHardness = maskEditBrushHardnessNumber.value
+
+  else if (from==='slider-opacity') maskBrushOpacity = maskEditBrushOpacitySlider.value
+  else if (from==='number-opacity') maskBrushOpacity = maskEditBrushOpacityNumber.value
   updateMaskSlider()
 }

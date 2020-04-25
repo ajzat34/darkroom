@@ -53,21 +53,37 @@
           <div class="divider"></div>
           <div class="ftop">
             <table>
+
               <tr>
                 <td>Size:</td>
                 <td>
-                  <input class="slider" type="range" oninput="maskEditorInput('slider-size')" id="range-editmask-brushsize" step="4" value="0" min="1" max="2048">
-                  <input class="num" type="number" value="0" onchange="maskEditorInput('number-size')" step="4" id="number-editmask-brushsize">
+                  <input class="slider" type="range" oninput="maskEditorInput('slider-size')" id="range-editmask-brushsize" step="1" value="0" min="1" max="1024">
+                  <input class="num" type="number" value="0" onchange="maskEditorInput('number-size')" step="1" id="number-editmask-brushsize">
                 </td>
               </tr>
+
               <tr>
-                <td>Add/Sub:</td>
+                <td>Hardness:</td>
                 <td>
-                  <input class="slider" type="range" oninput="maskEditorInput('slider-value')" id="range-editmask-value" value="1" min="0" max="100">
-                  <input class="num" type="number" value="0" min="0" max="100" onchange="maskEditorInput('number-value')" id="number-editmask-value">
+                  <input class="slider" type="range" oninput="maskEditorInput('slider-hardness')" id="range-editmask-hardness" step="1" value="0" min="1" max="100">
+                  <input class="num" type="number" value="0" onchange="maskEditorInput('number-hardness')" step="1" id="number-editmask-hardness">
                 </td>
               </tr>
+
+              <tr>
+                <td>Opacity:</td>
+                <td>
+                  <input class="slider" type="range" oninput="maskEditorInput('slider-opacity')" id="range-editmask-opacity" step="1" value="0" min="0" max="100">
+                  <input class="num" type="number" value="0" onchange="maskEditorInput('number-opacity')" step="1" id="number-editmask-opacity">
+                </td>
+              </tr>
+
             </table>
+          </div>
+          <div class="divider"></div>
+          <div class="ftop">
+            <span><input type="radio" id="radio-editmask-value" value="subtract" name="value" checked><label for="subtract">Subtract</label><br></span>
+            <span><input type="radio" name="value" value="add"><label for="add">Add</label><br></span>
           </div>
         </div>
       </div>

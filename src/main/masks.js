@@ -22,6 +22,8 @@ function maskInit(gl) {
       'transform': 'transform',
       'texture': 'brushSampler',
       'value': 'value',
+      'hardness': 'hardness',
+      'opacity': 'opacity',
     }
   })
 }
@@ -67,8 +69,8 @@ class Mask {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT)
   }
 
-  stroke(r,x,y,v) {
-    this.strokes.push({radius: (r/128)*(128/this.height), x: x, y: y, value: v})
+  stroke(r,x,y,v,h,o) {
+    this.strokes.push({radius: (r/128)*(128/this.height), x: x, y: y, value: v, hardness: h, opacity: o})
   }
 
   load(strokes) {
@@ -99,11 +101,15 @@ class Mask {
     gl.uniform1i(brushProgram.uniformLocations.texture, 0)
     for (; this.stagingPtr < this.strokes.length; this.stagingPtr++) {
       var stroke = this.strokes[this.stagingPtr]
+
       const transform = mat4.create()
       mat4.translate(transform, transform, [stroke.x,stroke.y,0])
       mat4.scale(transform, transform, [stroke.radius,stroke.radius*(this.width/this.height),1])
       gl.uniformMatrix4fv(brushProgram.uniformLocations.transform, false, transform)
       gl.uniform1f(brushProgram.uniformLocations.value, stroke.value)
+      gl.uniform1f(brushProgram.uniformLocations.hardness, stroke.hardness)
+      gl.uniform1f(brushProgram.uniformLocations.opacity, stroke.opacity)
+
       pushDraw(gl)
     }
   }
@@ -132,6 +138,8 @@ class Mask {
       mat4.scale(transform, transform, [stroke.radius,stroke.radius*(this.width/this.height),1])
       gl.uniformMatrix4fv(brushProgram.uniformLocations.transform, false, transform)
       gl.uniform1f(brushProgram.uniformLocations.value, stroke.value)
+      gl.uniform1f(brushProgram.uniformLocations.hardness, stroke.hardness)
+      gl.uniform1f(brushProgram.uniformLocations.opacity, stroke.opacity)
       pushDraw(gl)
 
     })
