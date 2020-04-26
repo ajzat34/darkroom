@@ -230,11 +230,7 @@ function main () {
   window.addEventListener('mousemove', mouseMoveHandler)
   pc.addEventListener("mousewheel", mouseWheelHandler, false);
   pgl = getWebGL(pc)
-  if (!pgl) {
-    alert('WebGL is not supported')
-    remote.getCurrentWindow().close()
-    return
-  }
+  if (!pgl) errorBox('WebGL2 not supported', 'It looks like your computer doesn\'t support OpenGL-ES 3.0 / WebGL2.', 'Try updating your computer, and making sure your graphics drivers are properly installed.')
 
   gatherWindowData()
 
