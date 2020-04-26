@@ -356,11 +356,14 @@ function updateGlobalRecents (recents) {
 // might help some machines support webgl2
 app.commandLine.appendSwitch('enable-unsafe-es3-apis')
 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', ()=>{
+app.on('ready', main)
+async function main () {
   clearMenu()
+  aslkdjfl;
   var recents = store.get('recents')
   if (!recents) recents = []
   global.envdata = {
@@ -373,7 +376,8 @@ app.on('ready', ()=>{
   spawnFileSelectionWindow()
 
   ipcMain.on('show-license', spawnLicenseWindow)
-})
+}
+
 
 // clears the title memu
 function clearMenu() {
