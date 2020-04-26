@@ -1,3 +1,21 @@
+// defines the default opengl texture formats
+var sourceImgInternalFormat = 'RGBA16F'
+var sourceImgFormat = 'RGBA'
+var sourceImgType = 'HALF_FLOAT'
+var disable16BitLoading = false // when set to true, sourceImg* = texture*
+
+var webGLsourceImgInternalFormat
+var webGLsourceImgFormat
+var webGLsourceImgType
+
+var textureInternalFormat = 'RGBA'
+var textureFormat = 'RGBA'
+var textureType = 'UNSIGNED_BYTE'
+
+var webGLtextureInternalFormat
+var webGLtexutreFormat
+var webGLtextureType
+
 // does most of the webgl/widget setup
 // - loads model
 // - loads shaders
@@ -7,6 +25,21 @@
 // - loads the image
 // when done loading the image, loadTexture() will call eventImageLoad() to finish preparing and show the window
 function prepare (gl) {
+
+  if (disable16BitLoading) {
+    sourceImgInternalFormat = textureInternalFormat
+    sourceImgFormat = textureFormat
+    sourceImgType = textureType
+  }
+
+  webGLtextureInternalFormat = gl[textureInternalFormat]
+  webGLtextureFormat = gl[textureFormat]
+  webGLtextureType = gl[textureType]
+
+  webGLsourceImgInternalFormat = gl[sourceImgInternalFormat]
+  webGLsourceImgFormat = gl[sourceImgFormat]
+  webGLsourceImgType = gl[sourceImgType]
+
   // to render the image we use two texture-mapped triangles
   model = prepareModelBuffer(gl)
 
@@ -37,13 +70,13 @@ function prepare (gl) {
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
     imageFormat = imageFormat[imageFormat.length-1]
-    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, imageFormat, imageB64, eventImageLoad)
+    sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
   } else if (resp.loadmode === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
     srcPackage = JSON.parse(fs.readFileSync(imagePath))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
-    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, imageFormat, imageB64, eventImageLoad)
+    sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
   }
 
   // prepare resources for masks

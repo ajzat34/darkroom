@@ -150,13 +150,10 @@ function loadTextureDataFormat(gl, texture, internalFormat, srcFormat, width, he
 
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-function loadTexture(gl, internalFormat, srcFormat, imageFormat, imageData, callback, filter) {
+function loadTexture(gl, internalFormat, srcFormat, srcType, imageFormat, imageData, callback, filter) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
-  const srcType = gl.UNSIGNED_BYTE;
-  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat,
-                1, 1, 0, srcFormat, srcType,
-                new Uint8Array([0, 0, 0, 0]));
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 1, 1, 0, srcFormat, srcType, null);
 
   loadImageBase64(imageFormat, imageData, function(image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -178,13 +175,12 @@ function loadTexture(gl, internalFormat, srcFormat, imageFormat, imageData, call
   return texture;
 }
 
-function loadTexturePath(gl, internalFormat, srcFormat, path, callback, filter){
+function loadTexturePath(gl, internalFormat, srcFormat, srcType, path, callback, filter){
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
-  const srcType = gl.UNSIGNED_BYTE;
   gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat,
                 1, 1, 0, srcFormat, srcType,
-                new Uint8Array([0, 0, 0, 0]));
+                null);
 
   loadImage(path, function(image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);

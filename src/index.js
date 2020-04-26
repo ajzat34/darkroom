@@ -363,7 +363,6 @@ app.commandLine.appendSwitch('enable-unsafe-es3-apis')
 app.on('ready', main)
 async function main () {
   clearMenu()
-  aslkdjfl;
   var recents = store.get('recents')
   if (!recents) recents = []
   global.envdata = {
