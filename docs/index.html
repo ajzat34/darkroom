@@ -6,14 +6,13 @@
     <link rel="stylesheet" href="master.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Darkroom Photo Editor - Home</title>
-    <meta name="description" content="Open Darkroom is an Open Source, Cross Platform Photo Editor.">
+    <meta name="description" content="Open Darkroom - The Free, Open Source, Cross Platform Photo Editor.">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <section class="hero">
       <h1>Open Darkroom</h1>
-      <h2>Simple, Free, Cross Platform, Open Source Photo Editor.</h2>
-      <h2>GPU Accelerated.</h2>
+      <h2>The Free Image Processor</h2>
       <div class="buttonrow">
         <a href="#readmore" class="linkbutton blue">Read More</a>
         <a href="#downloads" class="linkbutton yellow" id="downloadsbutton">Download Beta</a>
@@ -22,8 +21,29 @@
     </section>
     <section id="readmore">
       <h2 class="big">About</h2>
-    <section>
+      <div class="split ileft">
+        <img src="image/splash.png" alt="">
+        <div>
+          <h3>GPU Accalerated.</h3>
+          <p>Open Darkroom Takes advantage of your computers Graphics Processor to edit you photo at full quality in real time.</p>
+        </div>
+      </div>
+      <div class="split iright">
+        <div>
+          <h3>Open Source</h3>
+          <p>Anyone can View, Edit, or Contribute to Open Darkroom's Source Code.</p>
+        </div>
+        <img src="image/icon.png" alt="">
+      </div>
+      <div class="split ileft">
+        <img src="image/plate.png" alt="">
+        <div>
+          <h3>Photo Processor</h3>
+          <p>Open Darkroom is a Photo Processor, meaning it is meant "develop" your photos, and make your photography look it's best. Not create illustrations and designs.</p>
+        </div>
+      </div>
 
+      <section>
         <h3>Requirements (Unvalidated)</h3>
         <div class="col2">
           <div class="col">
@@ -32,7 +52,9 @@
               <li>CPU: ~2Ghz, 2 Cores</li>
               <li>GPU: 512MB of VRAM, OpenGL ES 3.0 / WebGL2 Support</li>
               <li>RAM: 2GB+</li>
+              <li>OS: macOS (10.10+), Windows 10, or Linux</li>
             </ul>
+            <p>English: You need a Mac or PC made after 2012 with reasonable specs.</p>
           </div>
 
           <div class="col">
@@ -42,11 +64,10 @@
               <li>GPU: Dedicated Graphics Card with 2GB of VRAM</li>
               <li>RAM: 4GB+</li>
             </ul>
+            <p>English: It's Nice to have a decent computer made after 2016. A dedicated graphics card can go a long way.</p>
           </div>
         </div>
-
-    </section>
-
+      </section>
     </section>
 
     <section class="full" id="downloads">
@@ -55,12 +76,13 @@
 
       <table class="downloads">
         <tr>
-          <th>version</th> <th>MacOS</th> <th>Windows</th> <th>Linux</th>
+          <th>version</th> <th>MacOS</th> <th>Windows</th> <th>Linux .deb</th> <th>Linux .rpm</th>
         </tr>
         <tr>
           <td>v0.7.4_pre_beta</td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.7.4/Darkroom-darwin-x64-0.7.4.zip" class="blue">macos 10.10+</a></td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.7.4/Darkroom-0.7.4.Setup.exe" class="blue">Windows 10</a></td>
+          <td>None</td>
           <td>None</td>
         </tr>
         <tr>
@@ -68,16 +90,19 @@
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.7.3/Darkroom-darwin-x64-0.7.3.zip" class="blue">macos 10.10+</a></td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.7.3/Darkroom-0.7.3.Setup.exe" class="blue">Windows 10</a></td>
           <td>None</td>
+          <td>None</td>
         </tr>
         <tr>
           <td>v0.7.0_pre_beta</td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.7.0/Darkroom-darwin-x64-0.7.0.zip" class="blue">macos 10.10+</a></td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.7.0/Darkroom-0.7.0.Setup.exe" class="blue">Windows 10</a></td>
           <td>None</td>
+          <td>None</td>
         </tr>
         <tr>
           <td>v0.6.6_pre_alpha</td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.6.6/Darkroom-darwin-x64-0.6.6.zip" class="blue">macos 10.10+</a></td>
+          <td>None</td>
           <td>None</td>
           <td>None</td>
         </tr>
@@ -86,10 +111,12 @@
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.6.5/Darkroom-darwin-x64-0.6.5.zip" class="blue">macos 10.10+</a></td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.6.5/Darkroom-0.6.5.Setup.exe" class="blue">Windows 10</a></td>
           <td>None</td>
+          <td>None</td>
         </tr>
         <tr>
           <td>v0.6.0_pre_alpha</td>
           <td><a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.6.0/Darkroom-darwin-x64-0.6.0.zip" class="blue">macos 10.10+</a></td>
+          <td>None</td>
           <td>None</td>
           <td>None</td>
         </tr>
@@ -102,6 +129,7 @@
         <tr>
           <td>v0.5.0_pre_alpha</td>
           <td> <a href="https://github.com/ajzat34/Open-Darkroom/releases/download/0.2.0/Darkroom-darwin-x64-0.5.0.zip" class="blue">macOS (10.10+)</a> </td>
+          <td>None</td>
           <td>None</td>
           <td>None</td>
         </tr>

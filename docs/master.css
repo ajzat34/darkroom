@@ -191,8 +191,55 @@ div.col2 div.col div img {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1)) drop-shadow(0 20px 24px rgba(0, 0, 0, 0.2)) drop-shadow(0 40px 32px rgba(0, 0, 0, 0.1));
 }
 
-.readme h3 {
+.split {
+  display: flex;
+  flex-direction: row;
+  max-width: 80%;
+  align-items: center;
+}
+
+.split img {
+  flex-shrink: 1;
+  flex-grow: 0;
+  max-width: 20%;
+}
+
+.split div {
+  flex-grow: 1;
+}
+
+.split.iright div {
+  text-align: right;
+}
+
+.split.ileft img {
+  margin-right: 48px;
+}
+
+.split.iright img {
+  margin-left: 48px;
+}
+
+.section-title {
+  padding-top: 32px;
+}
+
+
+#readmore {
+  background-color: rgb(44, 50, 64);
+  color: rgb(255, 251, 231);
+  min-height: 100vh;
+  margin-top: 120px;
+  padding-bottom: 48px;
+}
+
+#readmore h2 {
+  margin-bottom: 32px;
+}
+
+#readmore h3 {
   font-size: 28pt;
+  margin-bottom: 24px;
   font-weight: bold;
 }
 
