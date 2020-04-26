@@ -34,29 +34,11 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-// creates a loading window
-function spawnLoadWindow () {
-  // Create the loading window
-  const loadWindow = new BrowserWindow({
-    width: 300,
-    height: 400,
-    show: false,
-    frame: false,
-    transparent: true,
-    resizable: false,
-  })
+// there can only be one preferences window so we keep track if it globally
+var prefsWindow = false
 
-  // show on ready
-  loadWindow.once('ready-to-show', () => {
-    loadWindow.show()
-  })
--
-  loadWindow.on('focus', mainTitleMenu)
 
-  // and load the index.html of the app.
-  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
-  return loadWindow
-}
+// -- window creation --
 
 // creates the main editor window
 const spawnEditorWindow = (filepath) => {
@@ -99,6 +81,30 @@ const spawnEditorWindow = (filepath) => {
       console.log('window is already shown, this usually happens then the editor is reloaded')
     }
   }
+
+// creates a loading window
+function spawnLoadWindow () {
+  // Create the loading window
+  const loadWindow = new BrowserWindow({
+    width: 300,
+    height: 400,
+    show: false,
+    frame: false,
+    transparent: true,
+    resizable: false,
+  })
+
+  // show on ready
+  loadWindow.once('ready-to-show', () => {
+    loadWindow.show()
+  })
+-
+  loadWindow.on('focus', mainTitleMenu)
+
+  // and load the index.html of the app.
+  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
+  return loadWindow
+}
 
   // when the render process is ready, show the window
   ipcMain.on('mainwindow-loaded', swapwindows)
@@ -221,6 +227,19 @@ const spawnFileSelectionWindow = () => {
   })
 }
 
+// creates a window for preferences
+const spawnPrefsWindow = () => {
+  if (prefsWindow) {
+    prefsWindow.show()
+    return
+  }
+
+  prefsWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+  })
+}
+
 // license viewer window
 const spawnLicenseWindow = () => {
   // Create the file selection window
@@ -277,6 +296,8 @@ function childWindow(parent, opt) {
     child.loadFile(path.join(__dirname, opt.path))
   })
 }
+
+// -- helper / utility functions --
 
 
 // parses path info for mac and windows
@@ -357,6 +378,9 @@ function addRecent(path) {
   store.set('recents', recents)
   updateGlobalRecents(recents)
 }
+ipcMain.on('add-recent', (event, path) => {
+  addRecent(path)
+})
 
 // updates the global (shared between render processes and main process) for recent files
 function updateGlobalRecents (recents) {
@@ -368,35 +392,12 @@ function updateGlobalRecents (recents) {
   global.recents = data
 }
 
-// might help some machines support webgl2
-app.commandLine.appendSwitch('enable-unsafe-es3-apis')
-
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', main)
-async function main () {
-  clearMenu()
-  var recents = store.get('recents')
-  if (!recents) recents = []
-  global.envdata = {
-    darwin: isDarwin,
-    windows: isWindows,
-    pathsep: {true: '\\', false: '/'}[isWindows],
-  }
-  updateGlobalRecents(recents)
-  // open a window
-  spawnFileSelectionWindow()
-
-  ipcMain.on('show-license', spawnLicenseWindow)
-}
-
-
 // clears the title memu
 function clearMenu() {
   Menu.setApplicationMenu()
 }
+
+// -- menus --
 
 // set the application menu for file selection
 function fileSelectTitleMenu() {
@@ -406,6 +407,7 @@ function fileSelectTitleMenu() {
       submenu: [
         { role: 'about' },
         { type: 'separator' },
+        { label: 'preferences', click(menuItem) { spawnPrefsWindow() }, accelerator: 'CommandOrControl+,'},
         { role: 'quit' }
       ]
     },
@@ -434,8 +436,9 @@ function mainTitleMenu() {
       label: 'Menu',
       submenu: [
         { role: 'about' },
+        { label: 'preferences', click(menuItem) { spawnPrefsWindow() }, accelerator: 'CommandOrControl+,'},
         { type: 'separator' },
-        { role: 'quit' }
+        { role: 'quit' },
       ]
     },
 
@@ -484,4 +487,25 @@ function mainTitleMenu() {
       ]
     },
   ]))
+}
+
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', main)
+async function main () {
+  clearMenu()
+  var recents = store.get('recents')
+  if (!recents) recents = []
+  global.envdata = {
+    darwin: isDarwin,
+    windows: isWindows,
+    pathsep: {true: '\\', false: '/'}[isWindows],
+  }
+  updateGlobalRecents(recents)
+  // open a window
+  spawnFileSelectionWindow()
+
+  ipcMain.on('show-license', spawnLicenseWindow)
 }

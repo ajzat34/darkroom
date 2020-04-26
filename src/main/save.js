@@ -79,6 +79,7 @@ async function saveProjectAs() {
     return
   } else {
     projectPath = file.filePath
+    ipcRenderer.send('add-recent', projectPath)
   }
   saveProject()
 }
