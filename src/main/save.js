@@ -2,8 +2,8 @@
 // NEEDS LOTS OF WORK
 
 var FORMAT = {
-  version: '0.8.1',
-  compatable: ['0.8.0', '0.8.1'],
+  version: '0.8.2',
+  compatable: ['0.8.2'],
 }
 
 var projectPath = null
@@ -24,7 +24,7 @@ function createBundle (activeWidgets, widgetData, imageFormat, imageB64) {
 function loadPackage (pkg, srcpath) {
   // TODO: add version checking
   if (!FORMAT.compatable.includes(pkg.version)) {
-    alert('The file you are trying to load is not compatable with this version of darkroom')
+    errorBox('Darkroom - Cannot Open File', 'The file you are trying to load is not compatable with this version of darkroom', `File version: ${pkg.version}`)
     throw new Error('incompatable file version ' + pkg.versoin)
   }
   try {

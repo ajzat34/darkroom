@@ -104,6 +104,19 @@ const spawnEditorWindow = (filepath) => {
   // and we never recive the signal to show it
   var closetimeout = setTimeout(swapwindows, 8000)
 
+  // handle errors sent from the render process
+  function renderError(event) {
+    try {
+      if (event.sender === mainWindow.webContents) {
+        clearTimeout(closetimeout)
+        if (!shown) swapwindows()
+      } else {
+        ipcMain.once('render-error', renderError )
+      }
+    } catch (err) { console.error(err)}
+  }
+  ipcMain.once('render-error', renderError )
+
   var file = readPath(filepath)
   var loadmode = 'image'
   if (file.ext === 'dkg' || file.ext === 'dkr') loadmode = 'project'

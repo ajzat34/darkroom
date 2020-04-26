@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function(){
   var recents = remote.getGlobal('recents')
   var pathsep = remote.getGlobal('envdata').pathsep
   for (var i = recents.length-1; i>=0; i--) {
-    var recent = recents[i]
+    const recent = recents[i]
     console.log(recent, i)
     var tr = document.createElement('tr')
     var td = document.createElement('td')
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function(){
     a.classList.add('pad-right')
     a.href = '#'
     a.addEventListener('click', function(){
-      ipcRenderer.send('image-select', {path: recent.path})
+      ipcRenderer.send('image-select', {path: recent.path + ''})
     })
     a.appendChild(document.createTextNode(recent.name))
     td.appendChild(a)
