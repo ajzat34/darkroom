@@ -1,5 +1,4 @@
 #!/bin/bash
-npm install -g electron-icon-builder
 cd "$(dirname "$0")"
 electron-icon-builder --input=./source.png --output=./out
 mv ./out/icons/mac/icon.icns ../icon.icns

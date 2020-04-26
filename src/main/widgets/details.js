@@ -40,7 +40,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 10,
+      value: 5,
       step: 0.1,
     },
     'Value Noise': {
