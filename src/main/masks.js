@@ -12,7 +12,7 @@ var brushTexture = null
 var brushProgram = null
 
 function maskInit(gl) {
-  brushTexture = loadTexturePath(gl, gl.RGBA, gl.RGBA, __dirname + '/brush/128.png', null, gl.LINEAR)
+  brushTexture = loadTexturePath(gl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __dirname + '/brush/128.png', null, gl.LINEAR)
 
   // load the shader used for drawing the result to the viewport/canvas
   brushProgram = loadShaderPack(gl, __dirname + '/shaders/brush', {

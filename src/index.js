@@ -1,5 +1,7 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
+const version = '0.8.3'
+const codeName = 'Beta'
 
 const { app, BrowserWindow, ipcMain, dialog, Menu, crashReporter } = require('electron')
 const path = require('path')
@@ -13,9 +15,9 @@ const Store = require('electron-store')
 const store = new Store()
 
 // global is accessable in render processes
-global.version = '0.8.1'
-global.codeName = 'Radar (Beta)'
-global.versionName = '0.8.1 Beta'
+global.version = version
+global.codeName = codeName
+global.versionName = `${version} ${codeName}`
 
 // windows packager things
 // when installing on windows, squirrel creates multiple processes
@@ -103,6 +105,19 @@ const spawnEditorWindow = (filepath) => {
   // set a timeout in case something goes wrong while creating the editor
   // and we never recive the signal to show it
   var closetimeout = setTimeout(swapwindows, 8000)
+
+  // handle errors sent from the render process
+  function renderError(event) {
+    try {
+      if (event.sender === mainWindow.webContents) {
+        clearTimeout(closetimeout)
+        if (!shown) swapwindows()
+      } else {
+        ipcMain.once('render-error', renderError )
+      }
+    } catch (err) { console.error(err)}
+  }
+  ipcMain.once('render-error', renderError )
 
   var file = readPath(filepath)
   var loadmode = 'image'
@@ -356,10 +371,12 @@ function updateGlobalRecents (recents) {
 // might help some machines support webgl2
 app.commandLine.appendSwitch('enable-unsafe-es3-apis')
 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', ()=>{
+app.on('ready', main)
+async function main () {
   clearMenu()
   var recents = store.get('recents')
   if (!recents) recents = []
@@ -373,7 +390,8 @@ app.on('ready', ()=>{
   spawnFileSelectionWindow()
 
   ipcMain.on('show-license', spawnLicenseWindow)
-})
+}
+
 
 // clears the title memu
 function clearMenu() {

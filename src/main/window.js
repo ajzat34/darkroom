@@ -57,7 +57,7 @@ var autosaveTimer                     // same as above, but for autosave
 var model             // holds the webgl object for the model
 var copyprogram       // webgl shader program for
 var widgets = {}      // holds the widget descriptors
-var widgetOrder = ['adjustments', 'details'] // order to apply widgets
+var widgetOrder = ['rawdev', 'adjustments', 'details'] // order to apply widgets
 var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
 var sourceImage       // texture with the source image
 
@@ -208,7 +208,13 @@ function gatherWindowData () {
   envdata = remote.getGlobal('envdata')
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+// entry point
+document.addEventListener("DOMContentLoaded",
+function(){
+  window.addEventListener("error", function (e) { onError(e.error) })
+  main()
+})
+function main () {
 
   // get window panes
   preview = document.getElementById('preview-pane')
@@ -224,11 +230,7 @@ document.addEventListener("DOMContentLoaded", function(){
   window.addEventListener('mousemove', mouseMoveHandler)
   pc.addEventListener("mousewheel", mouseWheelHandler, false);
   pgl = getWebGL(pc)
-  if (!pgl) {
-    alert('WebGL is not supported')
-    remote.getCurrentWindow().close()
-    return
-  }
+  if (!pgl) errorBox('WebGL2 not supported', 'It looks like your computer doesn\'t support OpenGL-ES 3.0 / WebGL2.', 'Try updating your computer, and making sure your graphics drivers are properly installed.')
 
   gatherWindowData()
 
@@ -253,8 +255,29 @@ document.addEventListener("DOMContentLoaded", function(){
   ipcRenderer.on('save-as', saveProjectAs)
 
   setupButtonEvents()
-})
+}
 
+// displays a message when an error ocurs. handles closing on error, and show on error while loading
+function errorBox(title, message, detail) {
+  ipcRenderer.send('render-error')
+  const response = dialog.showMessageBoxSync({
+    type: 'error',
+    buttons: ['Quit', 'Keep Going'],
+    defaultId: 0,
+    title: title,
+    message: message,
+    detail: detail,
+  })
+  switch (response) {
+    case 0:
+      remote.getCurrentWindow().close()
+      break
+  }
+}
+
+function onError(err) {
+  errorBox('Error', 'Something went wrong!', error.toString())
+}
 
 // ------ rendering ------
 
