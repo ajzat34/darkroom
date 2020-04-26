@@ -1,5 +1,7 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
+const version = '0.8.3'
+const codeName = 'Beta'
 
 const { app, BrowserWindow, ipcMain, dialog, Menu, crashReporter } = require('electron')
 const path = require('path')
@@ -13,9 +15,9 @@ const Store = require('electron-store')
 const store = new Store()
 
 // global is accessable in render processes
-global.version = '0.8.1'
-global.codeName = 'Radar (Beta)'
-global.versionName = '0.8.1 Beta'
+global.version = version
+global.codeName = codeName
+global.versionName = `${version} ${codeName}`
 
 // windows packager things
 // when installing on windows, squirrel creates multiple processes
