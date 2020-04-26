@@ -1,9 +1,4 @@
 var bindings = {
-  48: function(){viewreset()},   // 0
-  49: function(){viewabs(1)},    // 1
-  50: function(){viewabs(2)},    // 2
-  51: function(){viewabs(4)},    // 3
-
   27: function(){viewMode()},    // esc
 
   219: function(){if(controlmode==='editmask') brushD()},     // [
@@ -19,4 +14,22 @@ document.getElementById('btn-maskedit-exit').addEventListener('click',function()
 
 document.onkeyup = function(e) {
   Object.keys(bindings).forEach((binding) => { if (e.which == binding) bindings[binding]() })
+}
+
+function prepareShortcuts() {
+  ipcRenderer.on('view-reset', function(){viewreset()})
+  ipcRenderer.on('view-1', function(){viewabs(1)})
+  ipcRenderer.on('view-2', function(){viewabs(2)})
+  ipcRenderer.on('view-3', function(){viewabs(3)})
+  ipcRenderer.on('view-4', function(){viewabs(4)})
+  ipcRenderer.on('view-5', function(){viewabs(5)})
+
+  ipcRenderer.on('export', function(){exportProject()})
+
+  document.getElementById('btn-show-mask').addEventListener("mousedown", function(e) {
+    updateCanvasMouseShowMask()
+  })
+  document.getElementById('btn-show-mask').addEventListener("mouseup", function(e) {
+    updateCanvasMouse()
+  })
 }

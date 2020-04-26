@@ -106,3 +106,11 @@ function maskEditorInput(from) {
   else if (from==='number-opacity') maskBrushOpacity = maskEditBrushOpacityNumber.value
   updateMaskSlider()
 }
+
+function updateCanvasMouseShowMask () {
+  console.log(editingMask)
+  viewscale = scale*scale
+  var width = calcCanvasSizeWidth()
+  var height = calcCanvasSizeHeight()
+  updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, editingMask.texture)
+}

@@ -7,10 +7,12 @@ body {
   flex-direction: column;
   -webkit-user-select: none;
   user-select: none;
+  background-color: rgb(28, 31, 37);
 }
 
 .toolbar {
   height: 32px;
+  -webkit-app-region: drag;
 }
 
 .osx_buttons {
@@ -58,4 +60,44 @@ img {
   width: 78%;
   margin-bottom: 0px;
   margin-top: -25px;
+}
+
+.title {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+}
+
+.recent {
+  min-height: 64px;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(94, 139, 255);
+}
+
+table {
+  margin-left: 24px;
+  border-collapse: separate;
+  border-spacing: 12px 0;
+}
+
+
+h1 {
+  font-size: 32pt;
+}
+
+section ul {
+  margin-top: 0;
+  padding-left: 24px;
+}
+
+section h2 {
+  margin-bottom: 0.25em;
+}
+
+li {
+  list-style-type: none;
 }

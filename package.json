@@ -1,7 +1,7 @@
 {
   "name": "opendarkroom",
   "productName": "Darkroom",
-  "version": "0.7.5",
+  "version": "0.8.1",
   "description": "Open Source Image Editor",
   "main": "src/index.js",
   "scripts": {
@@ -16,7 +16,10 @@
     "name": "Andrew Johnson",
     "email": "ajzat34@gmail.com"
   },
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ajzat34/darkroom.git"
+  },
   "config": {
     "forge": {
       "packagerConfig": {
@@ -27,7 +30,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Darkroom",
+            "setupIcon": "build/icon.ico",
             "loadingGif": "build/installer.gif"
           }
         },
@@ -45,11 +48,24 @@
           "name": "@electron-forge/maker-rpm",
           "config": {}
         }
+      ],
+      "publishers": [
+        {
+          "name": "@electron-forge/publisher-github",
+          "config": {
+            "repository": {
+              "owner": "ajzat34",
+              "name": "darkroom"
+            },
+            "prerelease": true
+          }
+        }
       ]
     }
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^5.1.1",
     "lodash": "^4.17.15"
   },
   "devDependencies": {

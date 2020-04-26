@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="window.css">
     <link rel="stylesheet" href="open/main.css">
 
+    <title>Darkroom <script>document.write(require('electron').remote.getGlobal('versionName'))</script></title>
+
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
   </head>
   <body>
@@ -16,17 +18,36 @@
     <div class="main">
       <div class="leftpane">
         <div class="content">
-          <h2>Start a new project from an image:</h2>
-          <button class="large" type="button" id="open-btn">Open Image</button>
-          <h2>Load an existing project:</h2>
-          <button class="large" type="button" id="project-btn">Open Project</button>
+
+          <section>
+            <h1 class="title">Open Darkoom</h1>
+          </section>
+
+          <section>
+            <button class="large" type="button" id="open-btn">New Project</button>
+            <button class="large" type="button" id="project-btn">Existing Project</button>
+          </section>
+
+          <section class="recent">
+            <h2>Recent</h2>
+            <table id="recent-list">
+            </table>
+          </section>
+
+          <section class="recent">
+            <h2>Docs</h2>
+            <ul>
+              <li><a href="#" onclick="openLink('https://github.com/ajzat34/darkroom/wiki')">Wiki</a></li>
+              <li><a href="#" onclick="openLicense()">License</a></li>
+            </ul>
+          </section>
+
         </div>
       </div>
       <div class="spacer line right lightline"></div>
       <div class="rightpane">
         <img src="open/splash.png" alt="icon" draggable="false">
-        <h1>Open Darkroom</h1>
-        <span>By Andrew Johnson</span>
+        <span style="font-size: 24pt;"> <script>document.write(require('electron').remote.getGlobal('versionName'))</script></span>
       </div>
     </div>
     <script type="text/javascript" src="open/main.js"></script>

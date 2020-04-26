@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
 
-    <title>Open Darkroom</title>
+    <title>Darkroom <script>document.write(require('electron').remote.getGlobal('versionName'))</script></title>
 
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="window.css">
@@ -23,13 +23,12 @@
             <span class="max" id="max-btn"><span class="button">+</span></span>
           </div>
           <button class="mid buttonimg" type="button" id="btn-save" onclick="saveProject()">Save <img src="icon/save.svg"></button>
-          <button class="mid buttonimg" type="button" id="btn-save-as" onclick="saveProjectAs()">Save As <img src="icon/save.svg"></button>
         </section>
         <section class="mid">
           <span class="text" id="filename-tag">...</span>
         </section>
         <section class="right">
-          <button class="mid buttonimg" type="button" id="btn-save-as" onclick="exportProject()">Export <img src="icon/export.svg"></button>
+          <button class="mid buttonimg" type="button" id="btn-export" onclick="exportProject()">Export <img src="icon/export.svg"></button>
           <button class="mid" type="button" id="btn-compare">Compare</button>
         </section>
       </div>
@@ -81,9 +80,13 @@
             </table>
           </div>
           <div class="divider"></div>
-          <div class="ftop">
+          <div class="vcenter">
             <span><input type="radio" id="radio-editmask-value" value="subtract" name="value" checked><label for="subtract">Subtract</label><br></span>
             <span><input type="radio" name="value" value="add"><label for="add">Add</label><br></span>
+          </div>
+          <div class="divider"></div>
+          <div class="vcenter">
+            <button type="button" class="mid" id="btn-show-mask">Show mask</button>
           </div>
         </div>
       </div>

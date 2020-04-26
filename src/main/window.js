@@ -143,19 +143,20 @@ function mouseMoveHandler (e) {
     deltaX = (e.clientX - mosusepos[0]) / viewscale
     deltaY = (e.clientY - mosusepos[1]) / viewscale
     mosusepos = [e.clientX, e.clientY]
-    if (controlmode === 'view') {
+    if (controlmode === 'view' | e.ctrlKey) {
       scroll = [scroll[0]+deltaX, scroll[1]+deltaY]
       scheduleUpdate()
+    } else {
+      maskEditorTick(mosusepos)
     }
-    maskEditorTick(mosusepos)
   }
 }
 
 function mouseDownHandler (e) {
   mouse = 'down'
   mosusepos = [e.clientX, e.clientY]
-  if (controlmode === 'view') pc.style.cursor = "move"
-  maskEditorTick(mosusepos)
+  if (controlmode === 'view' | e.ctrlKey) pc.style.cursor = "move"
+  else maskEditorTick(mosusepos)
 }
 
 function mouseUpHandler () {
@@ -237,6 +238,8 @@ document.addEventListener("DOMContentLoaded", function(){
   // prepare the contextual menu
   loadContexts()
   setContextualMode('view')
+
+  prepareShortcuts()
 
   // initial sizing
   resize()
