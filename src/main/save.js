@@ -147,8 +147,8 @@ async function exportImage(format, quality) {
   }
   var blob = await framebufferToBlob(pgl, format, framebuffers.final, {quality: quality})
   var reader = new FileReader()
-  reader.onload = function(){
-      var buffer = new Buffer(reader.result)
+  reader.onload = function() {
+      var buffer = Buffer.from(reader.result)
       fs.writeFile(path, buffer, {}, (err, res) => {
           if(err){
               alert('exporting failed! \n\n' + err.toString())
