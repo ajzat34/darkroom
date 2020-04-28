@@ -1,6 +1,6 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
-const version = '0.9.0'
+const version = '0.9.1'
 const codeName = 'Beta'
 
 const { app, BrowserWindow, ipcMain, dialog, Menu, crashReporter } = require('electron')
@@ -498,6 +498,7 @@ function mainTitleMenu() {
 app.on('ready', main)
 async function main () {
   clearMenu()
+  store.set('lastversion', version)
   var recents = store.get('recents')
   if (!recents) recents = []
   global.envdata = {
