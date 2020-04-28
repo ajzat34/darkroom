@@ -422,6 +422,8 @@ function fileSelectTitleMenu() {
     {
       label: 'Window',
       submenu: [
+        { role: 'close' },
+        { type: 'separator' },
         { label:'Reload', click(menuItem, focusedWin) { focusedWin.webContents.reload() }, accelerator: 'CommandOrControl+shift+r'},
         { label:'Open Dev Tools', click(menuItem, focusedWin) { focusedWin.webContents.openDevTools() }, accelerator: 'CommandOrControl+Option+i'},
       ]
