@@ -1,5 +1,6 @@
 # version 300 es
 uniform sampler2D texSampler;
+uniform sampler2D maskSampler;
 // size of the kernal
 uniform mediump int ksize;
 // max 80 weights = max kernel size of 9x9
@@ -19,6 +20,7 @@ highp vec3 csample(ivec2 s)
 void main (void) {
   // get the center texel coord
   highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
+  highp float mask = texelFetch(maskSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0).r;
 
   highp vec3 acc = vec3(0.0);
 
@@ -195,5 +197,5 @@ void main (void) {
    acc += csample(p+ivec2(4,-4)) * weights[80];
 }
 
-  fragmentColor = vec4(acc.rgb, 1.0);
+  fragmentColor = vec4((acc.rgb*mask)  + (csample(p)*(1.0-mask)), 1.0);
 }

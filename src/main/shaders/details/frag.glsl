@@ -84,57 +84,6 @@ highp vec3 convolution(ivec2 p, highp float weights[49]) {
    acc += csample(p+ivec2(1,-2)) * weights[23];
    acc += csample(p+ivec2(2,-2)) * weights[24];
 }
- else if (ksize == 7) {
-   acc += csample(p+ivec2(-3,3)) * weights[0];
-   acc += csample(p+ivec2(-2,3)) * weights[1];
-   acc += csample(p+ivec2(-1,3)) * weights[2];
-   acc += csample(p+ivec2(0,3)) * weights[3];
-   acc += csample(p+ivec2(1,3)) * weights[4];
-   acc += csample(p+ivec2(2,3)) * weights[5];
-   acc += csample(p+ivec2(3,3)) * weights[6];
-   acc += csample(p+ivec2(-3,2)) * weights[7];
-   acc += csample(p+ivec2(-2,2)) * weights[8];
-   acc += csample(p+ivec2(-1,2)) * weights[9];
-   acc += csample(p+ivec2(0,2)) * weights[10];
-   acc += csample(p+ivec2(1,2)) * weights[11];
-   acc += csample(p+ivec2(2,2)) * weights[12];
-   acc += csample(p+ivec2(3,2)) * weights[13];
-   acc += csample(p+ivec2(-3,1)) * weights[14];
-   acc += csample(p+ivec2(-2,1)) * weights[15];
-   acc += csample(p+ivec2(-1,1)) * weights[16];
-   acc += csample(p+ivec2(0,1)) * weights[17];
-   acc += csample(p+ivec2(1,1)) * weights[18];
-   acc += csample(p+ivec2(2,1)) * weights[19];
-   acc += csample(p+ivec2(3,1)) * weights[20];
-   acc += csample(p+ivec2(-3,0)) * weights[21];
-   acc += csample(p+ivec2(-2,0)) * weights[22];
-   acc += csample(p+ivec2(-1,0)) * weights[23];
-   acc += csample(p) * weights[24];
-   acc += csample(p+ivec2(1,0)) * weights[25];
-   acc += csample(p+ivec2(2,0)) * weights[26];
-   acc += csample(p+ivec2(3,0)) * weights[27];
-   acc += csample(p+ivec2(-3,-1)) * weights[28];
-   acc += csample(p+ivec2(-2,-1)) * weights[29];
-   acc += csample(p+ivec2(-1,-1)) * weights[30];
-   acc += csample(p+ivec2(0,-1)) * weights[31];
-   acc += csample(p+ivec2(1,-1)) * weights[32];
-   acc += csample(p+ivec2(2,-1)) * weights[33];
-   acc += csample(p+ivec2(3,-1)) * weights[34];
-   acc += csample(p+ivec2(-3,-2)) * weights[35];
-   acc += csample(p+ivec2(-2,-2)) * weights[36];
-   acc += csample(p+ivec2(-1,-2)) * weights[37];
-   acc += csample(p+ivec2(0,-2)) * weights[38];
-   acc += csample(p+ivec2(1,-2)) * weights[39];
-   acc += csample(p+ivec2(2,-2)) * weights[40];
-   acc += csample(p+ivec2(3,-2)) * weights[41];
-   acc += csample(p+ivec2(-3,-3)) * weights[42];
-   acc += csample(p+ivec2(-2,-3)) * weights[43];
-   acc += csample(p+ivec2(-1,-3)) * weights[44];
-   acc += csample(p+ivec2(0,-3)) * weights[45];
-   acc += csample(p+ivec2(1,-3)) * weights[46];
-   acc += csample(p+ivec2(2,-3)) * weights[47];
-   acc += csample(p+ivec2(3,-3)) * weights[48];
- }
  return acc;
 }
 
