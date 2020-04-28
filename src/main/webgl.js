@@ -137,17 +137,6 @@ function loadTextureData(gl, texture, width, height, data, alignment) {
                 data)
 }
 
-function loadTextureDataFormat(gl, texture, internalFormat, srcFormat, width, height, data, offset, alignment) {
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  const level = 0;
-  const border = 0;
-  const srcType = gl.UNSIGNED_BYTE;
-  if (alignment) gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment)
-  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-                width, height, border, srcFormat, srcType,
-                data, offset)
-}
-
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
 function loadTexture(gl, internalFormat, srcFormat, srcType, imageFormat, imageData, callback, filter) {
@@ -188,6 +177,27 @@ function loadTexturePath(gl, internalFormat, srcFormat, srcType, path, callback,
     if (callback) callback(image)
   })
 
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  if (filter) {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter)
+  } else {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  }
+  return texture;
+}
+
+// same as above but accepts an array
+function loadTextureArray(gl, internalFormat, srcFormat, srcType, width, height, data, callback, filter) {
+  const texture = gl.createTexture();
+  setTimeout(function(){
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, srcType, data, 0);
+    callback({width: width, height: height})
+  },0)
   gl.bindTexture(gl.TEXTURE_2D, texture)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)

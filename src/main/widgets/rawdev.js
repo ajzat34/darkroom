@@ -2,7 +2,7 @@ var sliderDark = 'rgba(120, 120, 120, 1)'
 var sliderLight = 'rgba(255,255,255,1)'
 
 module.exports = {
-  name: 'Develop Raw',
+  name: '16bit Developer',
   knobs: {
     'Exposure': {
       type: 'slider',

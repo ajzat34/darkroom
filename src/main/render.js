@@ -1,13 +1,6 @@
+var bits16Mode = false
+
 // defines the default opengl texture formats
-var sourceImgInternalFormat = 'RGBA16F'
-var sourceImgFormat = 'RGBA'
-var sourceImgType = 'HALF_FLOAT'
-var disable16BitLoading = false // when set to true, sourceImg* = texture*
-
-var webGLsourceImgInternalFormat
-var webGLsourceImgFormat
-var webGLsourceImgType
-
 var textureInternalFormat = 'RGBA'
 var textureFormat = 'RGBA'
 var textureType = 'UNSIGNED_BYTE'
@@ -26,19 +19,9 @@ var webGLtextureType
 // when done loading the image, loadTexture() will call eventImageLoad() to finish preparing and show the window
 function prepare (gl) {
 
-  if (disable16BitLoading) {
-    sourceImgInternalFormat = textureInternalFormat
-    sourceImgFormat = textureFormat
-    sourceImgType = textureType
-  }
-
   webGLtextureInternalFormat = gl[textureInternalFormat]
   webGLtextureFormat = gl[textureFormat]
   webGLtextureType = gl[textureType]
-
-  webGLsourceImgInternalFormat = gl[sourceImgInternalFormat]
-  webGLsourceImgFormat = gl[sourceImgFormat]
-  webGLsourceImgType = gl[sourceImgType]
 
   // to render the image we use two texture-mapped triangles
   model = prepareModelBuffer(gl)
@@ -69,21 +52,44 @@ function prepare (gl) {
     // if we are loading an image, pass it to loadTexture directly as a base64 string
     imageB64 = fs.readFileSync(imagePath).toString('base64')
     imageFormat = imagePath.split('.')
-    imageFormat = imageFormat[imageFormat.length-1]
-    sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
+    imageFormat = imageFormat[imageFormat.length-1].toLowerCase()
+    // sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
   } else if (resp.loadmode === 'project') {
     // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
     srcPackage = JSON.parse(fs.readFileSync(imagePath))
     imageB64 = srcPackage.image.data
     imageFormat = srcPackage.image.format
-    sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
+    // sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
   }
+  loadImageByFormat(gl, imageFormat, imageB64, eventImageLoad)
+
+  if (bits16Mode) widgetOrder.unshift('rawdev')
 
   // prepare resources for masks
   maskInit(gl)
 
   // create the options widgets
   createWidgetUIs()
+}
+
+// helper function for loading an image with the correct librarys
+function loadImageByFormat(gl, format, base64image, callback) {
+  if (format === 'tiff' || format === 'tif' || format === 'arw' || format === 'dng') {
+    var tiff = TIFF.read(Buffer.from(base64image, 'base64'))
+    console.log(tiff)
+    // use the first readable image
+    var tiffimage
+    tiff.images.forEach((image, i) => {
+      console.log('image', i, 'readable', tiff.images[i].readable)
+      if (image.readable) tiffimage = image
+    })
+    if (!tiffimage) throw new Error('failed to find readable image from tiff file')
+    var image = ImageToArrayBufferView(tiffimage)
+    if (image.glImageInternalFormat === 'RGBA16F') bits16Mode = true
+    sourceImage = loadTextureArray(gl, gl[image.glImageInternalFormat], gl[image.glImageFormat], gl[image.glImageType], image.width, image.height, image.data, callback, false)
+  } else {
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, format, base64image, callback)
+  }
 }
 
 function triggerRecreateFrameBuffers (gl) {

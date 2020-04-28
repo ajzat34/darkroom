@@ -24,6 +24,6 @@ void main(void) {
   saturationc.b -= temperature;
 
   // blend the original with the filtered, based on the mask
-  fragmentColor.rgb = saturationc;
+  fragmentColor.rgb = saturationc.rgb;
   fragmentColor.a = color.a;
 }

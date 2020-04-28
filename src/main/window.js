@@ -1,5 +1,7 @@
 const { ipcRenderer, remote } = require('electron')
 const dialog = remote.dialog
+const nodepath = require('path')
+const TIFF = require(nodepath.join(__dirname + '/tiff/index.js'))
 const fs = require('fs')
 
 // preview pane
@@ -57,7 +59,7 @@ var autosaveTimer                     // same as above, but for autosave
 var model             // holds the webgl object for the model
 var copyprogram       // webgl shader program for
 var widgets = {}      // holds the widget descriptors
-var widgetOrder = ['rawdev', 'adjustments', 'details'] // order to apply widgets
+var widgetOrder = ['adjustments', 'details'] // order to apply widgets
 var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
 var sourceImage       // texture with the source image
 
@@ -276,7 +278,7 @@ function errorBox(title, message, detail) {
 }
 
 function onError(err) {
-  errorBox('Error', 'Something went wrong!', error.toString())
+  errorBox('Error', 'Something went wrong!', err.toString())
 }
 
 // ------ rendering ------

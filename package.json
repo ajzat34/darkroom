@@ -1,7 +1,7 @@
 {
   "name": "opendarkroom",
   "productName": "Darkroom",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "versionName": "Beta",
   "description": "Open Source Image Editor",
   "main": "src/index.js",
@@ -68,6 +68,7 @@
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^5.1.1",
+    "exiftool-vendored": "^11.2.0",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
