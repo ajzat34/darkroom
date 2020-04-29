@@ -6,6 +6,7 @@ function createWidgetUi (parent, from) {
   r.knobs = []
   r.onchange = function(){console.log('onchange callback unset', r)}
   r.ondata = function(){console.log('ondata callback unset', r)}
+  r.hidden = false
 
   function sendData() {
     var data = {}
@@ -50,30 +51,31 @@ function createWidgetUi (parent, from) {
         allowHTML: true,
       })
       titlerow.appendChild(title)
-
-    if (from.takesMask) {
-      var mask = document.createElement("button")
-        mask.appendChild(document.createTextNode('Mask'))
-        mask.addEventListener('click', function(){
-          toggleEditingMask(from.mask)
-        })
-        if (useToolTips) tippy(mask, {
-          content: `Edit masking for this adjustment layer`,
-          arrow: true, delay: [toolTipDelay, 100],
-          hideOnClick: true,
-          theme: 'widgetUItooltip',
-          animation: 'fade',
-          placement: 'left',
-          allowHTML: true,
-        })
-        titlerow.appendChild(mask)
-    }
   }
   {
     // create the knobs
     var content = document.createElement("div")
       content.classList.add("widgetUI-content")
       node.appendChild(content)
+
+      if (from.takesMask) {
+        var mask = document.createElement("button")
+          mask.classList.add("maskbutton")
+          mask.appendChild(document.createTextNode('Mask'))
+          mask.addEventListener('click', function(){
+            toggleEditingMask(from.mask)
+          })
+          if (useToolTips) tippy(mask, {
+            content: `Edit masking for this adjustment layer`,
+            arrow: true, delay: [toolTipDelay, 100],
+            hideOnClick: true,
+            theme: 'widgetUItooltip',
+            animation: 'fade',
+            placement: 'left',
+            allowHTML: true,
+          })
+          content.appendChild(mask)
+      }
 
     Object.keys(from.knobs).forEach((name) => {
       var knob = createWidgetUiKnob(name, from.knobs[name])
@@ -93,12 +95,30 @@ function createWidgetUi (parent, from) {
     })
   }
 
+  var collapse = document.createElement("button")
+    collapse.appendChild(document.createTextNode('Hide'))
+    collapse.addEventListener('click', function(){
+      if (r.hidden) {
+        collapse.innerText = 'Hide'
+        content.style.height = `${maxHeight}px`
+        content.style.opacity = '1'
+      } else {
+        content.style.height = `0px`
+        content.style.opacity = '0'
+        collapse.innerText = 'Show'
+      }
+      r.hidden = !r.hidden
+    })
+    titlerow.appendChild(collapse)
+
   parent.appendChild(node)
   Object.keys(r.knobs).forEach((knobname, i) => {
     if (r.knobs[knobname].oncreate){
       r.knobs[knobname].oncreate()
     }
-  });
+  })
+  var maxHeight = content.scrollHeight
+  content.style.height = `${maxHeight}px`
 
   r.remove = function() {
     Object.keys(r.knobs).forEach((knobname, i) => {
