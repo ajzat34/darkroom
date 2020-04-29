@@ -117,7 +117,7 @@ highp float edgedetect(ivec2 t) {
     diff = p[i]-mean;
     acc += diff*diff;
   }
-  return pow(acc, noisegamma);
+  return pow(acc/noisegamma, noisegamma);
 }
 
 void main (void) {

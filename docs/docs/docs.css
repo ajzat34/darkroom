@@ -3,7 +3,7 @@
 }
 
 .normaltext {
-  width: 60%;
+  width: 800px;
 }
 
 .normaltext h1, .normaltext h2, .normaltext h3, .normaltext h4, .normaltext h5, .normaltext h6 {
@@ -36,4 +36,10 @@ p.indent {
   max-width: 256px;
   margin: 8px;
   border-radius: 8px;
+}
+
+@media only screen and (max-width: 800px) {
+  .normaltext {
+    width: 90%;
+  }
 }

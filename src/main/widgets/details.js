@@ -102,7 +102,7 @@ module.exports = {
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
       tooltip: `
 <div class="tooltip-content">
-<h4>Color Detection</h4>
+<h4>Noise Gain</h4>
 <p>A higher gain will (disproportionately) increase the sensitivity to more subtle noise, while a lower gain will cause masking to ignore subtle noise more.</p>
 </div>`,
     },

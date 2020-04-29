@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sharpness and Denoising - Open Darkroom Photo Editor - Docs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/master.css">
+    <link rel="stylesheet" href="../master.css">
+    <link rel="stylesheet" href="docs.css">
+  </head>
+  <body>
+
+    <section class="docs-title">
+      <h1>Sharpness and Denoising</h1>
+      <h3>For Amature Photographers</h3>
+    </section>
+
+    <section>
+
+      <h2>Overview</h2>
+      <div class="normaltext">
+        <p class="indent">
+            This guide aims to provide a detailed look into the use of the details filter. This guide assumes that you have read and understand Basic Editing for Amature Photographers.
+        </p>
+      </div>
+
+      <h2>Basic Sharpness Concepts</h2>
+      <img src="images/sharpness_tool.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+            The goal of image sharpening is to elminate unwanted blur from the image. To accompish this we need at least two paramaters,
+          how strongly the blur is applied to the image, and the radius (distance) of the blur. These paramaters are given as:
+        </p>
+        <ul>
+          <li> <strong>Sharpen:</strong> how strong the blur elimination should be applied.</li>
+          <li> <strong>Radius:</strong> what is the radius of the blur.</li>
+        </ul>
+        <p class="indent">
+            If these settings are set correcly, edges will have increased contrast. If the radius is set too high you will likely notice outlines around
+          edges.
+        </p>
+        <p class="indent">
+            Generally a good method to set these settings is:
+        </p>
+        <ol>
+          <li>Zoom in to at least a <strong>1:1 View</strong>. You must be able to see each pixel to accuratly judge sharpness. </li>
+          <li>Set <strong>Sharpen</strong> to <strong>100</strong>. </li>
+          <li>Set <strong>Radius</strong> to <strong>0</strong> and increase until the sharpness area matches the blurs area. </li>
+          <li>Set <strong>Sharpen</strong> to the lowest value that suffeciently sharpens the image. </li>
+        </ol>
+      </div>
+
+      <h2>Smart Masking</h2>
+      <img src="images/sharpness_tool_smart_mask.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+            Appling sharpness to the entire image can introduce unwanted image noise, so we use masking to only sharpen the parts of the image
+          with important details. This process is automaticly applied by default, but Open Darkroom gives you many ways to minipulate the masking process.
+          The simplest why in wich you can minipulate the mask is by adjusting "Smart Masking", a large value masks off more of the image, thus sharpening
+          less high frequency noise.
+        </p>
+      </div>
+
+      <h2>Visualize Image Processing</h2>
+      <img src="images/sharpness_tool_visualize.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+          To get the most out of smart masking it is important to understand the "Visualize Image Processing" mode.
+          In order to understand the VIP mode we must consider:
+        </p>
+        <ul>
+          <li> <strong>Green:</strong> sharpend pixels, brighter green = more sharpening</li>
+          <li> <strong>Black:</strong> unaffected pixels</li>
+          <li> <strong>Blue:</strong> denoised pixels, brighter blue = more denoising (see Denoising)</li>
+        </ul>
+        <div class="row3">
+          <div class="">
+            <img src="images/sharpness_smart_mask_sharpen.jpg">
+            <span>Only sharpness applied.</span>
+          </div>
+          <div class="">
+            <img src="images/sharpness_smart_mask_denoise.jpg">
+            <span>Only denoising applied.</span>
+          </div>
+          <div class="">
+            <img src="images/sharpness_smart_mask_both.jpg">
+            <span>Both sharpness and denoising applied.</span>
+          </div>
+        </div>
+        <p class="indent">
+          Due to the nature of sharpening and denoising, pixels cannot be both sharpened and denoised.
+        </p>
+        <p>
+          Note: denoised pixels will not be visable unless the Denoise slider is set, and Smart Masking is enabled.
+        </p>
+      </div>
+
+      <h2>Tweaking Smart Masking</h2>
+      <img src="images/sharpness_tweaks.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+            The image mask is genorated by computing a modified standard deviation within a group of nearby pixels. There are two ways to tweak this masking:
+            <ul>
+              <li> <strong>Detection Modes:</strong> The smart mask algorithm takes into account varyations in HSL information. There are 3 normalized controls for how much each HSL component is considered.</li>
+              <ul>
+                <li> <strong>Saturation:</strong> tells the masking algorithm to look for varyations in saturation. Usually the most effective.</li>
+                <li> <strong>Value:</strong> tells the masking algorithm to look for varyations in luminance. Usually the second most effective, good for detecting strong edges.</li>
+                <li> <strong>Color:</strong> tells the masking algorithm to look for varyations in hue. High values of Color Detection can cause unexpected behavior.</li>
+                <p>Note: normalized means that only the ratio of these values to eachother have meaning, not their exact value. For example 0,20,40 is the same as 0,2,4</p>
+              </ul>
+              <li> <strong>Gain:</strong> increase or decrease the sensitivity to more subtle noise.</li>
+            </ul>
+        </p>
+      </div>
+
+      <h2>Denoising</h2>
+      <img src="images/sharpness_tool_denoise.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+            Most of the information relevent to denoising has already been covered. Here is what remains:
+        </p>
+        <ul>
+          <li><strong>You must set both the Denoise slider and the Smart Masking slider to denoise any pixels</strong></li>
+          <li>Radius also affects the denoising radius</li>
+        </ul>
+        <p class="indent">
+            Denoising Tips:
+        </p>
+        <ul>
+          <li><strong>Sharpen by denoising:</strong> on very noisy images sometimes the best way to sharpen an image is to denoise around the edges. Often sharpening will look out of place on images with heavy denoisng, and leaving edges noisy will give the appearance of sharpness. </li>
+        </ul>
+      </div>
+    </section>
+
+    <header>
+      <span class="title">Open Darkroom</span>
+      <span class="shrinkspacer"></span>
+      <a class="" href="/docs/index.html">Documentation</a>
+      <a class="" href="/index.html#downloads">Download Now</a>
+    </header>
+
+  </body>
+</html>
