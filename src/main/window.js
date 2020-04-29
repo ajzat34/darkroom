@@ -63,7 +63,7 @@ var autosaveTimer                     // same as above, but for autosave
 var model             // holds the webgl object for the model
 var copyprogram       // webgl shader program for
 var widgets = {}      // holds the widget descriptors
-var widgetOrder = ['adjustments', 'details'] // order to apply widgets
+var widgetOrder = ['adjustments', 'details', 'colormat'] // order to apply widgets
 var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
 var sourceImage       // texture with the source image
 

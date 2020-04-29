@@ -116,7 +116,21 @@ input.inputnumber:focus {outline:0;}
   margin-bottom: 4px;
 }
 
+
+.knob input.trislider {
+  width: 30%;
+  margin-left: 6px;
+}
+
 .knob:hover input.slider {
+  opacity: 1;
+  height: 4px;
+}
+.knob:hover input.trislider {
+  opacity: 0.7;
+  height: 2px;
+}
+.knob input.trislider:hover {
   opacity: 1;
   height: 4px;
 }

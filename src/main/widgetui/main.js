@@ -138,6 +138,10 @@ function createWidgetUiKnob (name, base) {
       widget = createWidgetUiKnobCurves(name, base)
       widget.widgetUiValueType = 'curves'
       break
+    case 'trislider':
+      widget = createWidgetUiKnobTriSlider(name, base)
+      widget.widgetUiValueType = 'trivalue'
+      break
     default:
       throw new Error(`unknown knob type ${base.type}`)
       return
