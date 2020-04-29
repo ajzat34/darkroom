@@ -136,8 +136,6 @@ module.exports = {
           var b = k['Blue'].value
           var bsum = (b[0] + b[1] + b[2]) / (k['Master'].value[2]/100)
           var bn = [b[0]/bsum, b[1]/bsum, b[2]/bsum]
-
-          console.log(rn,gn,bn)
           set('r', 'vec3', rn)
           set('g', 'vec3', gn)
           set('b', 'vec3', bn)

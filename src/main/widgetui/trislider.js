@@ -42,9 +42,12 @@ function createWidgetUiKnobTriSlider (name, base) {
       })
 
   knob.morphTo = function(data) {
-    sliders[0] = data.value[0]
-    sliders[1] = data.value[1]
-    sliders[2] = data.value[2]
+    sliders[0].value = data.value[0]
+    sliders[1].value = data.value[1]
+    sliders[2].value = data.value[2]
+    knob.widgetUiValue[0] = data.value[0]
+    knob.widgetUiValue[1] = data.value[1]
+    knob.widgetUiValue[2] = data.value[2]
   }
 
   return knob

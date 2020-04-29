@@ -140,7 +140,7 @@ function createWidgetUiKnob (name, base) {
       break
     case 'trislider':
       widget = createWidgetUiKnobTriSlider(name, base)
-      widget.widgetUiValueType = 'trivalue'
+      widget.widgetUiValueType = 'value'
       break
     default:
       throw new Error(`unknown knob type ${base.type}`)

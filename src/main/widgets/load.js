@@ -1,1 +1,1 @@
-widgetimports = ["adjustments", "blur", "details", "rawdev", "colormat"]
+widgetimports = ["adjustments", "blur", "details", "rawdev", "colormat", 'grayscale']
