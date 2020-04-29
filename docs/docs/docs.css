@@ -1,0 +1,12 @@
+.docs-title {
+  margin-top: 24px;
+}
+
+.normaltext {
+  width: 60%;
+}
+
+.normaltext h1, .normaltext h2, .normaltext h3, .normaltext h4, .normaltext h5, .normaltext h6 {
+  width: auto;
+  text-align: left;
+}

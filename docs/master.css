@@ -87,7 +87,7 @@ section {
   flex-direction: column;
   align-items: center;
   padding-top: 56px;
-  min-height: 60vh;
+  min-height: 30vh;
 }
 
 section.hero {
@@ -170,25 +170,15 @@ div.col2 div.col {
   width: 50%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
 }
 
 div.col2 div.col div {
-  width: 100%;
   display: flex;
-  flex-direction: row;
-}
-
-div.col2 div.col div span {
-  padding-top: 56px;
-}
-
-div.col2 div.col div img {
-  max-width: 40%;
-  margin: 24px;
-  object-fit: contain;
-  object-position: top;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1)) drop-shadow(0 20px 24px rgba(0, 0, 0, 0.2)) drop-shadow(0 40px 32px rgba(0, 0, 0, 0.1));
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .split {
