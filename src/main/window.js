@@ -50,6 +50,10 @@ var normalscroll = false
 // holds to global state of all adjustments (widget knobs)
 var widgetState = {}
 
+// tool tip settings
+var useToolTips = true  // should tools tips be created (must be set before loading widgetUI)
+var toolTipDelay = 500 // delay before showing tool tips (in ms)
+
 // autosave and undo history
 var undoHistory = new UndoHistory(64) // holds the undo history
 var historyTimer                      // timer to batch change events

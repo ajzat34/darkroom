@@ -3,6 +3,7 @@ var sliderLight = 'rgba(255,255,255,1)'
 
 module.exports = {
   name: 'Details',
+  tooltip: 'Control image detail with shapening and denoising',
   knobs: {
     'Sharpen': {
       type: 'slider',
@@ -10,7 +11,12 @@ module.exports = {
       maxValue: 100,
       value: 0,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Sharpen</h4>
+<p>Reduce out of focus edges</p>
+</div>`,
     },
     'Radius': {
       type: 'slider',
@@ -18,7 +24,12 @@ module.exports = {
       maxValue: 100,
       value: 40,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Shapen/Denoise Radius</h4>
+<p>The sharpness/denoise radius</p>
+</div>`,
     },
     'Smart Masking': {
       type: 'slider',
@@ -26,7 +37,12 @@ module.exports = {
       maxValue: 100,
       value: 10,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+  <div class="tooltip-content">
+  <h4>Smart Masking</h4>
+  <p>Uses image processing to only apply sharpening and denoising to areas that need it</p>
+  </div>`,
     },
     'Denoise': {
       type: 'slider',
@@ -34,28 +50,48 @@ module.exports = {
       maxValue: 100,
       value: 0,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+  <div class="tooltip-content">
+  <h4>Denoise</h4>
+  <p>Applies High frequency noise reduction ONLY to pixels that have been selected with the "Smart Masking" adjustment. See Visualize image processing.</p>
+  </div>`,
     },
-    'Value Edges': {
+    'Value Detection': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 40,
       step: 0.1,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Value Detection</h4>
+<p>Control how much chagnes in brightness affect the smart mask</p>
+</div>`,
     },
-    'Saturation Edges': {
+    'Saturation Detection': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 80,
       step: 0.1,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Saturation Detection</h4>
+<p>Control how much chagnes in saturation affect the smart mask</p>
+</div>`,
     },
-    'Color Edges': {
+    'Color Detection': {
       type: 'slider',
       minValue: 0,
       maxValue: 50,
       value: 4,
       step: 0.1,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Color Detection</h4>
+<p>Control how much chagnes in color affect the smart mask. Using too much color detection can cause unprectiable results.</p>
+</div>`,
     },
     'Gain': {
       type: 'slider',
@@ -63,15 +99,30 @@ module.exports = {
       maxValue: 300,
       value: 160,
       step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Color Detection</h4>
+<p>A higher gain will (disproportionately) increase the sensitivity to more subtle noise, while a lower gain will cause masking to ignore subtle noise more.</p>
+</div>`,
     },
     'Visualize Image Processing': {
       type: 'checkbox',
       value: false,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Visualize Image Processing</h4>
+<p>Pixels to be sharpened will appear green (brigheter green = more sharpening), while pixels to be denoised will appear blue. Unaffected pixes will appear black. Due to the nature of sharpening and denoisng pixels cannot be sharpened and denoised at the same time, this is why only pixels excluded from sharpening by smart mask will be denoised.</p>
+</div>`,
     },
     'Large Noise': {
       type: 'checkbox',
       value: false,
+      tooltip: `
+<div class="tooltip-content">
+<h4>Large Area Noise</h4>
+<p>Enable only when a radius of at least 90 is not effective. Controls the number of pixels used in sharpening and blur calculations. Off = 3x3, On = 5x5.</p>
+</div>`,
     },
   },
   framebuffers: ['maps'],
@@ -112,10 +163,10 @@ module.exports = {
         "Denoise": function(v, set) {
           set('denoise', 'float', v/4)
         },
-        'Color Edges': function(v, set, k){
-          var h = k['Color Edges'].value/100
-          var s = k['Value Edges'].value/100
-          var v = k['Saturation Edges'].value/100
+        'Color Detection': function(v, set, k){
+          var h = k['Color Detection'].value/100
+          var s = k['Value Detection'].value/100
+          var v = k['Saturation Detection'].value/100
           var sum = h+s+v
           set('hsvweights', 'vec3', [h/sum, s/sum, v/sum])
         }

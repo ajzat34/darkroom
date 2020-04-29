@@ -69,7 +69,8 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^5.1.1",
     "exiftool-vendored": "^11.2.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "tippy.js": "^6.2.3"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.50",

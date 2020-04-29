@@ -1,3 +1,5 @@
+const tippy = require('tippy.js').default
+
 function createWidgetUi (parent, from) {
   var r = {}
   r.partent = parent
@@ -38,6 +40,15 @@ function createWidgetUi (parent, from) {
       title.classList.add("title")
       title.classList.add("large")
       title.appendChild(document.createTextNode(from.name))
+      if (from.tooltip && useToolTips) tippy(title, {
+        content: from.tooltip,
+        arrow: true, delay: [toolTipDelay, 100],
+        hideOnClick: true,
+        theme: 'widgetUItooltip',
+        animation: 'fade',
+        placement: 'left',
+        allowHTML: true,
+      })
       titlerow.appendChild(title)
 
     if (from.takesMask) {
@@ -45,6 +56,15 @@ function createWidgetUi (parent, from) {
         mask.appendChild(document.createTextNode('Mask'))
         mask.addEventListener('click', function(){
           toggleEditingMask(from.mask)
+        })
+        if (useToolTips) tippy(mask, {
+          content: `Edit masking for this adjustment layer`,
+          arrow: true, delay: [toolTipDelay, 100],
+          hideOnClick: true,
+          theme: 'widgetUItooltip',
+          animation: 'fade',
+          placement: 'left',
+          allowHTML: true,
         })
         titlerow.appendChild(mask)
     }
@@ -57,6 +77,15 @@ function createWidgetUi (parent, from) {
 
     Object.keys(from.knobs).forEach((name) => {
       var knob = createWidgetUiKnob(name, from.knobs[name])
+      if (from.knobs[name].tooltip  && useToolTips) tippy(knob, {
+        content: from.knobs[name].tooltip,
+        arrow: true, delay: [toolTipDelay, 100],
+        hideOnClick: true,
+        theme: 'widgetUItooltip',
+        animation: 'fade',
+        placement: 'left',
+        allowHTML: true,
+      })
       knob.name = name
       knob.widgetUiOnUpdate = update
       r.knobs[name] = knob

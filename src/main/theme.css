@@ -1,17 +1,28 @@
 :root {
   --theme-background-color: rgb(19, 22, 26);
   --theme-text-color: rgb(225, 226, 233);
+
   --theme-line-color: rgb(8, 8, 8);
   --theme-line-light-color: rgb(53, 57, 62);
+
   --theme-button-color: rgb(64, 70, 80);
   --theme-button-active-color: rgba(51, 56, 64, 0.5);
+
+  --theme-options-color: rgb(26, 30, 34);
+
   --theme-widget-color: rgb(43, 46, 51);
   --theme-widget-line-color: rgb(20, 21, 23);
+
   --theme-area-color: rgb(64, 70, 80);
   --theme-area-color-dark: rgb(49, 54, 62);
-  --theme-options-color: rgb(26, 30, 34);
+
   --theme-color-success: rgb(42, 198, 127);
   --theme-color-warning: rgb(223, 176, 35);
   --theme-color-danger: rgb(224, 55, 71);
+
   --theme-background-button-color: rgb(255,255,255);
+
+  --theme-tooltip-background-color: rgb(56, 118, 204);
+  --theme-tooltip-line-color: rgb(43, 73, 101);
+  --theme-tooltip-color: rgb(255, 255, 255);
 }

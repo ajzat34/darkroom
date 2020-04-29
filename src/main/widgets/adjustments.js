@@ -58,6 +58,7 @@ var sliderLight = 'rgba(255,255,255,1)'
 
 module.exports = {
   name: 'Adjustments',
+  tooltip: 'Basic color and tone adjustments',
   knobs: {
     'Gamma': {
       type: 'slider',
@@ -66,6 +67,11 @@ module.exports = {
       value: 1,
       style: `background: linear-gradient(90deg, ${sliderLight} 0%, ${sliderDark} 100%);`,
       step: 0.05,
+      tooltip: `
+<div class="tooltip-content">
+  <h4>Gamma Correction</h4>
+  <p>Lighten the image without affecting the white and black levels by non-linearly adjusting the brightness of pixels.</p>
+</div>`,
     },
     'Brightness': {
       type: 'slider',
@@ -73,27 +79,47 @@ module.exports = {
       maxValue: 100,
       value: 0,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+  <h4>Brightness</h4>
+  <p>Lighten or darken the entire image</p>
+</div>`,
     },
     'Contrast': {
       type: 'slider',
       minValue: -50,
       maxValue: 50,
       value: 0,
-      style: `background: linear-gradient(90deg, ${sliderLight} 0%, ${sliderDark} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderLight} 0%, ${sliderDark} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+  <h4>Contrast</h4>
+  <p>Increase or decrease separation between light and and dark parts of the image</p>
+</div>`,
     },
-    'Blacks': {
+    'Black Level': {
       type: 'slider',
       minValue: -100,
       maxValue: 100,
       value: 0,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+  <h4>Black Level</h4>
+  <p>Change the brightness of dark shades without affecting the brightest whites</p>
+</div>`,
     },
-    'Whites': {
+    'White Level': {
       type: 'slider',
       minValue: -100,
       maxValue: 100,
       value: 0,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+<div class="tooltip-content">
+  <h4>White Level</h4>
+  <p>Change the brightness of bright shades without affecting the deepest blacks</p>
+</div>`,
     },
     'Saturation': {
       type: 'slider',
@@ -101,6 +127,11 @@ module.exports = {
       maxValue: 100,
       value: 0,
       style: 'background: linear-gradient(90deg, rgba(200,200,200,1) 0%, rgba(255,217,217,1) 14%, rgba(255,186,222,1) 28%, rgba(225,159,255,1) 42%, rgba(119,168,255,1) 57%, rgba(76,255,119,1) 71%, rgba(252,255,47,1) 85%, rgba(255,0,0,1) 100%);',
+    tooltip: `
+<div class="tooltip-content">
+<h4>Saturation</h4>
+<p>Change intensity of colors</p>
+</div>`,
     },
     'Temperature': {
       type: 'slider',
@@ -108,6 +139,11 @@ module.exports = {
       maxValue: 100,
       value: 0,
       style: 'background: linear-gradient(90deg, rgba(101,154,255,1) 0%, rgba(250,250,250,1) 49%, rgba(255,201,96,1) 100%);',
+      tooltip: `
+<div class="tooltip-content">
+<h4>Color Temperature</h4>
+<p>Correct image white balance (blue-orange)</p>
+</div>`,
     },
     'Hue': {
       type: 'slider',
@@ -115,6 +151,11 @@ module.exports = {
       maxValue: 100,
       value: 0,
       style: 'background: linear-gradient(90deg, rgba(187,101,255,1) 0%, rgba(250,250,250,1) 49%, rgba(145,255,136,1) 100%);',
+      tooltip: `
+<div class="tooltip-content">
+<h4>Color Hue</h4>
+<p>Correct image white balance (magenta-green)</p>
+</div>`,
     },
     'Curves': {
       type: 'curves',
@@ -149,6 +190,11 @@ module.exports = {
           ]
         },
       },
+      tooltip: `
+<div class="tooltip-content">
+<h4>Color Curves</h4>
+<p>Custom Tone Mapping. Input value (horizontal axis) maps to output value (vertical axis).</p>
+</div>`,
     },
     // 'Show clipping': {
     //   type: 'checkbox',
@@ -178,11 +224,11 @@ module.exports = {
       knob_bindings: {
         'Curves': function(v, set, k) {
           // get the values from other sliders
-          var gamma =  k['Gamma'].value
+          var gamma =  1/k['Gamma'].value
           var brightness = k['Brightness'].value/100
           var contrast = k['Contrast'].value
-          var blacks = k['Blacks'].value
-          var whites = k['Whites'].value
+          var blacks = k['Black Level'].value
+          var whites = k['White Level'].value
           // negetive contrast, blacks and whites values must be mapped to a fraction
           if (contrast >= 0)  contrast = 1+(contrast/100)
           else                contrast = (100+contrast)/100
