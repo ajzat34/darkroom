@@ -30,3 +30,10 @@ p.indent {
 .row3 div img {
   width: 100%;
 }
+
+.toolimg {
+  max-height: 128px;
+  max-width: 256px;
+  margin: 8px;
+  border-radius: 8px;
+}

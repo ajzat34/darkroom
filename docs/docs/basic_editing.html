@@ -17,6 +17,7 @@
     </section>
 
     <section>
+
       <h2>Overview</h2>
       <div class="normaltext">
         <p class="indent">
@@ -25,6 +26,7 @@
           tool mentioned.
         </p>
       </div>
+
       <h2>Terminology</h2>
       <div class="normaltext">
         <ul>
@@ -43,7 +45,9 @@
           <li> <strong>White Balance:</strong> refers the the appeance that objects that should be neutral/gray have color.</li>
         </ul>
       </div>
+
       <h2>Black Level & White Level</h2>
+      <img src="images/white_black_tool.jpg" class="toolimg">
       <div class="normaltext">
         <p class="indent">
             The Black and White Levels are amongst the most important tools available when editing images. They allow the editor
@@ -57,7 +61,7 @@
             <span>Washed Out Shadows & Dim Highlights.</span>
           </div>
           <div class="">
-            <img src="images/white_black_correct.jpg">
+            <img src="images/original.jpg">
             <span>Correctly Utalizes Dynamic Range.</span>
           </div>
           <div class="">
@@ -67,6 +71,62 @@
         </div>
         <p class="indent">
             Note that if the original image contained clipping, then it is impossible to regain the lost information; however it is usually easier to recover an underexposed image than an overexposed one.
+        </p>
+      </div>
+
+      <h2>Gamma</h2>
+      <img src="images/gamma_tool.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+            Gamma controls the brightness of the shadows and low-midtones inside the dynamic range without affecting the white and black levels. Gamma is the first non-linear adjustment to be discussed,
+          meaning that it does not apply a fixed transformation to each color. The change in the pixels value depends on its original value.
+        </p>
+        <div class="row3">
+          <div class="">
+            <img src="images/gamma_too_low.jpg">
+            <span>Gamma too low, shadows and midtones appear too dark.</span>
+          </div>
+          <div class="">
+            <img src="images/original.jpg">
+            <span>Just right, the brightness of all colors appears natural.</span>
+          </div>
+          <div class="">
+            <img src="images/gamma_too_high.jpg">
+            <span>Gamma to high, shadows appear unrealisticly bright.</span>
+          </div>
+        </div>
+        <p class="indent">
+            Notice how the highlights and very dark shadows are unaffected by the gamma adjustment. Gamma can also relate to color space, but this is beyond the scope of this article.
+        </p>
+      </div>
+
+      <h2>White Balance (Temperature and Hue)</h2>
+      <img src="images/wb_tool.jpg" class="toolimg">
+      <div class="normaltext">
+        <p class="indent">
+            White Blanace ensures that gray colors remain netural. It is adjusted in two ways:
+        </p>
+        <ul>
+          <li> <strong>Temperature:</strong> Blue-Orange</li>
+          <li> <strong>Hue:</strong> Magenta-Green</li>
+        </ul>
+        <div class="row3">
+          <div class="">
+            <img src="images/wb_too_warm.jpg">
+            <span>White balance too warm, highlights appear yellow/orange.</span>
+          </div>
+          <div class="">
+            <img src="images/original.jpg">
+            <span>Just right, all colors appear natural.</span>
+          </div>
+          <div class="">
+            <img src="images/wb_too_magenta.jpg">
+            <span>Hue too magenta.</span>
+          </div>
+        </div>
+        <p class="indent">
+            Setting the proper White Blanace can be very difficult, so usually it is best to try to set the cameras white balance when taking the
+          picture. Most DSLR/Mirrorless Cameras allow you to set the white balance by taking a picture of neutral gray card.
         </p>
       </div>
     </section>
