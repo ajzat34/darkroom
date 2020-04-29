@@ -60,6 +60,30 @@ module.exports = {
   name: 'Adjustments',
   tooltip: 'Basic color and tone adjustments',
   knobs: {
+    'White Level': {
+      type: 'slider',
+      minValue: -100,
+      maxValue: 100,
+      value: 0,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+  <div class="tooltip-content">
+  <h4>White Level</h4>
+  <p>Change the brightness of bright shades without affecting the deepest blacks</p>
+  </div>`,
+    },
+    'Black Level': {
+      type: 'slider',
+      minValue: -100,
+      maxValue: 100,
+      value: 0,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+      tooltip: `
+  <div class="tooltip-content">
+  <h4>Black Level</h4>
+  <p>Change the brightness of dark shades without affecting the brightest whites</p>
+  </div>`,
+    },
     'Gamma': {
       type: 'slider',
       minValue: 0,
@@ -95,30 +119,6 @@ module.exports = {
 <div class="tooltip-content">
   <h4>Contrast</h4>
   <p>Increase or decrease separation between light and and dark parts of the image</p>
-</div>`,
-    },
-    'Black Level': {
-      type: 'slider',
-      minValue: -100,
-      maxValue: 100,
-      value: 0,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
-      tooltip: `
-<div class="tooltip-content">
-  <h4>Black Level</h4>
-  <p>Change the brightness of dark shades without affecting the brightest whites</p>
-</div>`,
-    },
-    'White Level': {
-      type: 'slider',
-      minValue: -100,
-      maxValue: 100,
-      value: 0,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
-      tooltip: `
-<div class="tooltip-content">
-  <h4>White Level</h4>
-  <p>Change the brightness of bright shades without affecting the deepest blacks</p>
 </div>`,
     },
     'Saturation': {

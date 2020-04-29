@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Editing - Open Darkroom Photo Editor - Docs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/master.css">
+    <link rel="stylesheet" href="../master.css">
+    <link rel="stylesheet" href="docs.css">
+  </head>
+  <body>
+
+    <section class="docs-title">
+      <h1>Basic Editing</h1>
+      <h3>For Amature Photographers</h3>
+    </section>
+
+    <section>
+      <h2>Overview</h2>
+      <div class="normaltext">
+        <p class="indent">
+            This guide aims to explore basic photo editing techniques in Open Darkroom, oriented around improving decent quality images.
+          This is not a guide to artistic minipulation of images, or recovery of poor quality images, nor is it a detailed guide on each
+          tool mentioned.
+        </p>
+      </div>
+      <h2>Terminology</h2>
+      <div class="normaltext">
+        <ul>
+          <li> <strong>Pixel:</strong> The base unit of image information. Images are made up of thousands of tiny boxes, called pixels (short for Picutre-Element).</li>
+          <li> <strong>Highlights:</strong> the bright areas of a picture.</li>
+          <li> <strong>Shadows:</strong> the dark areas of a picture.</li>
+          <li> <strong>Blacks:</strong> specificlly refers to the absolute darkest possible color.</li>
+          <li> <strong>Whites:</strong> specificlly refers to the absolute brightest possible color.</li>
+          <li> <strong>Dynamic Range:</strong> The range from the darkest black the brightest white.</li>
+          <li> <strong>Luminance (Luma):</strong> refers only to the brightness information in the image, a grayscale image contains only luminance information. Also refered to as value.</li>
+          <li> <strong>Clipping:</strong> clipping is the loss of image information as a result of image data going beyond the available dynamic range.</li>
+          <li> <strong>Washed out:</strong> refers to the undesirable effect when part of the image is brighter than it should be. Washed out blacks look gray, and washed out highlights cause clipping.</li>
+          <li> <strong>Crushed Shadows:</strong> when image data is clipped as a result of the dark areas being darkend too much.</li>
+          <li> <strong>Blown highlights:</strong> washed out highlights.</li>
+          <li> <strong>RGB:</strong> Short for Red-Green-Blue. Pixels contain a red, green, and blue color value.</li>
+          <li> <strong>White Balance:</strong> refers the the appeance that objects that should be neutral/gray have color.</li>
+        </ul>
+      </div>
+      <h2>Black Level & White Level</h2>
+      <div class="normaltext">
+        <p class="indent">
+            The Black and White Levels are amongst the most important tools available when editing images. They allow the editor
+          to strech the dynamic range to fully utalize the images information. The goal is to strech the darkest black in the photo to the darkest
+          black stored in the image, and the same for the brightest. Failure to correcly utalize the dynamic range can cause image information to be lost
+          to due to clipping, or cause the image to look dim or washed out.
+        </p>
+        <div class="row3">
+          <div class="">
+            <img src="images/white_black_wash.jpg">
+            <span>Washed Out Shadows & Dim Highlights.</span>
+          </div>
+          <div class="">
+            <img src="images/white_black_correct.jpg">
+            <span>Correctly Utalizes Dynamic Range.</span>
+          </div>
+          <div class="">
+            <img src="images/white_black_clipping.jpg">
+            <span>Clipped Blacks and Whites, Loss of detail.</span>
+          </div>
+        </div>
+        <p class="indent">
+            Note that if the original image contained clipping, then it is impossible to regain the lost information; however it is usually easier to recover an underexposed image than an overexposed one.
+        </p>
+      </div>
+    </section>
+
+    <header>
+      <span class="title">Open Darkroom</span>
+      <span class="shrinkspacer"></span>
+      <a class="" href="/docs/index.html">Documentation</a>
+      <a class="" href="/index.html#downloads">Download Now</a>
+    </header>
+
+  </body>
+</html>
