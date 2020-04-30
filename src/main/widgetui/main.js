@@ -42,7 +42,6 @@ function createWidgetUi (parent, from) {
     node.classList.add('disabled')
     if (toggle) toggle.classList.remove('checked')
   }
-  r.widgetUIdisable()
   {
     // create the title and buttons
     var titlerow = document.createElement("div")
@@ -140,6 +139,8 @@ function createWidgetUi (parent, from) {
         if (!r.enabled) {r.widgetUIenable(); update()}
         else {r.widgetUIdisable(); update()}
       })
+      if (!from.startEnabled) r.widgetUIdisable()
+      else r.widgetUIenable()
       titlerow.appendChild(toggle)
 
   parent.appendChild(node)

@@ -59,6 +59,7 @@ var sliderLight = 'rgba(255,255,255,1)'
 module.exports = {
   name: 'Adjustments',
   tooltip: 'Basic color and tone adjustments',
+  startEnabled: true,
   knobs: {
     'White Level': {
       type: 'slider',
