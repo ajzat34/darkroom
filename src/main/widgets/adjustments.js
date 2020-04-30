@@ -125,8 +125,19 @@ module.exports = {
       style: 'background: linear-gradient(90deg, rgba(200,200,200,1) 0%, rgba(255,217,217,1) 14%, rgba(255,186,222,1) 28%, rgba(225,159,255,1) 42%, rgba(119,168,255,1) 57%, rgba(76,255,119,1) 71%, rgba(252,255,47,1) 85%, rgba(255,0,0,1) 100%);',
     tooltip: `
 <div class="tooltip-content">
-<p>Change intensity of colors</p>
+<p>Change intensity of all colors</p>
 </div>`,
+  },
+  'Vibrance': {
+    type: 'slider',
+    minValue: -100,
+    maxValue: 100,
+    value: 0,
+    style: 'background: linear-gradient(90deg, rgba(200,200,200,1) 0%, rgba(255,217,217,1) 14%, rgba(255,186,222,1) 28%, rgba(225,159,255,1) 42%, rgba(119,168,255,1) 57%, rgba(76,255,119,1) 71%, rgba(252,255,47,1) 85%, rgba(255,0,0,1) 100%);',
+  tooltip: `
+  <div class="tooltip-content">
+  <p>Change intensity of desaturated colors</p>
+  </div>`,
     },
     'Temperature': {
       type: 'slider',
@@ -211,6 +222,7 @@ module.exports = {
         'saturation': 'saturation',
         'temperature': 'temperature',
         'hue': 'hue',
+        'vibrance': 'vibrance',
       },
       textures: ['lut'],
       knob_bindings: {
@@ -244,6 +256,9 @@ module.exports = {
             } else {
               set('saturation', 'float', (100+v)/100)
             }
+        },
+        'Vibrance':  function(v, set) {
+            set('vibrance', 'float', (v/100))
         },
         'Temperature':  function(v, set) {
           set('temperature', 'float', v/1000)
