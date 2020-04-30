@@ -5,3 +5,4 @@ April 20,    2020: added exporting. preparing for initial builds. Make macOS and
 April 21,    2020: code review, overhauling save
 April 25,    2020: masking added, undo bug fixed.
 April 26,    2020: added 16 bit mode support. added error reporting dialog.
+April 30,    2020: added color filters, major ui and widget processing overhauls.

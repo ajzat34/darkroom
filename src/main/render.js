@@ -100,11 +100,15 @@ function triggerRecreateFrameBuffers (gl) {
 // renders the result image to a framebuffer for later use
 function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
   var frameWidgetOrder = []
+  var stop = false
   // update masks and create the widget order for this render
   widgetOrder.forEach((widgetname, i) => {
+    if (stop) return
     var widget = widgets[widgetname]
     if (widget.mask) widget.mask.bakeIf()
     if (widgetState[widgetname]._enabled === true) frameWidgetOrder.push(widgetname)
+    console.log(widgetState[widgetname]["Visualize Image Processing"])
+    if (widgetState[widgetname]["Visualize Image Processing"] && widgetState[widgetname]["Visualize Image Processing"].value) stop = true
   })
   var lastchain = 0
   frameWidgetOrder.forEach((widgetname, i) => {
