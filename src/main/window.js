@@ -12,7 +12,7 @@ var pcaspect    // preview canvas aspect ratio
 
 // options bar
 var options             // options pane element
-var optionsSize = 320   // width of the options pane
+var optionsSize = 310   // width of the options pane
 
 // height of the top toolbar
 var toolbarSize = 56
