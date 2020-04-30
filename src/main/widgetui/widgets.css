@@ -34,7 +34,7 @@
 .widgetUI-row.top {
   width: 100%;
   display: block;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 }
 
 .widgetUI-row .title {
@@ -44,11 +44,11 @@
 
 .widgetUI-row .title.large {
   font-weight: bold;
-  font-size: 14pt;
+  font-size: 12pt;
 }
 
 .widgetUI-row button {
-  font-size: 12pt;
+  font-size: 10pt;
   font-weight: bold;
   float: right;
   margin-left: 4px;
@@ -240,6 +240,45 @@ input.inputnumber:focus {outline:0;}
   padding: 4px 8px;
 }
 
-.maskbutton {
+.listbutton {
   margin-bottom: 12px;
+}
+
+.disabled * :not(.disabledoverride) {
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+span.onoffswitch {
+	cursor: pointer;
+	width: 32px;
+	height: 10px;
+	background: grey;
+	display: inline-block;
+	border-radius: 100px;
+	position: relative;
+  top: -1px;
+  margin: 0;
+  margin-left: 12px;
+}
+span.onoffswitch:after {
+	content: '';
+	position: absolute;
+	top: -2.5px;
+	left: 0px;
+	width: 14px;
+	height: 14px;
+	background: #fff;
+	border-radius: 90px;
+	transition: 0.3s;
+}
+span.onoffswitch.checked {
+	background: rgb(50, 136, 237);
+}
+span.onoffswitch.checked:after {
+	left: 100%;
+	transform: translateX(-100%);
+}
+span.onoffswitch:active:after {
+	width: 24px;
 }

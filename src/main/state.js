@@ -43,6 +43,7 @@ function genSaveState(activeWidgets, widgetData) {
       // loop over all values associated with the widget
       var widget = widgetData[widgetname]
       Object.keys(widget).forEach((valuename) => {
+        if (valuename === '_enabled') {result.data[widgetname][valuename] = widget[valuename]; return}
         result.data[widgetname][valuename] = {}
         result.data[widgetname][valuename].valueType = widget[valuename].valueType
         result.data[widgetname][valuename].value = getStoreValue(widget[valuename])
@@ -79,13 +80,13 @@ function loadSaveState(loadData, fromUndo) {
   // this will prevent updates from modifing the save state
   var data = clonedeep(loadData)
   if (!arraysEqual(widgetOrder, data.activeWidgets)) {
-    console.log('new widget order != to new one, remaking widgetUi elements, and framebuffer resources')
+    console.log('new widget order differes, remaking widgetUi elements, and framebuffer resources')
     widgetOrder = data.activeWidgets
     createWidgetUIs()
     triggerRecreateFrameBuffers(pgl)
   }
   Object.keys(data.data).forEach((widgetname) => {
-    widgetUiElements[widgetname].morphTo(data.data[widgetname], fromUndo)
+    widgetUiElements[widgetname].morphTo(data.data[widgetname])
   })
 
   // loop over all active widgets

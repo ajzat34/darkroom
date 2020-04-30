@@ -15,7 +15,7 @@ var options             // options pane element
 var optionsSize = 320   // width of the options pane
 
 // height of the top toolbar
-var toolbarSize = 48
+var toolbarSize = 56
 
 // width and height of the image
 // this gets changed when the image is loaded
@@ -184,22 +184,22 @@ function mouseWheelHandler (e) {
 
 function setupButtonEvents() {
   // macOS button events
-  document.getElementById("min-btn").addEventListener("click", function (e) {
-       var window = remote.getCurrentWindow();
-       window.minimize()
-  })
-  document.getElementById("max-btn").addEventListener("click", function (e) {
-       var window = remote.getCurrentWindow();
-       if (!window.isMaximized()) {
-           window.maximize()
-       } else {
-           window.unmaximize()
-       }
-  })
-  document.getElementById("close-btn").addEventListener("click", function (e) {
-       var window = remote.getCurrentWindow();
-       window.close();
-  })
+  // document.getElementById("min-btn").addEventListener("click", function (e) {
+  //      var window = remote.getCurrentWindow();
+  //      window.minimize()
+  // })
+  // document.getElementById("max-btn").addEventListener("click", function (e) {
+  //      var window = remote.getCurrentWindow();
+  //      if (!window.isMaximized()) {
+  //          window.maximize()
+  //      } else {
+  //          window.unmaximize()
+  //      }
+  // })
+  // document.getElementById("close-btn").addEventListener("click", function (e) {
+  //      var window = remote.getCurrentWindow();
+  //      window.close();
+  // })
 
   // compare button events
   document.getElementById('btn-compare').addEventListener("mousedown", function(e) {

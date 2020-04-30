@@ -99,13 +99,15 @@ function triggerRecreateFrameBuffers (gl) {
 
 // renders the result image to a framebuffer for later use
 function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
-  var lastchain = 0
-  // update masks
+  var frameWidgetOrder = []
+  // update masks and create the widget order for this render
   widgetOrder.forEach((widgetname, i) => {
     var widget = widgets[widgetname]
     if (widget.mask) widget.mask.bakeIf()
+    if (widgetState[widgetname]._enabled === true) frameWidgetOrder.push(widgetname)
   })
-  widgetOrder.forEach((widgetname, i) => {
+  var lastchain = 0
+  frameWidgetOrder.forEach((widgetname, i) => {
     var widget = widgets[widgetname]
     var widgetFramebuffers = {}
 
@@ -120,12 +122,19 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
       // if this is the first widget, pull from the source image
       source = sourceImage
     }
-    if (i === widgetOrder.length-1) {
+    if (i === frameWidgetOrder.length-1) {
       // if this is the last widget, use the result framebuffer
       destfb = framebuffers.final
     }
     runWidget(gl, widget, source, destfb, widgetFramebuffers)
   });
+  // if there are no active widgets use the copy shader to write directly to the result
+  if (frameWidgetOrder.length === 0) {
+    updateFromFramebuffers(gl, sourceImage, framebuffers.final, {
+      translate: [0, 0, 0],
+      scale: [1, 1, 1],
+    })
+  }
 }
 
 // stateful wrapper for update()

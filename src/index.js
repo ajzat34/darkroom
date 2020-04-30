@@ -58,7 +58,7 @@ const spawnEditorWindow = (filepath) => {
       nodeIntegration: true,
     },
     show: false,
-    frame: !isDarwin,
+    titleBarStyle: 'hidden',
     backgroundColor: '#24252b',
   })
 
@@ -195,7 +195,6 @@ const spawnFileSelectionWindow = () => {
       nodeIntegration: true,
     },
     titleBarStyle: 'hidden',
-    show: false,
     frame: !isDarwin,
     resizable: false,
     backgroundColor: '#24252b',

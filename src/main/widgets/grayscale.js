@@ -8,6 +8,7 @@ var bluestyle = `background: linear-gradient(90deg, rgba(113,113,113,1) 0%, rgba
 
 module.exports = {
   name: 'Black And White',
+  tooltip: 'Convert color images to grayscale',
   knobs: {
     'Red': {
       type: 'slider',

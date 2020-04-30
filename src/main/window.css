@@ -10,6 +10,43 @@ body {
   overflow: hidden;
 }
 
+.osx_windowtitle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  background-color: rgb(13, 15, 17);
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+body.notoolbar .page-osx_windowtitle {
+  display: none;
+}
+
+
+.page-content {
+  position: fixed;
+  top: 24px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh  - 24px);
+}
+
+body.notoolbar .page-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
 .maincontent {
 }
 
@@ -24,11 +61,11 @@ body {
 
 .toolbar {
   width: 100%;
-  height: 48px;
+  height: 32px;
   background-color: var(--theme-options-color);
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
 
-  min-width: 900px;
+  min-width: 300px;
 
   display: flex;
   flex-direction: row;
@@ -37,14 +74,19 @@ body {
 }
 
 .toolbar.toolbartop {
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
+  min-width: 900px;
+  font-size: 10pt;
 }
 
 .toolbar.toolbarbottom{
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  height: 20px;
+  left: 0;
+}
+
+.toolbar.optionstoolbar {
+  box-shadow: none;
+  max-width: 320px;
 }
 
 .toolbar section {
@@ -59,6 +101,7 @@ body {
   order: 1;
   align-items: center;
   justify-content: flex-start;
+  padding-left: 12px;
 }
 
 .toolbar section.left span.text {
@@ -86,7 +129,7 @@ body {
 
 .preview canvas {
   position: absolute;
-  top: 48px;
+  top: 32px;
 }
 
 .preview .content {
@@ -105,11 +148,11 @@ body {
 }
 
 .options {
-  position: fixed;
+  position: absolute;
 
-  height: 100vh;
+  height: calc(100vh - 24px);
 
-  top: 0;
+  bottom: 0;
   right: 0;
 
   background-color: var(--theme-options-color);
@@ -120,6 +163,31 @@ body {
 
   overflow: scroll;
   overflow-x: visible;
+}
+
+body.notoolbar .options {
+  height: calc(100vh - 32px);
+}
+
+.optionsToolBarContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 32px;
+  width: 320px;
+}
+
+
+.imgdata {
+  min-height: 64px;
+
+  background-color: var(--theme-options-color-lightened);
+
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
+
+  margin: -12px;
+  margin-bottom: 24px;
+  padding: 12px;
 }
 
 ::-webkit-scrollbar {
@@ -192,6 +260,11 @@ button.mid {
   box-shadow: 0 1px 2px rgba(0,0,0, 0.1);
 }
 
+button.toolbarbutton {
+  height: 20px;
+  font-weight: bold;
+}
+
 .hidden {
   display: none !important;
 }
@@ -206,7 +279,7 @@ button.mid {
 
 .buttonimg img {
   padding-left: 8px;
-  height: 18px;
+  height: 12px;
   margin: 0;
   display: block;
 }
@@ -214,9 +287,8 @@ button.mid {
 .osx_buttons {
   display: flex;
   width: 70px;
-  height: 48px;
+  height: 24px;
   flex-direction: row;
-  padding-top: 12px;
   margin-left: 8px;
   margin-right: 8px;
   justify-content: space-evenly;

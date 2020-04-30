@@ -7,6 +7,7 @@ function createWidgetUi (parent, from) {
   r.onchange = function(){console.log('onchange callback unset', r)}
   r.ondata = function(){console.log('ondata callback unset', r)}
   r.hidden = false
+  r.enabled = false
 
   function sendData() {
     var data = {}
@@ -16,12 +17,13 @@ function createWidgetUi (parent, from) {
       data[knob.name].valueType = knob.widgetUiValueType
       data[knob.name].value = knob.widgetUiValue
     });
+    data._enabled = r.enabled
     r.ondata(data)
   }
 
-  function update() {
+  function update(fromUndo) {
     sendData()
-    r.onchange()
+    if (!fromUndo) r.onchange()
   }
 
   r.getData = function(){
@@ -30,6 +32,17 @@ function createWidgetUi (parent, from) {
 
   var node = document.createElement("div")
   node.classList.add("widgetUI-base")
+  r.widgetUIenable = function(){
+    r.enabled = true
+    node.classList.remove('disabled')
+    if (toggle) toggle.classList.add('checked')
+  }
+  r.widgetUIdisable = function(){
+    r.enabled = false
+    node.classList.add('disabled')
+    if (toggle) toggle.classList.remove('checked')
+  }
+  r.widgetUIdisable()
   {
     // create the title and buttons
     var titlerow = document.createElement("div")
@@ -40,6 +53,7 @@ function createWidgetUi (parent, from) {
     var title = document.createElement("div")
       title.classList.add("title")
       title.classList.add("large")
+      title.classList.add("disabledoverride")
       title.appendChild(document.createTextNode(from.name))
       if (from.tooltip && useToolTips) tippy(title, {
         content: from.tooltip,
@@ -60,7 +74,7 @@ function createWidgetUi (parent, from) {
 
       if (from.takesMask) {
         var mask = document.createElement("button")
-          mask.classList.add("maskbutton")
+          mask.classList.add("listbutton")
           mask.appendChild(document.createTextNode('Mask'))
           mask.addEventListener('click', function(){
             toggleEditingMask(from.mask)
@@ -97,19 +111,36 @@ function createWidgetUi (parent, from) {
 
   var collapse = document.createElement("button")
     collapse.appendChild(document.createTextNode('Hide'))
+    collapse.classList.add("disabledoverride")
+    r.widgetUIhide = function(){
+      content.style.maxHeight = `0px`
+      content.style.opacity = '0'
+      collapse.innerText = 'Show'
+      r.hidden = true
+    }
+    r.widgetUIunhide = function(){
+      collapse.innerText = 'Hide'
+      content.style.maxHeight = `${maxHeight}px`
+      content.style.opacity = '1'
+      r.hidden = false
+    }
     collapse.addEventListener('click', function(){
       if (r.hidden) {
-        collapse.innerText = 'Hide'
-        content.style.height = `${maxHeight}px`
-        content.style.opacity = '1'
+        r.widgetUIunhide()
       } else {
-        content.style.height = `0px`
-        content.style.opacity = '0'
-        collapse.innerText = 'Show'
+        r.widgetUIhide()
       }
-      r.hidden = !r.hidden
     })
     titlerow.appendChild(collapse)
+
+    var toggle = document.createElement("span")
+      toggle.classList.add("disabledoverride")
+      toggle.classList.add("onoffswitch")
+      toggle.addEventListener("click", function(){
+        if (!r.enabled) {r.widgetUIenable(); update()}
+        else {r.widgetUIdisable(); update()}
+      })
+      titlerow.appendChild(toggle)
 
   parent.appendChild(node)
   Object.keys(r.knobs).forEach((knobname, i) => {
@@ -118,7 +149,8 @@ function createWidgetUi (parent, from) {
     }
   })
   var maxHeight = content.scrollHeight
-  content.style.height = `${maxHeight}px`
+  content.style.maxHeight = `${maxHeight}px`
+  if (from.hidden) r.widgetUIhide()
 
   r.remove = function() {
     Object.keys(r.knobs).forEach((knobname, i) => {
@@ -129,7 +161,10 @@ function createWidgetUi (parent, from) {
     node.remove()
   }
 
-  r.morphTo = function(data, fromUndo) {
+  r.morphTo = function(data) {
+    console.log(data._enabled)
+    if (data._enabled) r.widgetUIenable()
+    else r.widgetUIdisable()
     morphWidget(r, data)
     sendData()
   }

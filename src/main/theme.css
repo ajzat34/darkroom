@@ -9,6 +9,8 @@
   --theme-button-active-color: rgba(51, 56, 64, 0.5);
 
   --theme-options-color: rgb(26, 30, 34);
+  --theme-options-color-lightened: rgb(30, 35, 41);
+
 
   --theme-widget-color: rgb(43, 46, 51);
   --theme-widget-line-color: rgb(20, 21, 23);
