@@ -191,7 +191,7 @@ body.notoolbar .options {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -204,7 +204,7 @@ body.notoolbar .options {
 ::-webkit-scrollbar-thumb {
   background: red;
   border-radius: 0px;
-  background-color: rgba(208, 213, 219, 1);
+  background-color: rgba(154, 159, 164, 1);
   box-shadow: 0 0 8px rgba(0,0,0,0.5);
 }
 
