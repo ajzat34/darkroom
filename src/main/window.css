@@ -26,7 +26,7 @@ body {
   -webkit-user-select: none;
   -webkit-app-region: drag;
 }
-body.notoolbar .page-osx_windowtitle {
+body.notoolbar .osx_windowtitle {
   display: none;
 }
 
@@ -166,7 +166,7 @@ body.notoolbar .page-content {
 }
 
 body.notoolbar .options {
-  height: calc(100vh - 32px);
+  height: 100vh;
 }
 
 .optionsToolBarContainer {

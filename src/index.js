@@ -27,6 +27,7 @@ if (require('electron-squirrel-startup')) return
 // macOS acts differently, this is will make it easier to tell if
 // we are running on macOS later
 var isDarwin = process.platform === 'darwin'
+// var isDarwin = false
 var isWindows = process.platform === 'win32'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.

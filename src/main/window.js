@@ -240,6 +240,12 @@ function main () {
 
   gatherWindowData()
 
+  if (envdata.darwin === false) {
+    var body = document.getElementsByTagName("BODY")[0]
+    body.classList.add('notoolbar')
+    toolbarSize = 24
+  }
+
   // start loading assets
   prepare(pgl)
 
