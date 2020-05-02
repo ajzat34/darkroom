@@ -2,7 +2,6 @@
 
 const {TIFF, BASELINE} = require('./base.js')
 const EXIF = require('./exif.js')
-const DNG = require('./dng.js')
 const {Reader} = require('./reader.js')
 
 function readFromReader (r) {
@@ -32,7 +31,7 @@ function readFromReader (r) {
   readIFDs(result.ifds, r, firstIFD)
 
   result.ifds.forEach((ifd) => {
-    result.images.push(makeIFDImage(r, ifd, [BASELINE, EXIF, DNG]))
+    result.images.push(makeIFDImage(r, ifd, [BASELINE, EXIF]))
   })
 
   return result

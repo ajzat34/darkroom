@@ -1,6 +1,6 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
-const version = '0.10.1'
+const version = '0.10.2'
 const codeName = 'Beta'
 
 const { app, BrowserWindow, ipcMain, dialog, Menu, crashReporter } = require('electron')
@@ -492,6 +492,10 @@ function mainTitleMenu() {
 }
 
 
+// we might need more memory
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=4096')
+// helps webgl2 support
+app.commandLine.appendSwitch('enable-unsafe-es3-apis')
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

@@ -75,17 +75,17 @@ module.exports = {
 <p>Control how much chagnes in saturation affect the smart mask</p>
 </div>`,
     },
-    'Color Detection': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 50,
-      value: 4,
-      step: 0.1,
-      tooltip: `
-<div class="tooltip-content">
-<p>Control how much chagnes in color affect the smart mask. Using too much color detection can cause unprectiable results.</p>
-</div>`,
-    },
+//     'Color Detection': {
+//       type: 'slider',
+//       minValue: 0,
+//       maxValue: 50,
+//       value: 4,
+//       step: 0.1,
+//       tooltip: `
+// <div class="tooltip-content">
+// <p>Control how much chagnes in color affect the smart mask. Using too much color detection can cause unprectiable results.</p>
+// </div>`,
+//     },
     'Gain': {
       type: 'slider',
       minValue: 0,
@@ -153,8 +153,8 @@ module.exports = {
         "Denoise": function(v, set) {
           set('denoise', 'float', v/4)
         },
-        'Color Detection': function(v, set, k){
-          var h = k['Color Detection'].value/100
+        'Value Detection': function(v, set, k){
+          var h = 0
           var s = k['Value Detection'].value/100
           var v = k['Saturation Detection'].value/100
           var sum = h+s+v

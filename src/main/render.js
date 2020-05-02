@@ -42,27 +42,8 @@ function prepare (gl) {
   // ask the main process for the image path
   var resp = ipcRenderer.sendSync('request-active-file')
   imagePath = resp.filepath
-  console.log(resp)
-  var fileName = resp.filepath.split('/')
-  if (fileName.length === 1) {
-    fileName = resp.filepath.split("\\")
-  }
-  document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
-  if (resp.loadmode === 'image') {
-    // if we are loading an image, pass it to loadTexture directly as a base64 string
-    imageB64 = fs.readFileSync(imagePath).toString('base64')
-    imageFormat = imagePath.split('.')
-    imageFormat = imageFormat[imageFormat.length-1].toLowerCase()
-    // sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
-  } else if (resp.loadmode === 'project') {
-    // if we are loading a project, extract the base64 image and mime type, then pass it to loadTexure
-    srcPackage = JSON.parse(fs.readFileSync(imagePath))
-    imageB64 = srcPackage.image.data
-    imageFormat = srcPackage.image.format
-    // sourceImage = loadTexture(gl, webGLsourceImgInternalFormat, webGLsourceImgFormat, webGLsourceImgType, imageFormat, imageB64, eventImageLoad)
-  }
-  loadImageByFormat(gl, imageFormat, imageB64, eventImageLoad)
-
+  loadSource(gl, imagePath, eventImageLoad)
+  // if 16 bits mode is enabled add the raw developer widget
   if (bits16Mode) widgetOrder.unshift('rawdev')
 
   // prepare resources for masks
@@ -70,26 +51,6 @@ function prepare (gl) {
 
   // create the options widgets
   createWidgetUIs()
-}
-
-// helper function for loading an image with the correct librarys
-function loadImageByFormat(gl, format, base64image, callback) {
-  if (format === 'tiff' || format === 'tif' || format === 'arw' || format === 'dng') {
-    var tiff = TIFF.read(Buffer.from(base64image, 'base64'))
-    console.log(tiff)
-    // use the first readable image
-    var tiffimage
-    tiff.images.forEach((image, i) => {
-      console.log('image', i, 'readable', tiff.images[i].readable)
-      if (image.readable) tiffimage = image
-    })
-    if (!tiffimage) throw new Error('failed to find readable image from tiff file')
-    var image = ImageToArrayBufferView(tiffimage)
-    if (image.glImageInternalFormat === 'RGBA16F') bits16Mode = true
-    sourceImage = loadTextureArray(gl, gl[image.glImageInternalFormat], gl[image.glImageFormat], gl[image.glImageType], image.width, image.height, image.data, callback, false)
-  } else {
-    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, format, base64image, callback)
-  }
 }
 
 function triggerRecreateFrameBuffers (gl) {
@@ -166,10 +127,15 @@ function updateFromFramebuffers (gl, framebuffer, dst, tin) {
 
 // uses the above function to draw a framebuffers's texture to a WebGL2RenderingContext with proper a transform matrix
 function updateCanvas (gl, x,y, scale, framebuffer) {
+
+  var wr = pc.width/ framebuffers.final.width
+  var hr = pc.height/ framebuffers.final.height
+  var ratioscale = Math.min(hr/wr,1)
+
   requestAnimationFrame(function(){
     updateFromFramebuffers(gl, framebuffer, null, {
-      translate: [x, y, 0],
-      scale: [scale, -(pcaspect)/(framebuffers.final.width/framebuffers.final.height)*scale, 1],
+      translate: [x/ratioscale, y, 0],
+      scale: [scale*ratioscale, -(pcaspect)/(framebuffers.final.width/framebuffers.final.height)*scale*ratioscale, 1],
     })
   })
 }

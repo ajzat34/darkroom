@@ -27,3 +27,85 @@ function getImageDataFromPath(path, callback) {
     callback(getImageData(image), image.width, image.height, image)
   })
 }
+
+function loadSource(gl, path, callback) {
+  var fileName = path.split('/')
+  if (fileName.length === 1) fileName = path.split("\\")
+  document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
+  var srcFormat = imagePath.split('.')
+  srcFormat = srcFormat[srcFormat.length-1].toLowerCase()
+  // this will either be used to create the image buffer in the case of a package, or tunrned into the
+  // image buffer in case of a simple image
+  var loadingBuff = fs.readFileSync(imagePath)
+  console.log('loading image of type', srcFormat)
+  loadSourceFromTypeData(gl, srcFormat, loadingBuff, null, callback)
+}
+
+// loads data from a format and buffer
+// if the format is a simple image, it will be converted to a base64 encoded string
+// and passed along, if it is a package the image will be extracted and passed back
+// to this function
+function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, callback) {
+  if (imageFormat === "dkg") {
+    console.log('determined source type: package, unwrapping and reloading')
+    srcPackage = JSON.parse(fs.readFileSync(imagePath))
+    imageFormat = srcPackage.image.format
+    imageB64 = srcPackage.image.data
+    loadSourceFromTypeData(gl, imageFormat, null, imageB64, callback)
+    return
+
+  }
+  // create a base64 version if we dont have one
+  // at this point we know it will be of the image because the data is not a package
+  if (!imageB64) var imageB64 = imageBuff.toString('base64')
+  if (imageFormat === 'png' || imageFormat === 'jpg' || imageFormat === 'jpeg') {
+    console.log('determined simple image format, loading directly with webgl')
+    // simple loading that can be passed on to js
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageFormat, imageB64, callback)
+    return
+
+  }
+  // create a buffer if the file was loaded from a base64 string, everything below will need a real buffer
+  if (!imageBuff) var imageBuff = Buffer.from(imageB64, 'base64')
+
+  // check for complex formats
+  if (imageFormat === 'tiff' || imageFormat === 'tif') {
+    // tiff loading in helper function
+    console.log('determined tiff image')
+    loadSourceImageTIFF(gl, imageBuff, callback)
+    return
+
+  } else if (imageFormat === 'dng' || imageFormat === 'arw'|| imageFormat === "crw" || imageFormat === "cr2" || imageFormat === "mrw" || imageFormat === "nef") {
+    // load raw formats with dcraw.js
+    console.log('determined RAW image, loading with dcrwaw')
+    try {
+      // load dcraw
+      var dcraw = require('dcraw')
+      console.log('using dcraw.js to convert raw image into TIFF, this may take quite a while... (verbose logging is enabled)')
+      throw new Error('Trying to load this image with dcraw will crash!')
+      var imageTiff = dcraw(imageBuff, { verbose: true, use16BitMode: false, exportAsTiff: true})
+      console.log('done converting raw to tiff')
+      loadSourceImageTIFF(gl, imageTiff, callback)
+      return
+    } catch (err) {
+      console.error('there was an error while trying to load a raw image with dcraw', err)
+      return
+    }
+  }
+  console.error('could not determine a suitable loader for image')
+}
+
+function loadSourceImageTIFF(gl, imageBuff, callback) {
+  // extract the tiff data
+  var tiff = TIFF.read(imageBuff)
+  // use the last readable image
+  var tiffimage
+  tiff.images.forEach((image, i) => { if (image.readable) tiffimage = image })
+  if (!tiffimage) throw new Error('failed to find readable image from tiff file')
+  // read the image
+  var image = ImageToArrayBufferView(tiffimage)
+  // if we loaded the image as a 16 bit image, enable 16 bits mode
+  if (image.glImageInternalFormat === 'RGBA16F') bits16Mode = true
+  // load the image to gl
+  sourceImage = loadTextureArray(gl, gl[image.glImageInternalFormat], gl[image.glImageFormat], gl[image.glImageType], image.width, image.height, image.data, callback, false)
+}

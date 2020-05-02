@@ -14,7 +14,7 @@ out highp vec4 fragmentColor;
 
 highp float vsample(ivec2 s)
 {
-  return texelFetch(blurSampler, ivec2(clamp(s.x, 3, size.x-3), clamp(s.y, 3, size.y-3)), 0).a;
+  return texelFetch(blurSampler, ivec2(clamp(s.x, 3, size.x-4), clamp(s.y, 3, size.y-4)), 0).a;
 }
 
 void main(void) {

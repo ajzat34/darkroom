@@ -24,7 +24,7 @@ out highp vec4 fragmentColor;
 // clamp sample texel
 highp vec3 csample(ivec2 s)
 {
-  return texelFetch(texSampler, ivec2(clamp(s.x, 0, size.x), clamp(s.y, 0, size.y)), 0).rgb;
+  return texelFetch(texSampler, ivec2(clamp(s.x, 0, size.x-1), clamp(s.y, 0, size.y-1)), 0).rgb;
 }
 
 highp vec3 rgb2hsv(vec3 c)

@@ -63,12 +63,13 @@ var autosaveTimer                     // same as above, but for autosave
 var model             // holds the webgl object for the model
 var copyprogram       // webgl shader program for
 var widgets = {}      // holds the widget descriptors
-var widgetOrder = ['adjustments', 'details', 'colormat', 'grayscale'] // order to apply widgets
+var widgetOrder = ['adjustments', 'saltnpepper', 'blur', 'details', 'colormat', 'grayscale'] // order to apply widgets
 var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
 var sourceImage       // texture with the source image
 
 // image loading
 var imageB64          // base64 encoded copy of the original image
+var imageBuff         // buffer of the original image
 var imageFormat       // what format (png, jpeg) was the original image in
 var imagePath         // where was the loaded image located
 var srcPackage        // holds a copy of the loaded dkg/dkr if one was loaded
@@ -102,11 +103,10 @@ function viewreset() {
 }
 
 function viewabs(n) {
-  var width = calcCanvasSizeWidth() * window.devicePixelRatio
-  var height = calcCanvasSizeHeight() * window.devicePixelRatio
-  var wr = sourceImageWidth/width * n
-  var hr = sourceImageHeight/height * n
-  scale = Math.sqrt(Math.min(wr,hr))
+  var wr = pc.width/ framebuffers.final.width
+  var hr = pc.height/ framebuffers.final.height
+  var fitscale = Math.min(wr, hr)
+  scale = n/fitscale
   scheduleUpdate()
 }
 

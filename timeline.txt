@@ -6,3 +6,4 @@ April 21,    2020: code review, overhauling save
 April 25,    2020: masking added, undo bug fixed.
 April 26,    2020: added 16 bit mode support. added error reporting dialog.
 April 30,    2020: added color filters, major ui and widget processing overhauls.
+May 1,       2020: tried dcraw.js conversion, causes crashes. looks like libraw bindings are the next step.

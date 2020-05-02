@@ -4,20 +4,20 @@ var sliderLight = 'rgba(255,255,255,1)'
 module.exports = {
   name: 'Gaussian Blur',
   knobs: {
-    'Kernel': {
-      type: 'slider',
-      minValue: 3,
-      maxValue: 9,
-      value: 5,
-      step: 2,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
-    },
     'Radius': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 0,
       step: 0.1,
+      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
+    },
+    'Kernel': {
+      type: 'slider',
+      minValue: 3,
+      maxValue: 9,
+      value: 3,
+      step: 2,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`
     },
   },
