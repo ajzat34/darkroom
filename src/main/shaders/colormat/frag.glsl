@@ -17,13 +17,13 @@ void main(void) {
   highp float mask = texelFetch(maskSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0).r;
 
   // lut
-  highp vec3 mix = vec3(
+  highp vec3 mixed = vec3(
     dot(color.rgb, r),
     dot(color.rgb, g),
     dot(color.rgb, b)
   );
 
   // blend the original with the filtered, based on the mask
-  fragmentColor.rgb = (mix*mask)+(color.rgb * (1.0-mask));
+  fragmentColor.rgb = mix(color.rgb, mixed, mask);
   fragmentColor.a = color.a;
 }

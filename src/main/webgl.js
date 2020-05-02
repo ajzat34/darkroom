@@ -313,6 +313,9 @@ function glSetUniformOrTextureData (gl, shader, bind, type, setdata){
     case 'int':
       gl.uniform1i(shader.glshaderpack.uniformLocations[bind], setdata)
       break;
+    case 'ivec2':
+      gl.uniform2i(shader.glshaderpack.uniformLocations[bind], setdata[0], setdata[1])
+      break;
     case 'bool':
       if (setdata) {
         gl.uniform1i(shader.glshaderpack.uniformLocations[bind], 1)

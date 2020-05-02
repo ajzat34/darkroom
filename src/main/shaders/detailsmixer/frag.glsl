@@ -49,7 +49,8 @@ void main(void) {
     fragmentColor.a = 1.0;
   } else {
     highp vec4 color = texelFetch(imageSampler, p, 0);
-    fragmentColor.rgb = (((color.rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*(vary))) * mask) + (color.rgb * (1.0 - mask));
+    fragmentColor.rgb = mix(color.rgb, mix(color.rgb, texelFetch(blurSampler, p, 0).rgb, vary), mask);
+    // fragmentColor.rgb = (((color.rgb*(1.0-vary))+(texelFetch(blurSampler, p, 0).rgb*(vary))) * mask) + (color.rgb * (1.0 - mask));
     fragmentColor.a = color.a;
   }
 }

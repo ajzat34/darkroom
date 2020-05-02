@@ -1,7 +1,7 @@
 # version 300 es
 uniform sampler2D texSampler;
 uniform highp float amount;
-uniform highp float threshold;
+uniform highp ivec2 d;
 uniform ivec2 size;
 
 in highp vec2 textureCoord;
@@ -42,18 +42,11 @@ void main(void) {
   highp vec4 color = csample(p);
 
   highp vec3 c0 = color.rgb;
-  highp vec3 c1 = rgbsample(p + ivec2(-1, 0));
-  highp vec3 c2 = rgbsample(p + ivec2( 0,-1));
-  highp vec3 c3 = rgbsample(p + ivec2( 1, 0));
-  highp vec3 c4 = rgbsample(p + ivec2( 0, 1));
-
-  highp vec3 c5 = rgbsample(p + ivec2( 1, 1));
-  highp vec3 c6 = rgbsample(p + ivec2(-1, 1));
-  highp vec3 c7 = rgbsample(p + ivec2( 1,-1));
-  highp vec3 c8 = rgbsample(p + ivec2(-1,-1));
-
+  highp vec3 c1 = rgbsample( p + (d* 1) );
+  highp vec3 c2 = rgbsample( p + (d*-1) );
+  highp vec3 c3 = rgbsample( p + (d* 2) );
+  highp vec3 c4 = rgbsample( p + (d*-2) );
   sort(c0, c1, c2, c3, c4);
-  sort(c5, c6, c2, c7, c8);
 
   fragmentColor.rgb = mix(color.rgb, c2, amount);
   fragmentColor.a  = color.a;
