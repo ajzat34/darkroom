@@ -14,24 +14,46 @@ out highp vec4 fragmentColor;
 
 highp float vsample(ivec2 s)
 {
-  return texelFetch(blurSampler, ivec2(clamp(s.x, 3, size.x-4), clamp(s.y, 3, size.y-4)), 0).a;
+  return texelFetch(blurSampler, ivec2(clamp(s.x, 0, size.x-1), clamp(s.y, 0, size.y-1)), 0).a;
+}
+
+void sort2(inout float a0, inout float a1) {
+	highp float b0 = min(a0, a1);
+	highp float b1 = max(a0, a1);
+	a0 = b0;
+	a1 = b1;
+}
+
+void sort(inout float a0, inout float a1, inout float a2, inout float a3, inout float a4) {
+	sort2(a0, a1);
+	sort2(a3, a4);
+	sort2(a0, a2);
+	sort2(a1, a2);
+	sort2(a0, a3);
+	sort2(a2, a3);
+	sort2(a1, a4);
+	sort2(a1, a2);
+	sort2(a3, a4);
 }
 
 void main(void) {
   highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
   highp float mask = texelFetch(maskSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0).r;
-  highp float vary = vsample(p)*2.0;
-  vary += vsample(p+ivec2(1,0))*1.5;
-  vary += vsample(p+ivec2(0,1))*1.5;
-  vary += vsample(p+ivec2(-1,0))*1.5;
-  vary += vsample(p+ivec2(0,-1))*1.5;
 
-  vary += vsample(p+ivec2( 1, 1));
-  vary += vsample(p+ivec2(-1, 1));
-  vary += vsample(p+ivec2( 1,-1));
-  vary += vsample(p+ivec2(-1,-1));
+  highp float c0 =  vsample(p);
+  highp float c1 = vsample(p + ivec2(-1, 0));
+  highp float c2 = vsample(p + ivec2( 0,-1));
+  highp float c3 = vsample(p + ivec2( 1, 0));
+  highp float c4 = vsample(p + ivec2( 0, 1));
 
-  vary = 0.0-((vary/12.0)-balance);
+  highp float c5 = vsample(p + ivec2( 1, 1));
+  highp float c6 = vsample(p + ivec2(-1, 1));
+  highp float c7 = vsample(p + ivec2( 1,-1));
+  highp float c8 = vsample(p + ivec2(-1,-1));
+
+  sort(c0, c1, c2, c3, c4);
+  sort(c5, c6, c2, c7, c8);
+  highp float vary = 0.0-(c2-balance);
 
   if (vary < 0.0) {
     // sharpen pixel
