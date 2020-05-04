@@ -11,9 +11,6 @@ uniform highp float noisegamma;
 
 uniform highp vec3 hsvweights;
 
-uniform highp float sharpen;
-uniform highp float denoise;
-
 // uniform highp vec3 hsvweights;
 
 uniform ivec2 size;

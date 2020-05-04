@@ -30,14 +30,18 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   // tell webgl to use a shader, and the rectangle model
   gluse(gl, shader.glshaderpack, model)
   // run a call back to load the uniform data for the shader
+  var abort = false // allows the steps to abort running each shader step
   Object.keys(shader.knob_bindings).forEach((key) => {
     if (!(key in state)) {
       throw new Error(`invalid knob binding: ${key}`)
     }
     shader.knob_bindings[key](state[key].value, function(bind, type, setdata) {
       glSetUniformOrTextureData(gl, shader, bind, type, setdata)
-    }, state)
+    }, state, function(){abort = true})
   })
+
+  if (abort) console.log('ABORTING SHADER', shaderidx)
+  if (abort) return false;
 
   // special value for passing the image size to the texture
   if ('__imagesize__' in shader.uniforms) {
@@ -55,6 +59,7 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
   useTextures(gl, shader.glshaderpack, imgs)
   // set the output framebuffer
   useFB(gl, fb)
+  return true
 }
 
 // runs a widget given the source image and framebuffer
@@ -73,8 +78,7 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
     if (shader.out === 'out') fb = fb_out
     else if (shader.out in privateframebuffers) fb = privateframebuffers[shader.out]
 
-    useWidgetShader(gl, widget, i, imgs, fb)
-    draw(gl)
+    if (useWidgetShader(gl, widget, i, imgs, fb)) draw(gl)
   })
 }
 

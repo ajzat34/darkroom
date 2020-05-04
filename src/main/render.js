@@ -68,7 +68,6 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
     var widget = widgets[widgetname]
     if (widget.mask) widget.mask.bakeIf()
     if (widgetState[widgetname]._enabled === true) frameWidgetOrder.push(widgetname)
-    console.log(widgetState[widgetname]["Visualize Image Processing"])
     if (widgetState[widgetname]["Visualize Image Processing"] && widgetState[widgetname]["Visualize Image Processing"].value) stop = true
   })
   var lastchain = 0

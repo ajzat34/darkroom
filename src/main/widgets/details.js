@@ -41,18 +41,18 @@ module.exports = {
   <p>Uses image processing to only apply sharpening and denoising to areas that need it</p>
   </div>`,
     },
-    'Denoise': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 100,
-      value: 0,
-      step: 0.1,
-      style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
-      tooltip: `
-  <div class="tooltip-content">
-  <p>Applies High frequency noise reduction ONLY to pixels that have been selected with the "Smart Masking" adjustment. See Visualize image processing.</p>
-  </div>`,
-    },
+  //   'Denoise': {
+  //     type: 'slider',
+  //     minValue: 0,
+  //     maxValue: 100,
+  //     value: 0,
+  //     step: 0.1,
+  //     style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
+  //     tooltip: `
+  // <div class="tooltip-content">
+  // <p>Applies High frequency noise reduction ONLY to pixels that have been selected with the "Smart Masking" adjustment. See Visualize image processing.</p>
+  // </div>`,
+  //   },
     'Value Detection': {
       type: 'slider',
       minValue: 0,
@@ -106,12 +106,12 @@ module.exports = {
 <p>Pixels to be sharpened will appear green (brigheter green = more sharpening), while pixels to be denoised will appear blue. Unaffected pixes will appear black. Due to the nature of sharpening and denoisng pixels cannot be sharpened and denoised at the same time, this is why only pixels excluded from sharpening by smart mask will be denoised.</p>
 </div>`,
     },
-    'Large Noise': {
+    'Large Grain': {
       type: 'checkbox',
       value: false,
       tooltip: `
 <div class="tooltip-content">
-<p>Enable only when a radius of at least 90 is not effective. Controls the number of pixels used in sharpening and blur calculations. Off = 3x3, On = 5x5.</p>
+<p>Enable only when a radius of at least 90 is not effective. Controls the number of pixels used in sharpening calculations. Off = 3x3, On = 5x5.</p>
 </div>`,
     },
   },
@@ -131,12 +131,10 @@ module.exports = {
         'edge-detect-weights': 'edgeweights',
         'masking': 'masking',
         'noisegamma': 'noisegamma',
-        'sharpen': 'sharpen',
-        'denoise': 'denoise',
         'hsvweights': 'hsvweights',
       },
       knob_bindings: {
-        'Large Noise': function(v, set, k) {
+        'Large Grain': function(v, set, k) {
           var kernel
           if (v) kernel = 5
           else kernel = 3
@@ -146,12 +144,6 @@ module.exports = {
         },
         "Gain": function(v, set) {
           set('noisegamma', 'float', 1/(v/100))
-        },
-        "Sharpen": function(v, set) {
-          set('sharpen', 'float', v/2)
-        },
-        "Denoise": function(v, set) {
-          set('denoise', 'float', v/4)
         },
         'Value Detection': function(v, set, k){
           var h = 0
@@ -188,9 +180,9 @@ module.exports = {
         'Sharpen': function(v, set) {
           set('sharpen', 'float', (v/5))
         },
-        'Denoise': function(v, set) {
-          set('denoise', 'float', (v/2))
-        },
+        // 'Denoise': function(v, set) {
+        //   set('denoise', 'float', (v/2))
+        // },
         'Visualize Image Processing': function(v, set) {
           set('showmask', 'bool', v)
         },

@@ -1,71 +1,110 @@
-var sliderDark = 'rgba(120, 120, 120, 1)'
-var sliderLight = 'rgba(255,255,255,1)'
-
 module.exports = {
-  name: 'NLMeans',
+  name: 'Denoise',
   knobs: {
-    'Amount': {
+    'Salt & Pepper': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 10,
     },
-    'Visualize Weights': {
-      type: 'checkbox',
-      value: false,
-    },
-    'select weight': {
+    'NL-Means': {
       type: 'slider',
       minValue: 0,
-      maxValue: 24,
+      maxValue: 3,
       value: 0,
     },
-    'gain': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 10,
-      value: 1,
-      step: 0.1,
-    },
-    'Visualize Noise': {
-      type: 'checkbox',
-      value: false,
-    },
   },
-  framebuffers: [],
+  framebuffers: ['salt'],
   takesMask: false,
   stages: [
     {
-      shadername: 'nlmeans',
+      shadername: 'saltnpepper',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
         'amount': 'amount',
-        'vnoise': 'vnoise',
-        'vweights': 'vweights',
-        'selweight': 'selweight',
-        'gain': 'mag',
+        'threshold': 'threshold',
       },
       knob_bindings: {
-        'Amount': function(v, set) {
+        'Salt & Pepper': function(v, set) {
           set('amount', 'float', (v/100))
-        },
-        'select weight': function(v, set) {
-          set('selweight', 'int', v)
-        },
-        'gain': function(v, set) {
-          set('gain', 'float', v)
-        },
-        'Visualize Noise': function(v, set) {
-          set('vnoise', 'bool', v)
-        },
-        'Visualize Weights': function(v, set) {
-          set('vweights', 'int', v)
         },
       },
       inputs: ['in'],
+      inputBindings: ['texSampler'],
+      out: 'salt',
+    },
+
+    {
+      shadername: 'passthru',
+      atrribVertexCoord: 'aVertex',
+      atrribTextureCoord: 'aTextureCoord',
+      uniforms: {
+        // bind name : in-shader name
+        '__imagesize__': 'size',
+      },
+      knob_bindings: {
+        'NL-Means': function(v, set, k, abort) {
+          if (v !== 0) abort()
+        },
+      },
+      inputs: ['salt'],
+      inputBindings: ['texSampler'],
+      out: 'out',
+    },
+
+    {
+      shadername: 'nlmeans3',
+      atrribVertexCoord: 'aVertex',
+      atrribTextureCoord: 'aTextureCoord',
+      uniforms: {
+        // bind name : in-shader name
+        '__imagesize__': 'size',
+      },
+      knob_bindings: {
+        'NL-Means': function(v, set, k, abort) {
+          if (v !== 1) abort()
+        },
+      },
+      inputs: ['salt'],
+      inputBindings: ['texSampler'],
+      out: 'out',
+    },
+
+    {
+      shadername: 'nlmeans5',
+      atrribVertexCoord: 'aVertex',
+      atrribTextureCoord: 'aTextureCoord',
+      uniforms: {
+        // bind name : in-shader name
+        '__imagesize__': 'size',
+      },
+      knob_bindings: {
+        'NL-Means': function(v, set, k, abort) {
+          if (v !== 2) abort()
+        },
+      },
+      inputs: ['salt'],
+      inputBindings: ['texSampler'],
+      out: 'out',
+    },
+
+    {
+      shadername: 'nlmeans7',
+      atrribVertexCoord: 'aVertex',
+      atrribTextureCoord: 'aTextureCoord',
+      uniforms: {
+        // bind name : in-shader name
+        '__imagesize__': 'size',
+      },
+      knob_bindings: {
+        'NL-Means': function(v, set, k, abort) {
+          if (v !== 3) abort()
+        },
+      },
+      inputs: ['salt'],
       inputBindings: ['texSampler'],
       out: 'out',
     },
