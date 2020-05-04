@@ -1,7 +1,7 @@
 {
   "name": "opendarkroom",
   "productName": "Darkroom",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "versionName": "Beta",
   "description": "Open Source Image Editor",
   "main": "src/index.js",

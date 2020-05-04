@@ -2,7 +2,7 @@ var sliderDark = 'rgba(120, 120, 120, 1)'
 var sliderLight = 'rgba(255,255,255,1)'
 
 module.exports = {
-  name: '16bit Developer',
+  name: 'Raw Developer',
   knobs: {
     'Exposure': {
       type: 'slider',
@@ -40,6 +40,7 @@ module.exports = {
   },
   framebuffers: [],
   takesMask: false,
+  startEnabled: true,
   stages: [
     {
       shadername: 'rawdev',

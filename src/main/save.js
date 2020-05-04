@@ -12,7 +12,7 @@ var projectPath = null
 function createBundle (activeWidgets, widgetData, imageFormat, imageB64) {
   var result = {}
   result.version = FORMAT.version
-  result.saveState = genSaveState(activeWidgets, widgetState)
+  result.saveState = genSaveState(activeWidgets, widgetState, renderPasses)
   result.image = {
     format: imageFormat,
     data: imageB64,

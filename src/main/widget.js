@@ -90,6 +90,7 @@ function createFramebuffers (gl, widgets, widgetOrder, width, height) {
     if (!(widgetname in widgets)) throw new Error (`widget ${widgetname} does not exist`)
     if (widgets[widgetname].framebuffers.length > extraFrameBuffersCount) extraFrameBuffersCount = widgets[widgetname].framebuffers.length
   });
+
   var chainFrameBuffers = []
   for (var i = 0; i<chainFrameBuffersCount; i++) {
     chainFrameBuffers.push(allocTextureFB(gl, width, height))
@@ -98,9 +99,14 @@ function createFramebuffers (gl, widgets, widgetOrder, width, height) {
   for (var i = 0; i<extraFrameBuffersCount; i++) {
     extraFrameBuffers.push(allocTextureFB(gl, width, height))
   }
+  var renderPassFramebuffers = []
+  for (var i = 0; i<renderPasses.length-1; i++) {
+    renderPassFramebuffers.push(allocTextureFB(gl, width, height))
+  }
   return {
     chain: chainFrameBuffers,
     extra: extraFrameBuffers,
+    render: renderPassFramebuffers,
     final: allocTextureFB(gl, width, height, true),
   }
 }

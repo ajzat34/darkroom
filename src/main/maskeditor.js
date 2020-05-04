@@ -16,13 +16,18 @@ var maskEditBrushValue = document.getElementById('radio-editmask-value')
 updateMaskSlider()
 
 function getGlNormalCoord(c) {
+
+  var wr = pc.width/ framebuffers.final.width
+  var hr = pc.height/ framebuffers.final.height
+  var ratioscale = Math.min(hr/wr,1)*viewscale
+
   var width = calcCanvasSizeWidth()
   var height = calcCanvasSizeHeight()
-  var offset = [(scroll[0])/(width/2), (scroll[1])/(height/2)]
+  var offset = [(scroll[0])/(width/2)/Math.min(hr/wr,1), (scroll[1])/(height/2)]
   var aspectFactor = (framebuffers.final.width/framebuffers.final.height)/pcaspect
   var norm = [c[0]/width, (c[1]-toolbarSize)/height]
   var center = [(norm[0]-0.5)*2, (norm[1]-0.5)*2]
-  var size = [center[0]/viewscale, center[1]*aspectFactor/viewscale]
+  var size = [center[0]/ratioscale, center[1]*aspectFactor/ratioscale]
   var move = [size[0]-offset[0], size[1]-offset[1]]
   return move
 }

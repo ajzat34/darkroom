@@ -35,6 +35,7 @@ var contextualMode = 'view'    // mode of the contextualMenu
 var contextual                 // dom element for contextual menu
 
 var updateRequest = false      // set to when signalling that the image needs to be re-rendered
+var renderRequestIndex = 0     // the index in renderPasses to start on
 var renderRequest = false      // same for canvas updates
 
 var widgetUiElements           // array of widgets (collections of dom elements)
@@ -63,7 +64,11 @@ var autosaveTimer                     // same as above, but for autosave
 var model             // holds the webgl object for the model
 var copyprogram       // webgl shader program for
 var widgets = {}      // holds the widget descriptors
-var widgetOrder = ['nlmeans', 'adjustments', 'details', 'saltnpepper', 'colormat', 'grayscale'] // order to apply widgets
+var widgetOrder = ['nlmeans', 'adjustments', 'details', 'colormat', 'grayscale'] // order to apply widgets
+var renderPasses = [
+  ['nlmeans'],
+  ['adjustments', 'details', 'colormat', 'grayscale']
+]
 var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
 var sourceImage       // texture with the source image
 
@@ -302,7 +307,8 @@ async function updateCycle () {
   if (renderRequest) {
     rendered = true
     renderRequest = false
-    render(pgl)
+    render(pgl, renderRequestIndex)
+    renderRequestIndex = 0
   }
 
   // this should help ensure that the render occurs before drawing it to the canvas
@@ -343,12 +349,13 @@ async function updateCanvasCycle () {
 }
 
 // tell the above render loop to update the final image or canvas
-function scheduleRender() { renderRequest = true }
+function scheduleRender(index) { renderRequest = true; if (index) {renderRequestIndex = index} else {renderRequestIndex = 0} }
 function scheduleUpdate() { updateRequest = true }
 
 // TODO: add history
-function projectChange(fromUndo) {
-  scheduleRender()
+function projectChange(fromUndo, renderPassIndex) {
+  if (!renderPassIndex) scheduleRender(0)
+  else scheduleRender(renderPassIndex)
   historyEventProjectChanged(fromUndo)
 }
 

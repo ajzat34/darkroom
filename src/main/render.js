@@ -44,7 +44,10 @@ function prepare (gl) {
   imagePath = resp.filepath
   loadSource(gl, imagePath, eventImageLoad)
   // if 16 bits mode is enabled add the raw developer widget
-  if (bits16Mode) widgetOrder.unshift('rawdev')
+  if (bits16Mode) {
+    widgetOrder.unshift('rawdev')
+    renderPasses[0].unshift('rawdev')
+  }
 
   // prepare resources for masks
   maskInit(gl)
@@ -59,7 +62,7 @@ function triggerRecreateFrameBuffers (gl) {
 }
 
 // renders the result image to a framebuffer for later use
-function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
+function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFramebuffer) {
   var frameWidgetOrder = []
   var stop = false
   // update masks and create the widget order for this render
@@ -88,13 +91,14 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
     }
     if (i === frameWidgetOrder.length-1) {
       // if this is the last widget, use the result framebuffer
-      destfb = framebuffers.final
+      destfb = destFramebuffer
     }
     runWidget(gl, widget, source, destfb, widgetFramebuffers)
   });
   // if there are no active widgets use the copy shader to write directly to the result
   if (frameWidgetOrder.length === 0) {
-    updateFromFramebuffers(gl, sourceImage, framebuffers.final, {
+    console.log('no widgets active in renderpass, using passthru shaders')
+    updateFromFramebuffers(gl, sourceImage, destFramebuffer, {
       translate: [0, 0, 0],
       scale: [1, 1, 1],
     })
@@ -102,8 +106,17 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage) {
 }
 
 // stateful wrapper for update()
-function render (gl) {
-  update(gl, framebuffers, widgets, widgetOrder, sourceImage)
+function render (gl, startIndex) {
+  console.log('rendering from pass', startIndex)
+  for (var i =startIndex; i<renderPasses.length; i++) {
+    var srcImg
+    var destFb
+    if (i===0) srcImg = sourceImage
+    else srcImg = framebuffers.render[i-1].texture
+    if (i===renderPasses.length-1) destFb = framebuffers.final
+    else destFb = framebuffers.render[i]
+    update(gl, framebuffers, widgets, renderPasses[i], srcImg, destFb)
+  }
 }
 
 // renders a framebuffer's texture image to a WebGL2RenderingContext
@@ -137,4 +150,5 @@ function updateCanvas (gl, x,y, scale, framebuffer) {
       scale: [scale*ratioscale, -(pcaspect)/(framebuffers.final.width/framebuffers.final.height)*scale*ratioscale, 1],
     })
   })
+
 }

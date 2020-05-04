@@ -1,4 +1,5 @@
 // for detaching copys
+const lodash = require('lodash')
 const clone = require('lodash').clone
 const clonedeep = require('lodash').cloneDeep
 
@@ -15,6 +16,12 @@ function createWidgetUIs() {
   widgetUiElements = {}
   widgetState = {}
   widgetOrder.forEach((widgetname) => {
+    var renderpassindex = -1
+    renderPasses.forEach((rp, i) => {
+      if (rp.includes(widgetname)) renderpassindex = i
+    })
+    if (renderpassindex === -1) throw new Error(`could not locate ${widgetname} in render passes`)
+
     var widget = widgets[widgetname]
     var wui = createWidgetUi(options, widget)
     widgetState[widgetname] = {}
@@ -25,7 +32,7 @@ function createWidgetUIs() {
     }
     // callback only for when the user changes the data
     wui.onchange = function() {
-      setTimeout(projectChange, 0)
+      setTimeout(function(){projectChange(false, renderpassindex)}, 0)
     }
     wui.getData()
     widgetUiElements[widgetname] = wui
@@ -33,9 +40,10 @@ function createWidgetUIs() {
 }
 
 // creates a single object that holds exclusivly the values of each widgets knobs
-function genSaveState(activeWidgets, widgetData) {
+function genSaveState(activeWidgets, widgetData, renderPasses) {
     var result = {}
     result.activeWidgets = activeWidgets
+    result.renderPasses = renderPasses
     result.data = {}
     // loop over all active widgets
     activeWidgets.forEach((widgetname) => {
@@ -64,9 +72,8 @@ function genSaveState(activeWidgets, widgetData) {
     return clonedeep(result)
 }
 
-// wrapper for genSaveState
 function newSaveState() {
-  return genSaveState(widgetOrder, widgetState)
+  return genSaveState(widgetOrder, widgetState, renderPasses)
 }
 
 // gets the storage version of a knob (no extra data, no methods)
@@ -79,9 +86,10 @@ function loadSaveState(loadData, fromUndo) {
   // use a deep clone to detach the original from the data that will be loaded
   // this will prevent updates from modifing the save state
   var data = clonedeep(loadData)
-  if (!arraysEqual(widgetOrder, data.activeWidgets)) {
+  if (!arraysEqual(widgetOrder, data.activeWidgets) || !lodash.isEqual(renderPasses, data.renderPasses)) {
     console.log('new widget order differes, remaking widgetUi elements, and framebuffer resources')
     widgetOrder = data.activeWidgets
+    renderPasses = data.renderPasses
     createWidgetUIs()
     triggerRecreateFrameBuffers(pgl)
   }
