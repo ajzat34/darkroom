@@ -60,7 +60,7 @@ void main(void){
  finalKernalWeights[9] = placeAndCompare(p+ivec2(2, 1), center, finalKernalSamples[9]);
  finalKernalWeights[10] = placeAndCompare(p+ivec2(-2, 0), center, finalKernalSamples[10]);
  finalKernalWeights[11] = placeAndCompare(p+ivec2(-1, 0), center, finalKernalSamples[11]);
- finalKernalWeights[12] = 0.0;
+ finalKernalWeights[12] = 0.01;
  finalKernalSamples[12] = color.rgb;
  finalKernalWeights[13] = placeAndCompare(p+ivec2(1, 0), center, finalKernalSamples[13]);
  finalKernalWeights[14] = placeAndCompare(p+ivec2(2, 0), center, finalKernalSamples[14]);

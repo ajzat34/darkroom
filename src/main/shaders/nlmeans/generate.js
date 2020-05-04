@@ -77,7 +77,7 @@ main += `
 `
 sv.forEach((sample, i) => {
   if (i === sscenter) {
-    main += ` finalKernalWeights[${i}] = 0.0;\n`
+    main += ` finalKernalWeights[${i}] = 0.01;\n`
     main += ` finalKernalSamples[${i}] = color.rgb;\n`
   } else {
     main += ` finalKernalWeights[${i}] = placeAndCompare(p+ivec2(${sample.x}, ${sample.y}), center, finalKernalSamples[${i}]);\n`
