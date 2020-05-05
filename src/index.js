@@ -66,69 +66,43 @@ const spawnEditorWindow = (filepath) => {
   // load the windows content
   mainWindow.loadFile(path.join(__dirname, 'main/index.html'))
 
-  // switch from the loading window to the main window
-  function swapwindows () {
-    if (!shown) {
-      console.log('swapping to main window')
-      try {
-        mainWindow.show()
-        loadWindow.close()
-        clearTimeout(closetimeout)
-      } catch (err) {
-        console.error('did the editor reload? ', err)
-      }
-      shown = true
-    } else {
-      console.log('window is already shown, this usually happens then the editor is reloaded')
-    }
-  }
-
-  // when the render process is ready, show the window
-  ipcMain.on('mainwindow-loaded', swapwindows)
-  // set a timeout in case something goes wrong while creating the editor
-  // and we never recive the signal to show it
-  var closetimeout = setTimeout(swapwindows, 15000)
-
-  // handle errors sent from the render process
-  function renderError(event) {
-    try {
-      if (event.sender === mainWindow.webContents) {
-        clearTimeout(closetimeout)
-        if (!shown) swapwindows()
-      } else {
-        ipcMain.once('render-error', renderError )
-      }
-    } catch (err) { console.error(err)}
-  }
-  ipcMain.once('render-error', renderError )
-
   var file = readPath(filepath)
   var loadmode = 'image'
   if (file.ext === 'dkg' || file.ext === 'dkr') loadmode = 'project'
 
-  console.log('loading file', file)
-
-  function activeFileListener (event, arg) {
-    try {
-      if (event.sender === mainWindow.webContents) {
-        event.returnValue = {
-          loadmode: loadmode,
-          filepath: filepath,
-        }
-      }
-    } catch (err) {
-      console.log(err)
+  // switch from the loading window to the main window
+  function swapwindows () {
+    if (!shown) {
+      console.log('swapping to main window')
+      mainWindow.show()
+      loadWindow.close()
+      clearTimeout(closetimeout)
+      shown = true
+    } else {
+      console.log('skipping window swap, window is already shown')
     }
   }
 
-  ipcMain.on('request-active-file', activeFileListener)
+  // when the render process is ready, show the window
+  ipcOn('mainwindow-loaded', mainWindow, swapwindows)
+  // set a timeout in case something goes wrong while creating the editor
+  // and we never recive the signal to show it
+  var closetimeout = setTimeout(swapwindows, 15000)
 
-  ipcMain.on('loading-raw-image', (event, arg) => {
-    console.log('image is raw format')
-    if (event.sender === mainWindow.webContents) {
-      console.log('sending ipc')
-      loadWindow.webContents.send('raw-image')
+  ipcOn('render-error', mainWindow, function(event, arg){
+    clearTimeout(closetimeout)
+    if (!shown) swapwindows()
+  })
+
+  ipcOn('request-active-file', mainWindow, function(event){
+    event.returnValue = {
+      loadmode: loadmode,
+      filepath: filepath,
     }
+  })
+
+  ipcOn('loading-raw-image', mainWindow, function(event){
+    loadWindow.webContents.send('raw-image')
   })
 
   // when the window is closed, prompt to confirm and remove listeners
@@ -142,29 +116,26 @@ const spawnEditorWindow = (filepath) => {
      })
      if (choice == 1) {
        e.preventDefault()
-     } else {
-       ipcMain.removeListener('request-active-file', activeFileListener)
      }
   })
 
-  ipcMain.on('create-child', async function (event, arg) {
-    if (event.sender === mainWindow.webContents) {
-      console.log('window requested child window')
-      try {
-        if (!arg || !arg.path) throw new Error('no path specified')
-        resultData = await childWindow(mainWindow, arg),
-        event.returnValue = {
-          error: false,
-          window: resultData,
-        }
-      } catch (err) {
-        console.error(err)
-        event.returnValue = {
-          error: err.toString()
-        }
+  ipcOn('create-child', mainWindow, async function(event, arg){
+    console.log('window requested child window')
+    try {
+      if (!arg || !arg.path) throw new Error('no path specified')
+      resultData = await childWindow(mainWindow, arg),
+      event.returnValue = {
+        error: false,
+        window: resultData,
+      }
+    } catch (err) {
+      console.error(err)
+      event.returnValue = {
+        error: err.toString()
       }
     }
   })
+
   return mainWindow
 }
 
@@ -500,6 +471,17 @@ function mainTitleMenu() {
       ]
     },
   ]))
+}
+
+// ipc helper
+function ipcOn(eventname, win, callback) {
+  function handle(event, arg) {
+    try { if (event.sender === win.webContents) {
+      callback(event, arg)
+    }} catch(err){console.error(err) }
+  }
+  ipcMain.on(eventname, handle)
+  win.on('closed', function(){ipcMain.removeListener(eventname, handle)})
 }
 
 
