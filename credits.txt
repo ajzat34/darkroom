@@ -1,3 +1,4 @@
+dcraw https://www.dechifro.org/dcraw/
 cubic spline curves from https://github.com/kuckir/CSPL.js (MIT)
 matrix math from gl-matrix
 CanvasToTiff https://github.com/motiz88/canvas-to-tiff
