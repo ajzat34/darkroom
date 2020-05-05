@@ -1,3 +1,10 @@
+var dcraw
+try {
+  dcraw = require('dcrawjs-darwin')
+} catch (err) {
+  console.log('unable to load dcrawjs', err)
+}
+
 function getImageData(img) {
   var canvas = document.createElement('canvas')
   var context = canvas.getContext('2d')
@@ -28,7 +35,7 @@ function getImageDataFromPath(path, callback) {
   })
 }
 
-function loadSource(gl, path, callback) {
+async function loadSource(gl, path, callback) {
   var fileName = path.split('/')
   if (fileName.length === 1) fileName = path.split("\\")
   document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
@@ -38,14 +45,14 @@ function loadSource(gl, path, callback) {
   // image buffer in case of a simple image
   var loadingBuff = fs.readFileSync(imagePath)
   console.log('loading image of type', srcFormat)
-  loadSourceFromTypeData(gl, srcFormat, loadingBuff, null, callback)
+  await loadSourceFromTypeData(gl, srcFormat, loadingBuff, null, callback, path)
 }
 
 // loads data from a format and buffer
 // if the format is a simple image, it will be converted to a base64 encoded string
 // and passed along, if it is a package the image will be extracted and passed back
 // to this function
-function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, callback) {
+async function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, callback, path) {
   if (imageFormat === "dkg") {
     console.log('determined source type: package, unwrapping and reloading')
     srcPackage = JSON.parse(fs.readFileSync(imagePath))
@@ -78,21 +85,19 @@ function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, callback) 
   } else if (imageFormat === 'dng' || imageFormat === 'arw'|| imageFormat === "crw" || imageFormat === "cr2" || imageFormat === "mrw" || imageFormat === "nef") {
     // load raw formats with dcraw.js
     console.log('determined RAW image, loading with dcrwaw')
+    if (!path) throw new Error('raw images must be loaded by path')
     try {
       // load dcraw
-      var dcraw = require('dcraw')
-      console.log('using dcraw.js to convert raw image into TIFF, this may take quite a while... (verbose logging is enabled)')
-      throw new Error('Trying to load this image with dcraw will crash!')
-      var imageTiff = dcraw(imageBuff, { verbose: true, use16BitMode: false, exportAsTiff: true})
-      console.log('done converting raw to tiff')
-      loadSourceImageTIFF(gl, imageTiff, callback)
-      return
+      if (!dcraw) throw new Error('dcraw missing')
+      if (eventLoadRawImage) eventLoadRawImage()
+      loadSourceImageTIFF(gl, await dcraw(path), callback)
     } catch (err) {
       console.error('there was an error while trying to load a raw image with dcraw', err)
       return
     }
+  } else {
+    console.error('could not determine a suitable loader for image')
   }
-  console.error('could not determine a suitable loader for image')
 }
 
 function loadSourceImageTIFF(gl, imageBuff, callback) {

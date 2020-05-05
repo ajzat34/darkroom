@@ -83,35 +83,11 @@ const spawnEditorWindow = (filepath) => {
     }
   }
 
-// creates a loading window
-function spawnLoadWindow () {
-  // Create the loading window
-  const loadWindow = new BrowserWindow({
-    width: 300,
-    height: 400,
-    show: false,
-    frame: false,
-    transparent: true,
-    resizable: false,
-  })
-
-  // show on ready
-  loadWindow.once('ready-to-show', () => {
-    loadWindow.show()
-  })
--
-  loadWindow.on('focus', mainTitleMenu)
-
-  // and load the index.html of the app.
-  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
-  return loadWindow
-}
-
   // when the render process is ready, show the window
   ipcMain.on('mainwindow-loaded', swapwindows)
   // set a timeout in case something goes wrong while creating the editor
   // and we never recive the signal to show it
-  var closetimeout = setTimeout(swapwindows, 8000)
+  var closetimeout = setTimeout(swapwindows, 15000)
 
   // handle errors sent from the render process
   function renderError(event) {
@@ -146,6 +122,14 @@ function spawnLoadWindow () {
   }
 
   ipcMain.on('request-active-file', activeFileListener)
+
+  ipcMain.on('loading-raw-image', (event, arg) => {
+    console.log('image is raw format')
+    if (event.sender === mainWindow.webContents) {
+      console.log('sending ipc')
+      loadWindow.webContents.send('raw-image')
+    }
+  })
 
   // when the window is closed, prompt to confirm and remove listeners
   mainWindow.on('close', function(e){
@@ -182,6 +166,33 @@ function spawnLoadWindow () {
     }
   })
   return mainWindow
+}
+
+// creates a loading window
+function spawnLoadWindow () {
+  // Create the loading window
+  const loadWindow = new BrowserWindow({
+    width: 280,
+    height: 360,
+    show: false,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  })
+
+  // show on ready
+  loadWindow.once('ready-to-show', () => {
+    loadWindow.show()
+  })
+
+  loadWindow.on('focus', mainTitleMenu)
+
+  // and load the index.html of the app.
+  loadWindow.loadFile(path.join(__dirname, 'loading/index.html'))
+  return loadWindow
 }
 
 // window for selecting a file to open

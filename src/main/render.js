@@ -17,7 +17,7 @@ var webGLtextureType
 // - creates the framebuffers
 // - loads the image
 // when done loading the image, loadTexture() will call eventImageLoad() to finish preparing and show the window
-function prepare (gl) {
+async function prepare (gl) {
 
   webGLtextureInternalFormat = gl[textureInternalFormat]
   webGLtextureFormat = gl[textureFormat]
@@ -42,7 +42,7 @@ function prepare (gl) {
   // ask the main process for the image path
   var resp = ipcRenderer.sendSync('request-active-file')
   imagePath = resp.filepath
-  loadSource(gl, imagePath, eventImageLoad)
+  await loadSource(gl, imagePath, eventImageLoad)
   // if 16 bits mode is enabled add the raw developer widget
   if (bits16Mode) {
     widgetOrder.unshift('rawdev')

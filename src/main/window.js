@@ -147,6 +147,11 @@ async function eventImageLoad (image) {
   })
 }
 
+// when a raw file is detected
+async function eventLoadRawImage() {
+  ipcRenderer.send('loading-raw-image')
+}
+
 // callback for canvas event mousemove
 // updates the canvas position and schedules an update when the mouse moves
 function mouseMoveHandler (e) {

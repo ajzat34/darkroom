@@ -182,13 +182,13 @@ const BASELINE = {
   315: function (ifd) {
     return {
       tag: 'Artist',
-      value: ifd.join(''),
+      value: ifd.data.join(''),
     }
   },
   33432: function (ifd) {
     return {
       tag: 'Copyright',
-      value: ifd.join(''),
+      value: ifd.data.join(''),
     }
   },
   306: function (ifd) {
