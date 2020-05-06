@@ -1,6 +1,6 @@
 var dcraw
 try {
-  dcraw = require('dcrawjs-darwin')
+  dcraw = require('dcrawjs')
 } catch (err) {
   console.log('unable to load dcrawjs', err)
 }

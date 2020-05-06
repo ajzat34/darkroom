@@ -66,7 +66,7 @@
     }
   },
   "optionalDependencies": {
-    "dcrawjs-darwin": "github:ajzat34/dcrawjs-darwin"
+    "dcrawjs": "github:ajzat34/dcrawjs"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
