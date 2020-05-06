@@ -23,7 +23,12 @@ function loadImageBase64(format, base64, onload) {
 }
 
 function loadImage(path, onload) {
-  var imageB64 = fs.readFileSync(path).toString('base64')
+  try {
+    var imageB64 = fs.readFileSync(path).toString('base64')
+  } catch (err) {
+    console.error('error loading file', err)
+    errorBox('Darkroom', `Unable to locate file: ${path}`, null)
+  }
   var imageFormat = path.split('.')
   imageFormat = imageFormat[imageFormat.length-1]
   loadImageBase64(imageFormat, imageB64, onload)
@@ -43,9 +48,15 @@ async function loadSource(gl, path, callback) {
   srcFormat = srcFormat[srcFormat.length-1].toLowerCase()
   // this will either be used to create the image buffer in the case of a package, or tunrned into the
   // image buffer in case of a simple image
-  var loadingBuff = fs.readFileSync(imagePath)
-  console.log('loading image of type', srcFormat)
-  await loadSourceFromTypeData(gl, srcFormat, loadingBuff, null, callback, path)
+  var loadingBuff
+  try {
+    loadingBuff = fs.readFileSync(imagePath)
+    console.log('loading image of type', srcFormat)
+    await loadSourceFromTypeData(gl, srcFormat, loadingBuff, null, callback, path)
+  } catch (err) {
+    console.error('error loading file', err)
+    errorBox('Darkroom', `Unable to locate file: ${path}`, 'error')
+  }
 }
 
 // loads data from a format and buffer
