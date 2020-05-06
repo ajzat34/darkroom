@@ -1,6 +1,6 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
-const version = '0.11.1'
+const version = '0.11.2'
 const codeName = 'Beta'
 
 const { app, BrowserWindow, ipcMain, dialog, Menu, crashReporter } = require('electron')
