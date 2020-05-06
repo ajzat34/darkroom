@@ -1,17 +1,20 @@
 module.exports = {
   name: 'Denoise',
+  tooltip: 'Use a variety of techniques to reduce image noise',
   knobs: {
     'Salt & Pepper': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 10,
+      tooltip: 'Reduce hot and cold pixels (Median Filter)',
     },
     'NL-Means': {
       type: 'slider',
       minValue: 0,
       maxValue: 3,
       value: 0,
+      tooltip: 'Smooth images along edges. (NlMeans)'
     },
   },
   framebuffers: ['salt'],

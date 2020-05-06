@@ -101,10 +101,7 @@ module.exports = {
       maxValue: 100,
       value: 0,
       style: `background: linear-gradient(90deg, ${sliderDark} 0%, ${sliderLight} 100%);`,
-      tooltip: `
-<div class="tooltip-content">
-  <p>Lighten or darken the entire image</p>
-</div>`,
+      tooltip: `<div class="tooltip-content">  <p>Lighten or darken the entire image</p> </div>`,
     },
     'Contrast': {
       type: 'slider',
