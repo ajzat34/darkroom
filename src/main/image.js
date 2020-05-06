@@ -90,7 +90,8 @@ async function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, call
       // load dcraw
       if (!dcraw) throw new Error('dcraw missing')
       if (eventLoadRawImage) eventLoadRawImage()
-      loadSourceImageTIFF(gl, await dcraw(path), callback)
+      loadSourceFromTypeData(gl, 'tiff', await dcraw(path), null, callback, null)
+      // loadSourceImageTIFF(gl, await dcraw(path), callback)
     } catch (err) {
       console.error('there was an error while trying to load a raw image with dcraw', err)
       return
