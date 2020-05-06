@@ -16,6 +16,12 @@ module.exports = {
       value: 0,
       tooltip: 'Smooth images along edges. (NlMeans)'
     },
+    'Details': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 400,
+      value: 100,
+    },
   },
   framebuffers: ['salt'],
   takesMask: false,
@@ -65,10 +71,14 @@ module.exports = {
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
+        'power': 'power',
       },
       knob_bindings: {
         'NL-Means': function(v, set, k, abort) {
           if (v !== 1) abort()
+        },
+        "Details": function(v, set) {
+          set('power', 'float', 1/(v/100))
         },
       },
       inputs: ['salt'],
@@ -83,10 +93,14 @@ module.exports = {
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
+        'power': 'power',
       },
       knob_bindings: {
         'NL-Means': function(v, set, k, abort) {
           if (v !== 2) abort()
+        },
+        "Details": function(v, set) {
+          set('power', 'float', 1/(v/100))
         },
       },
       inputs: ['salt'],
@@ -101,10 +115,14 @@ module.exports = {
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
+        'power': 'power',
       },
       knob_bindings: {
         'NL-Means': function(v, set, k, abort) {
           if (v !== 3) abort()
+        },
+        "Details": function(v, set) {
+          set('power', 'float', 1/(v/100))
         },
       },
       inputs: ['salt'],
