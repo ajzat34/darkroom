@@ -26,18 +26,6 @@ module.exports = {
       maxValue: 100,
       value: 100,
     },
-    'Desaturate Noise': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 100,
-      value: 20,
-    },
-    'Darken Noise': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 100,
-      value: 10,
-    },
     'Radius': {
       type: 'slider',
       minValue: 0,
@@ -51,6 +39,18 @@ module.exports = {
       maxValue: 100,
       value: 10,
       tooltip: 'Reduce hot and cold pixels (Median Filter)',
+    },
+    'Desaturate Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 0,
+    },
+    'Darken Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 0,
     },
   },
   framebuffers: ['salt', 'luma', 'chroma'],
