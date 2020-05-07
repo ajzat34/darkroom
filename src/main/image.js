@@ -42,9 +42,10 @@ function getImageDataFromPath(path, callback) {
 }
 
 async function loadSource(gl, path, callback) {
-  var fileName = path.split('/')
+  fileName = path.split('/')
   if (fileName.length === 1) fileName = path.split("\\")
-  document.getElementById('filename-tag').textContent = fileName[fileName.length-1]
+  fileName = fileName[fileName.length-1]
+  document.getElementById('filename-tag').textContent = fileName
   var srcFormat = imagePath.split('.')
   srcFormat = srcFormat[srcFormat.length-1].toLowerCase()
   // this will either be used to create the image buffer in the case of a package, or tunrned into the

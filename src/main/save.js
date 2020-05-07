@@ -2,8 +2,8 @@
 // NEEDS LOTS OF WORK
 
 var FORMAT = {
-  version: '0.10.0',
-  compatable: ['0.10.0'],
+  version: '0.11.2',
+  compatable: ['0.11.1','0.11.2'],
 }
 
 var projectPath = null
@@ -140,6 +140,7 @@ async function exportImage(format, quality) {
     title: 'Export Image',
     properties: ['createDirectory', 'showOverwriteConfirmation'],
     filters: filters,
+    defaultPath: fileName,
   })
   if (file.canceled) {
     return
@@ -175,7 +176,7 @@ async function exportFrameBuffer(fb) {
   }
   var blob = await framebufferToBlob(pgl, 'PNG', fb)
   var reader = new FileReader()
-  reader.onload = function(){
+  reader.onload = function() {
       var buffer = new Buffer(reader.result)
       fs.writeFile(path, buffer, {}, (err, res) => {
           if(err){

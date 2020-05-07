@@ -77,6 +77,7 @@ var imageB64          // base64 encoded copy of the original image
 var imageBuff         // buffer of the original image
 var imageFormat       // what format (png, jpeg) was the original image in
 var imagePath         // where was the loaded image located
+var fileName          // name of image
 var srcPackage        // holds a copy of the loaded dkg/dkr if one was loaded
 
 function calcCanvasSizeWidth () {
