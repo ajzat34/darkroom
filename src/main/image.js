@@ -1,7 +1,7 @@
 var dcraw
 try {
-  // dcraw = require('dcrawjs')
-  dcraw = require('../../../dcrawjs')
+  dcraw = require('dcrawjs')
+  // dcraw = require('../../../dcrawjs')
 } catch (err) {
   console.log('unable to load dcrawjs', err)
 }
