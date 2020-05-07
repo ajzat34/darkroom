@@ -5,6 +5,8 @@ uniform sampler2D chromaSampler;
 uniform ivec2 size;
 uniform highp float chromaAmount;
 uniform highp float lumaAmount;
+uniform highp float desaturate;
+uniform highp float darken;
 
 in highp vec2 textureCoord;
 out highp vec4 fragmentColor;
@@ -27,6 +29,12 @@ highp vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
+highp float huediff(float h1, float h2)
+{
+  highp float diff = abs(h1-h2);
+  return min(diff, 1.0-diff);
+}
+
 void main(void) {
   highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
   highp vec4 color = texelFetch(texSampler, p, 0);
@@ -34,10 +42,12 @@ void main(void) {
   highp vec3 hsvChroma = rgb2hsv(mix(color.rgb, texelFetch(chromaSampler, p, 0).rgb, chromaAmount));
   highp vec3 hsvLuma = rgb2hsv(texelFetch(lumaSampler, p, 0).rgb);
 
+  highp float hd = max(huediff(hsvColor.g, hsvChroma.g),huediff(hsvColor.g, hsvLuma.g));
+
   fragmentColor.rgb = hsv2rgb(vec3(
     hsvChroma.r,
-    mix(hsvColor.g, hsvLuma.g, lumaAmount),
-    mix(hsvColor.b, hsvLuma.b, lumaAmount)
+    mix(hsvColor.g, hsvChroma.g, chromaAmount)-clamp(hd*desaturate, 0.0, 1.0),
+    mix(hsvColor.b, hsvLuma.b , lumaAmount)-clamp(hd*darken, 0.0, 1.0)
   ));
   fragmentColor.a = color.a;
 }

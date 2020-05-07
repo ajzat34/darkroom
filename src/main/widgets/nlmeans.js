@@ -2,27 +2,13 @@ module.exports = {
   name: 'Denoise',
   tooltip: 'Use a variety of techniques to reduce image noise',
   knobs: {
-    'Salt & Pepper': {
+    'Luminance': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 10,
-      tooltip: 'Reduce hot and cold pixels (Median Filter)',
-    },
-    'NL-Means': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 3,
       value: 0,
-      tooltip: 'Smooth images along edges. (luma)'
     },
-    'Details': {
-      type: 'slider',
-      minValue: 0,
-      maxValue: 100,
-      value: 100,
-    },
-    'Chroma Details': {
+    'Luminance Details': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
@@ -32,13 +18,39 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 100,
+      value: 0,
     },
-    'Luminance': {
+    'Chroma Details': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 100,
+    },
+    'Desaturate Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 20,
+    },
+    'Darken Noise': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 10,
+    },
+    'Radius': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 3,
+      value: 1,
+      tooltip: 'Smooth images along edges. (luma)'
+    },
+    'Salt & Pepper': {
+      type: 'slider',
+      minValue: 0,
+      maxValue: 100,
+      value: 10,
+      tooltip: 'Reduce hot and cold pixels (Median Filter)',
     },
   },
   framebuffers: ['salt', 'luma', 'chroma'],
@@ -73,7 +85,7 @@ module.exports = {
         '__imagesize__': 'size',
       },
       knob_bindings: {
-        'NL-Means': function(v, set, k, abort) {
+        'Radius': function(v, set, k, abort) {
           if (v !== 0) abort()
         },
       },
@@ -92,10 +104,10 @@ module.exports = {
         'power': 'power',
       },
       knob_bindings: {
-        'NL-Means': function(v, set, k, abort) {
+        'Radius': function(v, set, k, abort) {
           if (v !== 1) abort()
         },
-        "Details": function(v, set) {
+        "Luminance Details": function(v, set) {
           set('power', 'float', 50/(v))
         },
       },
@@ -114,10 +126,10 @@ module.exports = {
         'power': 'power',
       },
       knob_bindings: {
-        'NL-Means': function(v, set, k, abort) {
+        'Radius': function(v, set, k, abort) {
           if (v !== 2) abort()
         },
-        "Details": function(v, set) {
+        "Luminance Details": function(v, set) {
           set('power', 'float', 50/(v))
         },
       },
@@ -136,10 +148,10 @@ module.exports = {
         'power': 'power',
       },
       knob_bindings: {
-        'NL-Means': function(v, set, k, abort) {
+        'Radius': function(v, set, k, abort) {
           if (v !== 3) abort()
         },
-        "Details": function(v, set) {
+        "Luminance Details": function(v, set) {
           set('power', 'float', 50/(v))
         },
       },
@@ -149,7 +161,7 @@ module.exports = {
     },
 
     {
-      shadername: 'nlmeans7',
+      shadername: 'nlmeans5',
       atrribVertexCoord: 'aVertex',
       atrribTextureCoord: 'aTextureCoord',
       uniforms: {
@@ -176,6 +188,8 @@ module.exports = {
         '__imagesize__': 'size',
         'lumaAmount': 'lumaAmount',
         'chromaAmount': 'chromaAmount',
+        'desaturate': 'desaturate',
+        'darken': 'darken',
       },
       knob_bindings: {
         "Luminance": function(v, set) {
@@ -184,6 +198,12 @@ module.exports = {
         "Chrominance": function(v, set) {
           set('chromaAmount', 'float', v/100)
         },
+        'Desaturate Noise': function(v, set) {
+          set('desaturate', 'float', v/100)
+        },
+        'Darken Noise': function(v, set) {
+          set('darken', 'float', v/100)
+        }
       },
       inputs: ['salt', 'luma', 'chroma'],
       inputBindings: ['texSampler', 'lumaSampler', 'chromaSampler'],
