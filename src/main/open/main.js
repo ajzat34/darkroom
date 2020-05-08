@@ -47,18 +47,25 @@ document.addEventListener("DOMContentLoaded", function(){
     a.addEventListener('click', function(){
       ipcRenderer.send('image-select', {path: recent.path + ''})
     })
-    a.appendChild(document.createTextNode(recent.name))
+    a.appendChild(document.createTextNode(trunc(recent.name, 20)))
     td.appendChild(a)
     tr.appendChild(td)
     var td = document.createElement('td')
-    td.appendChild(document.createTextNode(recent.parts.slice(recent.parts.length-4, recent.parts.length).join(pathsep)))
+    td.appendChild(document.createTextNode(trunc(recent.path, 30)))
     tr.appendChild(td)
     recentList.appendChild(tr)
   }
 
 })
 
-function openLink(link){
+function trunc (src, length) {
+  if (src.length-3 < length) {
+    return src
+  }
+  return '...' + src.substring(src.length-length-3, src.length)
+}
+
+function openLink(link) {
   shell.openExternal(link)
 }
 

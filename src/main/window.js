@@ -64,10 +64,10 @@ var autosaveTimer                     // same as above, but for autosave
 var model             // holds the webgl object for the model
 var copyprogram       // webgl shader program for
 var widgets = {}      // holds the widget descriptors
-var widgetOrder = ['nlmeans', 'saltnpepper', 'adjustments', 'details', 'colormat', 'grayscale'] // order to apply widgets
+var widgetOrder = ['nlmeans', 'saltnpepper', 'adjustments', 'details', 'clarity', 'colormat', 'grayscale'] // order to apply widgets
 var renderPasses = [
   ['nlmeans', 'saltnpepper'],
-  ['adjustments', 'details', 'colormat', 'grayscale']
+  ['adjustments', 'details', 'clarity', 'colormat', 'grayscale']
 ]
 var framebuffers = {} // holds all of the framebuffers (chain, final, extra)
 var sourceImage       // texture with the source image
