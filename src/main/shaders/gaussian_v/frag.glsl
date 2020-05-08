@@ -3,20 +3,12 @@
   // impliments fast nlmeans filter in glsl
   uniform sampler2D texSampler;
   uniform ivec2 size;
-  uniform highp float weights[33];
+  uniform highp float weights[25];
   in highp vec2 textureCoord;
   out highp vec4 fragmentColor;
   void main(void){
  highp ivec2 p = ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y)));
  highp vec3 acc = vec3(0.0);
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-32, 0, size.y-1)), 0).rgb * weights[32];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-31, 0, size.y-1)), 0).rgb * weights[31];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-30, 0, size.y-1)), 0).rgb * weights[30];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-29, 0, size.y-1)), 0).rgb * weights[29];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-28, 0, size.y-1)), 0).rgb * weights[28];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-27, 0, size.y-1)), 0).rgb * weights[27];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-26, 0, size.y-1)), 0).rgb * weights[26];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-25, 0, size.y-1)), 0).rgb * weights[25];
  acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-24, 0, size.y-1)), 0).rgb * weights[24];
  acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-23, 0, size.y-1)), 0).rgb * weights[23];
  acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+-22, 0, size.y-1)), 0).rgb * weights[22];
@@ -66,14 +58,6 @@
  acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+22, 0, size.y-1)), 0).rgb * weights[22];
  acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+23, 0, size.y-1)), 0).rgb * weights[23];
  acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+24, 0, size.y-1)), 0).rgb * weights[24];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+25, 0, size.y-1)), 0).rgb * weights[25];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+26, 0, size.y-1)), 0).rgb * weights[26];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+27, 0, size.y-1)), 0).rgb * weights[27];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+28, 0, size.y-1)), 0).rgb * weights[28];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+29, 0, size.y-1)), 0).rgb * weights[29];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+30, 0, size.y-1)), 0).rgb * weights[30];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+31, 0, size.y-1)), 0).rgb * weights[31];
- acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+32, 0, size.y-1)), 0).rgb * weights[32];
 
   fragmentColor.rgb = acc;
   fragmentColor.a  = 1.0;}
