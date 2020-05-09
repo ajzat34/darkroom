@@ -36,11 +36,13 @@ var contextual                 // dom element for contextual menu
 
 var updateRequest = false      // set to when signalling that the image needs to be re-rendered
 var renderRequestIndex = 0     // the index in renderPasses to start on
+var fullRenderIndex = 0
 var renderRequest = false      // same for canvas updates
 
 var widgetUiElements           // array of widgets (collections of dom elements)
 
 var renderTimeStat = 0         // stores how long the last render took
+var lastRender
 
 var envdata   // data about the environment
 
@@ -309,30 +311,38 @@ function onError(err) {
 // the scheduleRender() function is used to
 // notify this loop that a render needs to occur.
 async function updateCycle () {
-  var start = new Date()
-  var rendered = false
-  if (renderRequest) {
-    rendered = true
-    renderRequest = false
-    render(pgl, renderRequestIndex)
-    renderRequestIndex = 0
-  }
-
-  // this should help ensure that the render occurs before drawing it to the canvas
-  // it is NOT a sync, it just tells the drivers to "encourage eager execution of enqueued commands"
-  pgl.flush()
-
   // wait for the gpu finish
   await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
 
-  if (rendered) {
+  var start = new Date()
+  if (renderRequest) {
+    renderRequest = false
+    if (viewscale > 0.8) {
+      fullRenderIndex = renderRequestIndex
+      render(pgl, renderRequestIndex, true)
+    } else {
+      console.log('full render now')
+      fullRenderIndex = -1
+      render(pgl, renderRequestIndex, false)
+    }
+    renderRequestIndex = 0
+    pgl.flush()
+    // wait for the gpu finish
+    await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
     scheduleUpdate()
+    // record some stats
+    lastRender = new Date()
+    renderTimeStat = (new Date()-start)
+    console.log('render took', renderTimeStat, 'ms')
   }
 
-  // record some stats
-  renderTimeStat = (new Date()-start)
-  if (rendered) {
-    console.log('render took', renderTimeStat, 'ms')
+  if (fullRenderIndex>=0 && new Date() - lastRender > renderTimeStat+600 && !isMouseDown) {
+    render(pgl, fullRenderIndex, false)
+    await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
+    scheduleUpdate()
+    fullRenderIndex = -1
+    lastRender = new Date()
+    console.log('full render took', (new Date()-start), 'ms')
   }
 
   // do it all over again at least 1ms later
@@ -379,4 +389,13 @@ function updateCanvasMouseCompare () {
   var width = calcCanvasSizeWidth()
   var height = calcCanvasSizeHeight()
   updateCanvas(pgl, (scroll[0])/(width/2), (scroll[1])/(height/2), viewscale, sourceImage)
+}
+
+// keep track of mouse
+var isMouseDown = 0;
+document.body.onmousedown = function() {
+  ++isMouseDown;
+}
+document.body.onmouseup = function() {
+  --isMouseDown;
 }

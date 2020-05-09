@@ -62,7 +62,7 @@ function triggerRecreateFrameBuffers (gl) {
 }
 
 // renders the result image to a framebuffer for later use
-function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFramebuffer) {
+function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFramebuffer, scissor) {
   var frameWidgetOrder = []
   var stop = false
   // update masks and create the widget order for this render
@@ -94,7 +94,7 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
       // if this is the last widget, use the result framebuffer
       destfb = destFramebuffer
     }
-    runWidget(gl, widget, source, destfb, widgetFramebuffers)
+    runWidget(gl, widget, source, destfb, widgetFramebuffers, scissor)
   });
   // if there are no active widgets use the copy shader to write directly to the result
   if (frameWidgetOrder.length === 0) {
@@ -107,7 +107,7 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
 }
 
 // stateful wrapper for update()
-function render (gl, startIndex) {
+function render (gl, startIndex, scissor) {
   console.log('rendering from pass', startIndex)
   for (var i =startIndex; i<renderPasses.length; i++) {
     var srcImg
@@ -116,7 +116,7 @@ function render (gl, startIndex) {
     else srcImg = framebuffers.render[i-1].texture
     if (i===renderPasses.length-1) destFb = framebuffers.final
     else destFb = framebuffers.render[i]
-    update(gl, framebuffers, widgets, renderPasses[i], srcImg, destFb)
+    update(gl, framebuffers, widgets, renderPasses[i], srcImg, destFb, scissor)
   }
 }
 

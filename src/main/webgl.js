@@ -212,8 +212,10 @@ function loadTextureArray(gl, internalFormat, srcFormat, srcType, width, height,
 }
 
 // draws the model with the current program and framebuffers
-function draw (gl) {
+function draw (gl, scissor) {
   gl.disable(gl.BLEND)
+  if (scissor) enableScissor(gl)
+  else disableScissor(gl)
   gl.clearColor(0,0,0,0)
   gl.clear(gl.COLOR_BUFFER_BIT)
   const offset = 0;
@@ -223,6 +225,7 @@ function draw (gl) {
 
 // draws without clearing
 function pushDraw(gl) {
+  disableScissor()
   const offset = 0;
   const vertexCount = 6;
   gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
@@ -230,6 +233,7 @@ function pushDraw(gl) {
 
 // clear the canvas
 function clearNow(gl){
+  disableScissor(gl)
   gl.clearColor(0,0,0,0)
   gl.clear(gl.COLOR_BUFFER_BIT)
 }

@@ -63,7 +63,7 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
 }
 
 // runs a widget given the source image and framebuffer
-function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
+function runWidget(gl, widget, img_in, fb_out, privateframebuffers, scissor) {
   widget.stages.forEach((item, i) => {
     var shader = widget.stages[i]
     var imgs = []
@@ -78,7 +78,7 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers) {
     if (shader.out === 'out') fb = fb_out
     else if (shader.out in privateframebuffers) fb = privateframebuffers[shader.out]
 
-    if (useWidgetShader(gl, widget, i, imgs, fb)) draw(gl)
+    if (useWidgetShader(gl, widget, i, imgs, fb)) draw(gl,scissor)
   })
 }
 
