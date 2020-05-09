@@ -6,7 +6,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 0,
+      value: 50,
     },
     'Luminance Details': {
       type: 'slider',
@@ -18,7 +18,7 @@ module.exports = {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
-      value: 0,
+      value: 80,
     },
     'Chroma Details': {
       type: 'slider',
@@ -31,14 +31,13 @@ module.exports = {
       minValue: 0,
       maxValue: 3,
       value: 1,
-      tooltip: 'Smooth images along edges. (luma)'
     },
     'Salt & Pepper': {
       type: 'slider',
       minValue: 0,
       maxValue: 100,
       value: 10,
-      tooltip: 'Reduce hot and cold pixels (Median Filter)',
+      tooltip: 'Reduce hot and cold pixels. (Medians)',
     },
     'Desaturate Noise': {
       type: 'slider',

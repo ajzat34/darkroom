@@ -69,6 +69,7 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
   widgetOrder.forEach((widgetname, i) => {
     if (stop) return
     var widget = widgets[widgetname]
+    if (!widget) throw new Error(`unknown widget ${widgetname}`)
     if (widget.mask) widget.mask.bakeIf()
     if (widgetState[widgetname]._enabled === true) frameWidgetOrder.push(widgetname)
     if (widgetState[widgetname]["Visualize Image Processing"] && widgetState[widgetname]["Visualize Image Processing"].value) stop = true
