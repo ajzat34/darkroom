@@ -124,17 +124,28 @@ function newGlTexture(gl){
   return texture
 }
 
-function loadTextureData(gl, texture, width, height, data, alignment) {
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  const level = 0;
-  const internalFormat = gl.RGBA;
-  const border = 0;
-  const srcFormat = gl.RGBA;
-  const srcType = gl.UNSIGNED_BYTE;
+function loadTextureData(gl, texture, width, height, data, format, alignment) {
+  var internalFormat
+  var srcFormat
+  var srcType
+  if (format === 'RGBA') {
+    internalFormat = gl.RGBA
+    srcFormat = gl.RGBA
+    srcType = gl.UNSIGNED_BYTE
+  } else if (format === 'RGBA16F' ) {
+    internalFormat = gl.RGBA16F
+    srcFormat = gl.RGBA
+    srcType = gl.FLOAT
+  } else if (format === 'RGBA32F' ) {
+    internalFormat = gl.RGBA32F
+    srcFormat = gl.RGBA
+    srcType = gl.FLOAT
+  } else {
+    throw new Error(`unknown texture format: ${format}`)
+  }
   if (alignment) gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment)
-  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-                width, height, border, srcFormat, srcType,
-                data)
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, srcType, data, 0)
 }
 
 // Initialize a texture and load an image.
@@ -300,7 +311,7 @@ function asyncGlFence(gl, sync, rate) {
 }
 
 // wrapper for many kinds of webgl2context.unifomXX and webgl2context.textureXX
-function glSetUniformOrTextureData (gl, shader, bind, type, setdata){
+function glSetUniformOrTextureData (gl, shader, bind, type, setdata, privateframebuffers){
   switch (type) {
     case 'float':
       gl.uniform1f(shader.glshaderpack.uniformLocations[bind], setdata)
@@ -328,7 +339,11 @@ function glSetUniformOrTextureData (gl, shader, bind, type, setdata){
       }
       break;
     case 'texture':
-      loadTextureData(gl, shader.glshaderpack.textures[bind], setdata.width, setdata.height, setdata.data, setdata.format, setdata.alignment)
+      if (privateframebuffers[bind]) {
+        loadTextureData(gl, privateframebuffers[bind].texture, setdata.width, setdata.height, setdata.data, setdata.format, setdata.alignment)
+      }
+      else if (shader.glshaderpack.textures[bind]) loadTextureData(gl, shader.glshaderpack.textures[bind], setdata.width, setdata.height, setdata.data, setdata.format, setdata.alignment)
+      else throw new Error(`framebuffer/texture ${bind} unknown`)
       break;
     default:
       throw new Error (`unknown type ${value.type} in binding for knob ${key} in widget shader ${shaderidx}:${shader.shadername}`)

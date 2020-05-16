@@ -24,7 +24,7 @@ function loadWidget (gl, path) {
 }
 
 // sets up opengl to use a widget
-function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
+function useWidgetShader(gl, widget, shaderidx, imgs, fb, privateframebuffers) {
   var shader = widget.stages[shaderidx]
   var state = widgetState[widget.widgetname]
   // tell webgl to use a shader, and the rectangle model
@@ -36,11 +36,10 @@ function useWidgetShader(gl, widget, shaderidx, imgs, fb) {
       throw new Error(`invalid knob binding: ${key}`)
     }
     shader.knob_bindings[key](state[key].value, function(bind, type, setdata) {
-      glSetUniformOrTextureData(gl, shader, bind, type, setdata)
+      glSetUniformOrTextureData(gl, shader, bind, type, setdata, privateframebuffers)
     }, state, function(){abort = true})
   })
 
-  if (abort) console.log('ABORTING SHADER', shaderidx)
   if (abort) return false;
 
   // special value for passing the image size to the texture
@@ -78,7 +77,7 @@ function runWidget(gl, widget, img_in, fb_out, privateframebuffers, scissor) {
     if (shader.out === 'out') fb = fb_out
     else if (shader.out in privateframebuffers) fb = privateframebuffers[shader.out]
 
-    if (useWidgetShader(gl, widget, i, imgs, fb)) draw(gl,scissor)
+    if (useWidgetShader(gl, widget, i, imgs, fb, privateframebuffers)) draw(gl,scissor)
   })
 }
 

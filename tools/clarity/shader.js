@@ -1,76 +1,21 @@
-// calculate the area <x under the normal curve
-function normalcdf(x) {
-  return 0.5 * (1 + erf(x));
-}
-
-// constants for erf
-var a1 =  0.254829592;
-var a2 = -0.284496736;
-var a3 =  1.421413741;
-var a4 = -1.453152027;
-var a5 =  1.061405429;
-var p  =  0.3275911;
-
-function erf(x) {
-    // Save the sign of x
-    var sign = 1;
-    if (x < 0) {
-        sign = -1;
-    }
-    x = Math.abs(x);
-
-    // A&S formula 7.1.26
-    var t = 1.0/(1.0 + p*x);
-    var y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*Math.exp(-x*x);
-
-		return sign*y
-}
-
-function gaussian(x, stdev) {
-  return normalcdf(x/stdev)
-}
-
-// get the area between two values on the normal curve
-function gaussianRange(a, b, stdev) {
-	var av = gaussian(a, stdev)
-	var bv = gaussian(b, stdev)
-  if (bv > av){
-		return bv - av
-  }
-	return av - bv
-}
-
-// gets the area under the normal curve inside a pixel
-function gaussianPixel (n, spread) {
-	return gaussianRange(n - 0.5, n + 0.5, spread)
-}
-
-// create a gaussian distribution given the number of included pixels
-function gaussianNDist(n, spread) {
-	var result = new Array()
-	var total = 0
-	for (var i = 0; i<(n-1); i++) {
-		var g = gaussianPixel(i, spread)
-    result[i] = g
-		// keep track of total
-		// non-center values must be counted twice
-		if (i == 0){ total += g
-		} else { total += 2*g }
-	}
-	result.push( (1.0-total)/2 )
-  return result
-}
-
 // gets the number of samples after the center sample
 function nFromKsize(n) {
   return ((n-1)/2)+1
 }
 
+var colors = {
+  0:'r',
+  1:'g',
+  2:'b',
+  3:'a',
+}
+
+function genReadTextureData(sampler, i) {
+  return `texelFetch(${sampler}, ivec2(${Math.floor(i/4)},0), 0).${colors[Math.floor(i%4)]}`
+}
 
 // genorate frag shaders
 module.exports=function(size, direction){
-
-  var dist = gaussianNDist(size+1, size/2)
 
   var header =
   `# version 300 es
@@ -78,7 +23,7 @@ module.exports=function(size, direction){
   // impliments fast nlmeans filter in glsl
   uniform sampler2D texSampler;
   uniform ivec2 size;
-  uniform highp float weights[${size+1}];
+  uniform sampler2D weights;
   in highp vec2 textureCoord;
   out highp vec4 fragmentColor;
   `
@@ -89,9 +34,9 @@ module.exports=function(size, direction){
   main += ' highp vec3 acc = vec3(0.0);\n'
   for (var i=-size; i<=size; i++){
     if (direction === 0) {
-      main+=` acc+= texelFetch(texSampler, ivec2(clamp(p.x+${i}, 0, size.x-1), clamp(p.y, 0, size.y-1)), 0).rgb * weights[${Math.abs(i)}];\n`
+      main+=` acc+= texelFetch(texSampler, ivec2(clamp(p.x+${i}, 0, size.x-1), clamp(p.y, 0, size.y-1)), 0).rgb * ${genReadTextureData('weights', Math.abs(i))};\n`
     } else {
-      main+=` acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+${i}, 0, size.y-1)), 0).rgb * weights[${Math.abs(i)}];\n`
+      main+=` acc+= texelFetch(texSampler, ivec2(clamp(p.x, 0, size.x-1), clamp(p.y+${i}, 0, size.y-1)), 0).rgb * ${genReadTextureData('weights', Math.abs(i))};\n`
     }
   }
   main += `

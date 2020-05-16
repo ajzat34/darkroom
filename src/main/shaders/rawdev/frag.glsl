@@ -18,7 +18,7 @@ void main(void) {
   // get the texel value
   highp vec4 color = texelFetch(texSampler, ivec2(int(textureCoord.x * float(size.x)), int(textureCoord.y * float(size.y))), 0);
   // saturation temp and hue
-  highp vec3 level = pow( max((((color.rgb-1.0)*black)+1.0) * exposure, 0.0), vec3(gamma));
+  highp vec3 level = max(((( pow(color.rgb,vec3(gamma)) -1.0) *black)+1.0) * exposure, 0.0);
   highp vec3 saturationc = mix(vec3(dot(level, vec3(0.2125, 0.7154, 0.0721))), level, saturation);
   saturationc.r += temperature;
   saturationc.g += hue;

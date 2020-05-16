@@ -244,6 +244,7 @@ module.exports = {
           set('lut', 'texture', {
             width: 256,
             height: 1,
+            format: 'RGBA',
             data: makeLutImage(gamma, brightness, contrast, blacks, whites, v),
           })
         },

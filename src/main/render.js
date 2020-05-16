@@ -95,7 +95,10 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
       destfb = destFramebuffer
     }
     runWidget(gl, widget, source, destfb, widgetFramebuffers, scissor)
-  });
+    // Object.keys(widgetFramebuffers).forEach((fb, i) => {
+    //   loadTextureData(gl, widgetFramebuffers[fb].texture, 1, 1, Uint8Array.from([0,0,0,0]), 'RGBA')
+    // })
+  })
   // if there are no active widgets use the copy shader to write directly to the result
   if (frameWidgetOrder.length === 0) {
     console.log('no widgets active in renderpass, using passthru shaders')
@@ -110,6 +113,7 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
 function render (gl, startIndex, scissor) {
   console.log('rendering from pass', startIndex)
   for (var i =startIndex; i<renderPasses.length; i++) {
+    console.log('rendering pass', i)
     var srcImg
     var destFb
     if (i===0) srcImg = sourceImage

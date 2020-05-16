@@ -315,16 +315,19 @@ async function updateCycle () {
   await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
 
   var start = new Date()
-  if (renderRequest) {
+
+  if (fullRenderIndex>=0 && new Date() - lastRender > renderTimeStat+600 && !isMouseDown) {
+    console.log('starting full render from ', fullRenderIndex)
+    render(pgl, fullRenderIndex, false)
+    await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
+    scheduleUpdate()
+    fullRenderIndex = -1
+    lastRender = new Date()
+    console.log('full render took', (new Date()-start), 'ms')
+  } else if (renderRequest) {
     renderRequest = false
-    if (viewscale > 0.8) {
-      fullRenderIndex = renderRequestIndex
-      render(pgl, renderRequestIndex, true)
-    } else {
-      console.log('full render now')
-      fullRenderIndex = -1
-      render(pgl, renderRequestIndex, false)
-    }
+    fullRenderIndex = renderRequestIndex
+    render(pgl, renderRequestIndex, true)
     renderRequestIndex = 0
     pgl.flush()
     // wait for the gpu finish
@@ -334,15 +337,6 @@ async function updateCycle () {
     lastRender = new Date()
     renderTimeStat = (new Date()-start)
     console.log('render took', renderTimeStat, 'ms')
-  }
-
-  if (fullRenderIndex>=0 && new Date() - lastRender > renderTimeStat+600 && !isMouseDown) {
-    render(pgl, fullRenderIndex, false)
-    await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
-    scheduleUpdate()
-    fullRenderIndex = -1
-    lastRender = new Date()
-    console.log('full render took', (new Date()-start), 'ms')
   }
 
   // do it all over again at least 1ms later
@@ -394,8 +388,8 @@ function updateCanvasMouseCompare () {
 // keep track of mouse
 var isMouseDown = 0;
 document.body.onmousedown = function() {
-  ++isMouseDown;
+  isMouseDown = true;
 }
 document.body.onmouseup = function() {
-  --isMouseDown;
+  isMouseDown = false;
 }
