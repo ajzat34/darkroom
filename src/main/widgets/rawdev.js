@@ -50,6 +50,10 @@ module.exports = {
       style: 'background: linear-gradient(90deg, rgba(187,101,255,1) 0%, rgba(250,250,250,1) 49%, rgba(145,255,136,1) 100%);',
       tooltip: `<div class="tooltip-content"><p>Change the balance of colors by controlling color hue</p></div>`,
     },
+    'Show clipping': {
+      type: 'checkbox',
+      value: false,
+    },
   },
   framebuffers: [],
   takesMask: false,
@@ -68,6 +72,7 @@ module.exports = {
         'temperature': 'temperature',
         'hue': 'hue',
         'gamma': 'gamma',
+        'clipping': 'clipping',
       },
       knob_bindings: {
         'Black Level': function(v, set) {
@@ -90,6 +95,10 @@ module.exports = {
         },
         'Hue':  function(v, set) {
           set('hue', 'float', v/800)
+        },
+
+        'Show clipping':  function(v, set) {
+          set('clipping', 'bool', v)
         },
       },
       inputs: ['in'],

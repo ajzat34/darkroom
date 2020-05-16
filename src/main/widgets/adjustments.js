@@ -205,7 +205,7 @@ module.exports = {
     //   value: false,
     // },
   },
-  framebuffers: [],
+  framebuffers: ['lut'],
   takesMask: true,
   stages: [
     {
@@ -215,13 +215,12 @@ module.exports = {
       uniforms: {
         // bind name : in-shader name
         '__imagesize__': 'size',
-        'lut': 'lut',
+        // 'lut': 'lut',
         'saturation': 'saturation',
         'temperature': 'temperature',
         'hue': 'hue',
         'vibrance': 'vibrance',
       },
-      textures: ['lut'],
       knob_bindings: {
         'Curves': function(v, set, k) {
           // get the values from other sliders
@@ -265,7 +264,7 @@ module.exports = {
           set('hue', 'float', v/1000)
         },
       },
-      inputs: ['in', 'mask'],
+      inputs: ['in', 'mask', 'lut'],
       inputBindings: ['texSampler', 'maskSampler', 'lut'],
       out: 'out',
     }

@@ -80,7 +80,11 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
     var widgetFramebuffers = {}
 
     // allocate extra framebuffers to this widget if needed
-    widget.framebuffers.forEach((name, i) => { widgetFramebuffers[name] = framebuffers.extra[i] });
+    widget.framebuffers.forEach((name, i) => {
+      widgetFramebuffers[name] = framebuffers.extra[i]
+      gl.bindTexture(gl.TEXTURE_2D, widgetFramebuffers[name].texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, sourceImageWidth, sourceImageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    })
 
     // chose what framebuffers will be the input and output
     lastchain = (1-lastchain)
@@ -95,9 +99,10 @@ function update (gl, framebuffers, widgets, widgetOrder, sourceImage, destFrameb
       destfb = destFramebuffer
     }
     runWidget(gl, widget, source, destfb, widgetFramebuffers, scissor)
-    // Object.keys(widgetFramebuffers).forEach((fb, i) => {
-    //   loadTextureData(gl, widgetFramebuffers[fb].texture, 1, 1, Uint8Array.from([0,0,0,0]), 'RGBA')
-    // })
+    framebuffers.extra.forEach((fb, i) => {
+      gl.bindTexture(gl.TEXTURE_2D, fb.texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, sourceImageWidth, sourceImageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+    })
   })
   // if there are no active widgets use the copy shader to write directly to the result
   if (frameWidgetOrder.length === 0) {
