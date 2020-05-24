@@ -1,6 +1,6 @@
 // main electron process
 // mostly just spwans windows as needed, and moves data between windows
-const version = '0.14.2'
+const version = '0.14.3'
 const codeName = 'Beta'
 
 const { app, BrowserWindow, ipcMain, dialog, Menu, crashReporter } = require('electron')
@@ -246,6 +246,7 @@ function childWindow(parent, opt) {
       webPreferences: {
         nodeIntegration: true,
       },
+      fullscreen: false,
     })
     console.log('created child window')
 
