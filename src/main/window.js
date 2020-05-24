@@ -316,7 +316,7 @@ async function updateCycle () {
 
   var start = new Date()
 
-  if (fullRenderIndex>=0 && new Date() - lastRender > renderTimeStat+600 && !isMouseDown) {
+  if (fullRenderIndex>=0 && new Date() - lastRender > renderTimeStat+500 && !isMouseDown) {
     console.log('starting full render from ', fullRenderIndex)
     render(pgl, fullRenderIndex, false)
     await asyncGlFence(pgl, pgl.fenceSync(pgl.SYNC_GPU_COMMANDS_COMPLETE, 0), 10)
@@ -324,7 +324,9 @@ async function updateCycle () {
     fullRenderIndex = -1
     lastRender = new Date()
     console.log('full render took', (new Date()-start), 'ms')
+    document.getElementById('statusicon').setAttribute('mode', 'success')
   } else if (renderRequest) {
+    document.getElementById('statusicon').setAttribute('mode', 'danger')
     renderRequest = false
     fullRenderIndex = renderRequestIndex
     render(pgl, renderRequestIndex, true)
@@ -338,7 +340,6 @@ async function updateCycle () {
     renderTimeStat = (new Date()-start)
     console.log('render took', renderTimeStat, 'ms')
   }
-
   // do it all over again at least 1ms later
   setTimeout(function(){
     requestAnimationFrame(updateCycle)

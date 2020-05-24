@@ -150,6 +150,7 @@ function makeIFDImage (r, ifd, tagReaders) {
 
 // wrapper for readFromReader that creats a reader from a buffer
 function readTiffFromData (data) {
+  console.log(typeof data)
   return readFromReader(new Reader(data))
 }
 

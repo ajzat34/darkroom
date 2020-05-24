@@ -24,8 +24,9 @@ function loadImageBase64(format, base64, onload) {
 }
 
 function loadImage(path, onload) {
+  var imageB64
   try {
-    var imageB64 = fs.readFileSync(path).toString('base64')
+    imageB64 = fs.readFileSync(path).toString('base64')
   } catch (err) {
     console.error('error loading file', err)
     errorBox('Darkroom', `Unable to locate file: ${path}`, null)
@@ -41,6 +42,8 @@ function getImageDataFromPath(path, callback) {
   })
 }
 
+
+// loads a dkg or other image file
 async function loadSource(gl, path, callback) {
   fileName = path.split('/')
   if (fileName.length === 1) fileName = path.split("\\")
@@ -53,11 +56,16 @@ async function loadSource(gl, path, callback) {
   var loadingBuff
   try {
     loadingBuff = fs.readFileSync(imagePath)
+  } catch (err) {
+    console.error('error loading file', err)
+    errorBox('Darkroom', `Unable to locate file: ${path}`, 'error')
+  }
+  try {
     console.log('loading image of type', srcFormat)
     await loadSourceFromTypeData(gl, srcFormat, loadingBuff, null, callback, path)
   } catch (err) {
     console.error('error loading file', err)
-    errorBox('Darkroom', `Unable to locate file: ${path}`, 'error')
+    errorBox('Darkroom', `Unable to load file: ${path}`, 'error')
   }
 }
 
@@ -65,37 +73,41 @@ async function loadSource(gl, path, callback) {
 // if the format is a simple image, it will be converted to a base64 encoded string
 // and passed along, if it is a package the image will be extracted and passed back
 // to this function
-async function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, callback, path) {
+async function loadSourceFromTypeData(gl, imgFormat, imgBuff, imgB64, callback, path) {
+  console.log(`loading ${imgFormat}`)
+  imageFormat = imgFormat
   if (imageFormat === "dkg") {
     console.log('determined source type: package, unwrapping and reloading')
     srcPackage = JSON.parse(fs.readFileSync(imagePath))
-    imageFormat = srcPackage.image.format
-    imageB64 = srcPackage.image.data
-    loadSourceFromTypeData(gl, imageFormat, null, imageB64, callback)
+    console.log('srcPackage', srcPackage)
+    await loadSourceFromTypeData(gl, srcPackage.image.format, null ,srcPackage.image.data, callback)
     return
-
   }
+
   // create a base64 version if we dont have one
   // at this point we know it will be of the image because the data is not a package
-  if (!imageB64) var imageB64 = imageBuff.toString('base64')
-  if (imageFormat === 'png' || imageFormat === 'jpg' || imageFormat === 'jpeg') {
+  if (!imgB64) var imgB64 = imgBuff.toString('base64')
+  imageB64 = imgB64
+
+  if (imgFormat === 'png' || imgFormat === 'jpg' || imgFormat === 'jpeg') {
     console.log('determined simple image format, loading directly with webgl')
     // simple loading that can be passed on to js
-    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageFormat, imageB64, callback)
+    sourceImage = loadTexture(gl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgFormat, imgB64, callback)
     return
-
   }
+
   // create a buffer if the file was loaded from a base64 string, everything below will need a real buffer
-  if (!imageBuff) var imageBuff = Buffer.from(imageB64, 'base64')
+  if (!imgBuff) var imgBuff = Buffer.from(imgB64, 'base64')
 
   // check for complex formats
-  if (imageFormat === 'tiff' || imageFormat === 'tif') {
+  if (imgFormat === 'tiff' || imgFormat === 'tif') {
     // tiff loading in helper function
     console.log('determined tiff image')
-    loadSourceImageTIFF(gl, imageBuff, callback)
+    loadSourceImageTIFF(gl, imgBuff, callback)
     return
 
-  } else if (imageFormat === 'dng' || imageFormat === 'arw'|| imageFormat === "crw" || imageFormat === "cr2" || imageFormat === "mrw" || imageFormat === "nef") {
+  // check for raw formats
+  } else if (imgFormat === 'dng' || imgFormat === 'arw'|| imgFormat === "crw" || imgFormat === "cr2" || imgFormat === "mrw" || imgFormat === "nef") {
     // load raw formats with dcraw.js
     console.log('determined RAW image, loading with dcrwaw')
     if (!path) throw new Error('raw images must be loaded by path')
@@ -103,8 +115,8 @@ async function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, call
       // load dcraw
       if (!dcraw) throw new Error('dcraw missing')
       if (eventLoadRawImage) eventLoadRawImage()
-      loadSourceFromTypeData(gl, 'tiff', await dcraw(path), null, callback, null)
-      // loadSourceImageTIFF(gl, await dcraw(path), callback)
+      await loadSourceFromTypeData(gl, 'tiff', await dcraw(path), null, callback, null)
+      return
     } catch (err) {
       console.error('there was an error while trying to load a raw image with dcraw', err)
       return
@@ -117,6 +129,7 @@ async function loadSourceFromTypeData(gl, imageFormat, imageBuff, imageB64, call
 function loadSourceImageTIFF(gl, imageBuff, callback) {
   // extract the tiff data
   var tiff = TIFF.read(imageBuff)
+  console.log(tiff)
   // use the last readable image
   var tiffimage
   tiff.images.forEach((image, i) => { if (image.readable) tiffimage = image })
