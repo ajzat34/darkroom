@@ -1,4 +1,4 @@
-# Open Darkroom ⚠️ Not Maintained ⚠️
+# Darkroom ⚠️ Not Maintained ⚠️
 ### Check out the [Open Darkroom Website](https://darkroom.js.org)
 A simple, cross platform photo editor.
 
