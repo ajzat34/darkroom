@@ -2,9 +2,6 @@
 
 ![screenshot](/docs/image/screenshot.jpg)
 
-# About This Project
-Currently in early-development, don't expect stability or features.
-
 # Building
 * Make sure you have NodeJS installed
 * Clone & cd
