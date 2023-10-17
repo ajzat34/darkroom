@@ -1,5 +1,4 @@
 # Darkroom ⚠️ Not Maintained ⚠️
-A simple, cross platform photo editor.
 
 ![screenshot](/docs/image/screenshot.jpg)
 
